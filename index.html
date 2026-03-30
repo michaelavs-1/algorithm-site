@@ -1474,6 +1474,12 @@ var HERO_IMGS=[
         // Phase 2: Camera lands inside, grid expands (landed)
         setTimeout(function(){
           povCubeContainer.classList.add('landed');
+          // Force UI elements visible (CSS transition may not fire due to parent opacity timing)
+          catBack.style.opacity='1';
+          catBack.style.transform='translateX(-50%) translateY(0)';
+          catTitleLabel.style.opacity='1';
+          catTitleLabel.style.transform='translateY(0) scale(1)';
+          indicator.style.opacity='1';
           isAnimating=false;
         },900);
       },50);
@@ -1514,6 +1520,12 @@ var HERO_IMGS=[
     isAnimating=true;
     currentCat=null;
 
+    // Hide UI elements
+    catBack.style.opacity='0';
+    catBack.style.transform='translateX(-50%) translateY(-20px)';
+    catTitleLabel.style.opacity='0';
+    indicator.style.opacity='0';
+
     // Reverse dive
     povCubeContainer.classList.remove('landed');
 
@@ -1524,6 +1536,12 @@ var HERO_IMGS=[
         catPage.classList.remove('active');
         catPage.classList.remove('cube-tour');
         povScene.classList.remove('active');
+        // Reset inline styles
+        catBack.style.opacity='';
+        catBack.style.transform='';
+        catTitleLabel.style.opacity='';
+        catTitleLabel.style.transform='';
+        indicator.style.opacity='';
 
         // Restore cubies
         var cubies=window._cubies||[];
