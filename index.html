@@ -148,7 +148,7 @@ a{text-decoration:none}
 .cube-nav{
   display:flex;
   flex-direction:column;
-  gap:18px;
+  gap:14px;
   align-items:flex-end;
 }
 .cube-nav.visible{
@@ -157,7 +157,7 @@ a{text-decoration:none}
 }
 .nav-box{
   cursor:pointer;
-  perspective:280px;
+  perspective:380px;
   opacity:0;
   transform:translateX(50px);
 }
@@ -170,7 +170,7 @@ a{text-decoration:none}
 .cube-nav.visible .nav-box:nth-child(4){animation-delay:.32s}
 .cube-nav.visible .nav-box:nth-child(5){animation-delay:.40s}
 .nav-box-inner{
-  width:64px;height:64px;
+  width:88px;height:88px;
   position:relative;
   transform-style:preserve-3d;
   transform:var(--cr);
@@ -181,16 +181,16 @@ a{text-decoration:none}
 }
 .nf{
   position:absolute;
-  width:64px;height:64px;
+  width:88px;height:88px;
   backface-visibility:hidden;
 }
 .nf-front{
   background:rgba(4,18,44,.9);
   border:1.5px solid rgba(0,200,255,.65);
-  transform:translateZ(32px);
+  transform:translateZ(44px);
   display:flex;align-items:center;justify-content:center;
   font-family:'Amatic SC','Rubik',cursive;
-  font-weight:900;font-size:1rem;
+  font-weight:900;font-size:1.15rem;
   color:#00d4ff;
   text-shadow:0 0 8px rgba(0,200,255,.55);
   letter-spacing:1px;
@@ -200,24 +200,32 @@ a{text-decoration:none}
 .nf-right{
   background:rgba(2,10,28,.8);
   border:1.5px solid rgba(0,160,200,.4);
-  transform:translateX(32px) rotateY(90deg);
+  transform:translateX(44px) rotateY(90deg);
 }
 .nf-top{
   background:rgba(3,14,36,.72);
   border:1.5px solid rgba(0,175,215,.4);
-  transform:translateY(-32px) rotateX(90deg);
+  transform:translateY(-44px) rotateX(90deg);
 }
 @keyframes navBoxIn{
   from{opacity:0;transform:translateX(50px)}
   to{opacity:1;transform:translateX(0)}
 }
 @media(max-width:768px){
-  .cube-nav{gap:14px}
-  .nav-box-inner{width:52px;height:52px}
-  .nf{width:52px;height:52px}
-  .nf-front{font-size:.82rem;transform:translateZ(26px)}
-  .nf-right{transform:translateX(26px) rotateY(90deg)}
-  .nf-top{transform:translateY(-26px) rotateX(90deg)}
+  .cube-nav{gap:10px}
+  .nav-box-inner{width:68px;height:68px}
+  .nf{width:68px;height:68px}
+  .nf-front{font-size:.9rem;transform:translateZ(34px)}
+  .nf-right{transform:translateX(34px) rotateY(90deg)}
+  .nf-top{transform:translateY(-34px) rotateX(90deg)}
+}
+@media(max-width:480px){
+  .cube-nav{gap:8px}
+  .nav-box-inner{width:58px;height:58px}
+  .nf{width:58px;height:58px}
+  .nf-front{font-size:.82rem;transform:translateZ(29px)}
+  .nf-right{transform:translateX(29px) rotateY(90deg)}
+  .nf-top{transform:translateY(-29px) rotateX(90deg)}
 }
 
 </style>
@@ -250,9 +258,9 @@ a{text-decoration:none}
 
 </div>
 
-<div class="cube-nav" id="cubeNav" style="position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:999;visibility:hidden;opacity:0;transition:opacity .4s,visibility .4s">
+<div class="cube-nav" id="cubeNav" style="position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:999;visibility:hidden;opacity:0;transition:opacity .4s,visibility .4s">
 
-  <div class="nav-box" style="--cr:rotateZ(45deg) rotateX(-12deg) rotateY(22deg)">
+  <div class="nav-box" style="--cr:rotateZ(22deg) rotateX(-20deg) rotateY(28deg)">
     <div class="nav-box-inner">
       <div class="nf nf-top"></div>
       <div class="nf nf-right"></div>
@@ -268,7 +276,7 @@ a{text-decoration:none}
     </div>
   </div>
 
-  <div class="nav-box" style="--cr:rotateZ(-28deg) rotateX(-8deg) rotateY(-22deg)">
+  <div class="nav-box" style="--cr:rotateZ(-12deg) rotateX(-14deg) rotateY(-20deg)">
     <div class="nav-box-inner">
       <div class="nf nf-top"></div>
       <div class="nf nf-right"></div>
@@ -284,7 +292,7 @@ a{text-decoration:none}
     </div>
   </div>
 
-  <div class="nav-box" style="--cr:rotateZ(18deg) rotateX(-14deg) rotateY(28deg)">
+  <div class="nav-box" style="--cr:rotateZ(14deg) rotateX(-18deg) rotateY(26deg)">
     <div class="nav-box-inner">
       <div class="nf nf-top"></div>
       <div class="nf nf-right"></div>
