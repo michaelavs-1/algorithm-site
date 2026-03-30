@@ -582,14 +582,33 @@ var HERO_IMGS=[
       cats.classList.add('visible');
       if(hint) hint.style.display='none';
     } else {
-      // Close: fold back together
-      wrap.classList.remove('exploded');
-      cubies.forEach(function(c){
-        c.el.style.transition='transform .8s cubic-bezier(.25,.46,.45,.94), opacity .5s ease';
+      // Close: reverse the fold — animate back to saved positions first
+      cats.classList.remove('visible');
+
+      // Step 1: Animate each cubie back to its original (pre-open) transform
+      var faceOrder2={top:5, front:4, back:3, right:2, left:1, bottom:0, center:0};
+      var maxDelay=0;
+      cubies.forEach(function(c,idx){
+        var face=getFace(c);
+        var saved=c._savedTransform;
+        if(!saved){
+          // Fallback: compute from upd
+          if(window._cubeUpd) window._cubeUpd(c);
+          saved=c.el.style.transform;
+        }
+        var delay=faceOrder2[face]*60 + (idx%9)*12;
+        var totalTime=delay+800;
+        if(totalTime>maxDelay) maxDelay=totalTime;
+        c.el.style.transition='transform .8s cubic-bezier(.25,.46,.45,.94) '+delay+'ms';
+        c.el.style.transform=saved;
         c.el.style.opacity='1';
       });
-      cats.classList.remove('visible');
-      if(window._restoreCubies) window._restoreCubies();
+
+      // Step 2: After all animations complete, remove exploded and resume spin
+      setTimeout(function(){
+        wrap.classList.remove('exploded');
+        if(window._restoreCubies) window._restoreCubies();
+      }, maxDelay+50);
     }
   }
 
