@@ -1034,8 +1034,8 @@ var HERO_IMGS=[
     });
   }
 
-  // Return clones to cube position and restore
-  function flyClonesToCube(){
+  // Return clones to cube and show cubies (keep exploded state)
+  function flyClonesToExploded(){
     var cubies=window._cubies||[];
 
     cubies.forEach(function(c,idx){
@@ -1056,11 +1056,11 @@ var HERO_IMGS=[
     });
 
     setTimeout(function(){
+      // Show cubies in their current (exploded) positions — do NOT call _restoreCubies
       cubies.forEach(function(c){
         c.el.style.transition='opacity .25s ease';
         c.el.style.opacity='1';
       });
-      if(window._restoreCubies) window._restoreCubies();
       setTimeout(function(){
         flyClones.forEach(function(cl){if(cl.parentNode)cl.parentNode.removeChild(cl);});
         flyClones=[];
@@ -1107,8 +1107,8 @@ var HERO_IMGS=[
 
     // Return to exploded cube with categories visible (not closed cube)
     setTimeout(function(){
-      // Bring cubies back to their exploded positions
-      flyClonesToCube();
+      // Bring cubies back to exploded positions (not original)
+      flyClonesToExploded();
       hubCenter.style.pointerEvents='';
 
       // Show categories again after cubies return
@@ -1116,7 +1116,7 @@ var HERO_IMGS=[
         cats.classList.add('visible');
         var hint=document.getElementById('clickHint');
         if(hint) hint.style.display='none';
-      },500);
+      },600);
     },350);
   }
 
