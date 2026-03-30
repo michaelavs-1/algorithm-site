@@ -144,11 +144,11 @@ a{text-decoration:none}
   .scatter-dot,.scatter-line{display:none}
 }
 
-/* === Nav Cubes - 3D boxes that appear when cube opens === */
+/* === Nav Tabs - glowing animated buttons === */
 .cube-nav{
   display:flex;
   flex-direction:column;
-  gap:18px;
+  gap:14px;
   align-items:flex-end;
 }
 .cube-nav.visible{
@@ -157,74 +157,71 @@ a{text-decoration:none}
 }
 .nav-box{
   cursor:pointer;
-  perspective:600px;
   opacity:0;
   transform:translateX(60px);
+  animation:navFloat 4s ease-in-out infinite;
 }
+.nav-box:nth-child(2){animation-delay:.8s}
+.nav-box:nth-child(3){animation-delay:1.6s}
+.nav-box:nth-child(4){animation-delay:2.4s}
 .cube-nav.visible .nav-box{
-  animation:navBoxIn .5s cubic-bezier(.22,.68,.36,1.05) forwards;
+  animation:navBoxIn .6s cubic-bezier(.22,.68,.36,1.05) forwards, navFloat 4s ease-in-out 1s infinite;
 }
-.cube-nav.visible .nav-box:nth-child(1){animation-delay:.06s}
-.cube-nav.visible .nav-box:nth-child(2){animation-delay:.13s}
-.cube-nav.visible .nav-box:nth-child(3){animation-delay:.20s}
-.cube-nav.visible .nav-box:nth-child(4){animation-delay:.27s}
-
+.cube-nav.visible .nav-box:nth-child(1){animation-delay:.06s, 1s}
+.cube-nav.visible .nav-box:nth-child(2){animation-delay:.14s, 1.8s}
+.cube-nav.visible .nav-box:nth-child(3){animation-delay:.22s, 2.6s}
+.cube-nav.visible .nav-box:nth-child(4){animation-delay:.30s, 3.4s}
 .nav-box-inner{
-  width:320px;height:112px;
+  width:260px;height:82px;
   position:relative;
-  transform-style:preserve-3d;
-  transform:var(--cr);
-  transition:transform .35s ease, filter .25s;
+  transition:transform .3s ease, filter .3s;
 }
 .nav-box:hover .nav-box-inner{
-  filter:brightness(1.6) drop-shadow(0 0 14px rgba(0,210,255,.8));
+  transform:scale(1.08) translateX(-8px);
+  filter:brightness(1.5) drop-shadow(0 0 22px rgba(0,210,255,.7));
 }
-.nf{
-  position:absolute;
-  width:320px;height:112px;
-  backface-visibility:hidden;
-}
+.nf{display:none}
+.nf-right{display:none}
+.nf-top{display:none}
 .nf-front{
-  background:rgba(4,18,44,.92);
-  border:1.5px solid rgba(0,200,255,.68);
-  transform:translateZ(14px);
+  position:absolute;inset:0;
+  background:rgba(4,18,44,.88);
+  border:1.5px solid rgba(0,200,255,.55);
+  border-radius:6px;
   display:flex;align-items:center;justify-content:center;
   font-family:'Rubik','Heebo',sans-serif;
-  font-weight:900;font-size:2.8rem;
+  font-weight:800;font-size:1.85rem;
   color:#00d4ff;
-  text-shadow:0 0 12px rgba(0,200,255,.9), 0 0 24px rgba(0,200,255,.4);
+  text-shadow:0 0 10px rgba(0,200,255,.8), 0 0 22px rgba(0,200,255,.3);
   letter-spacing:1px;
   text-align:center;
   padding:4px;
+  animation:navGlow 3s ease-in-out infinite;
 }
-.nf-right{
-  display:none;
-}
-.nf-top{
-  width:270px;height:14px;
-  background:rgba(3,14,36,.8);
-  border:1.5px solid rgba(0,175,215,.55);
-  transform:translateY(-56px) rotateX(90deg);
-}
+.nav-box:nth-child(2) .nf-front{animation-delay:.75s}
+.nav-box:nth-child(3) .nf-front{animation-delay:1.5s}
+.nav-box:nth-child(4) .nf-front{animation-delay:2.25s}
 @keyframes navBoxIn{
   from{opacity:0;transform:translateX(60px)}
   to{opacity:1;transform:translateX(0)}
 }
+@keyframes navFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
+}
+@keyframes navGlow{
+  0%,100%{border-color:rgba(0,200,255,.5);box-shadow:0 0 8px rgba(0,200,255,.12)}
+  50%{border-color:rgba(0,220,255,.9);box-shadow:0 0 22px rgba(0,200,255,.35),inset 0 0 14px rgba(0,200,255,.07)}
+}
 @media(max-width:768px){
-  .cube-nav{gap:14px}
-  .nav-box-inner{width:260px;height:90px}
-  .nf{width:260px;height:90px}
-  .nf-front{font-size:2.3rem;transform:translateZ(12px)}
-  .nf-right{display:none}
-  .nf-top{width:220px;height:12px;transform:translateY(-38px) rotateX(90deg)}
+  .cube-nav{gap:12px}
+  .nav-box-inner{width:220px;height:70px}
+  .nf-front{font-size:1.55rem}
 }
 @media(max-width:480px){
   .cube-nav{gap:10px}
-  .nav-box-inner{width:220px;height:80px}
-  .nf{width:220px;height:80px}
-  .nf-front{font-size:2rem;transform:translateZ(10px)}
-  .nf-right{display:none}
-  .nf-top{width:185px;height:10px;transform:translateY(-33px) rotateX(90deg)}
+  .nav-box-inner{width:180px;height:60px}
+  .nf-front{font-size:1.35rem}
 }
 
 </style>
