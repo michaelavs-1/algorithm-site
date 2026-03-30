@@ -816,16 +816,19 @@ var HERO_IMGS=[
 
     // Step 2: Fly cubies to corners (from current exploded state)
     setTimeout(function(){
-      flyCubiesToCorners();
-
-      // Step 3: Hide hub center, show category page
-      hubCenter.style.transition='opacity .3s ease';
-      hubCenter.style.opacity='0';
+      // Hide glow and hint but keep cube visible
+      var glow=document.querySelector('.cube-glow');
+      var hint=document.getElementById('clickHint');
+      if(glow) glow.style.opacity='0';
+      if(hint) hint.style.display='none';
       hubCenter.style.pointerEvents='none';
 
+      flyCubiesToCorners();
+
+      // Step 3: Show category page after cubies start flying
       setTimeout(function(){
         catPage.classList.add('active');
-      },300);
+      },400);
     },150);
   }
 
@@ -840,9 +843,9 @@ var HERO_IMGS=[
     setTimeout(function(){
       wrap.classList.remove('exploded');
       flyCubiesBack();
-      hubCenter.style.transition='opacity .5s ease .3s';
-      hubCenter.style.opacity='1';
       hubCenter.style.pointerEvents='';
+      var glow=document.querySelector('.cube-glow');
+      if(glow){glow.style.transition='opacity .5s ease .8s';glow.style.opacity='1';}
     },300);
   }
 
