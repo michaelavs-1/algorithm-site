@@ -217,6 +217,141 @@ a{text-decoration:none}
   .click-hint{font-size:1rem;bottom:-28px;}
   .scatter-dot,.scatter-line{display:none}
 }
+
+/* === Category Page === */
+.cat-page{
+  position:absolute;z-index:8;
+  inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding-top:8vh;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .4s ease;
+  overflow-y:auto;
+}
+.cat-page.active{
+  pointer-events:auto;
+  opacity:1;
+}
+.cat-back{
+  position:fixed;top:20px;right:20px;z-index:20;
+  background:rgba(0,15,30,.8);
+  border:1px solid rgba(0,200,255,.3);
+  color:#00d4ff;
+  font-size:1.4rem;
+  width:44px;height:44px;
+  border-radius:50%;
+  cursor:pointer;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  transition:all .3s;
+  display:flex;align-items:center;justify-content:center;
+}
+.cat-back:hover{
+  background:rgba(0,60,100,.9);
+  border-color:rgba(0,220,255,.6);
+  transform:scale(1.1);
+}
+.cat-title{
+  font-family:'Amatic SC','Rubik',cursive;
+  font-weight:900;
+  font-size:3.5rem;
+  color:#00d4ff;
+  margin-bottom:2rem;
+  letter-spacing:2px;
+  text-align:center;
+  opacity:0;
+  transform:translateY(20px);
+  transition:all .5s ease .6s;
+}
+.cat-page.active .cat-title{
+  opacity:1;
+  transform:translateY(0);
+}
+.cat-content{
+  width:90%;
+  max-width:900px;
+  opacity:0;
+  transform:translateY(30px);
+  transition:all .5s ease .8s;
+}
+.cat-page.active .cat-content{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* Artist Grid */
+.artist-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
+  gap:18px;
+  width:100%;
+}
+.artist-card{
+  background:rgba(0,15,30,.7);
+  border:1px solid rgba(0,200,255,.15);
+  border-radius:14px;
+  padding:22px 16px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .35s ease;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+.artist-card:hover{
+  background:rgba(0,50,90,.8);
+  border-color:rgba(0,220,255,.5);
+  transform:translateY(-4px);
+  box-shadow:0 8px 30px rgba(0,180,230,.2);
+}
+.artist-icon{
+  width:64px;height:64px;
+  border-radius:50%;
+  margin:0 auto 12px;
+  background:linear-gradient(135deg,rgba(0,180,230,.25),rgba(0,100,150,.15));
+  border:2px solid rgba(0,200,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.6rem;
+  color:#00d4ff;
+}
+.artist-name{
+  font-family:'Heebo',sans-serif;
+  font-weight:600;
+  font-size:1.05rem;
+  color:#e4eaf0;
+  margin-bottom:4px;
+}
+.artist-role{
+  font-family:'Heebo',sans-serif;
+  font-weight:300;
+  font-size:.8rem;
+  color:rgba(0,200,255,.5);
+}
+
+/* Wide cube for category pages */
+.cube-wrap.cat-open{
+  position:fixed;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%) scale(0.35);
+  width:360px;height:360px;
+  z-index:6;
+  opacity:0.15;
+  pointer-events:none;
+  transition:transform .6s ease, opacity .6s ease;
+}
+
+@media(max-width:768px){
+  .cat-title{font-size:2.5rem;}
+  .artist-grid{
+    grid-template-columns:repeat(2, 1fr);
+    gap:12px;
+  }
+  .artist-card{padding:16px 10px;}
+  .artist-icon{width:50px;height:50px;font-size:1.3rem;}
+  .artist-name{font-size:.95rem;}
+  .cat-back{top:12px;right:12px;width:38px;height:38px;font-size:1.2rem;}
+  .cat-page{padding-top:6vh;}
+}
 </style>
 </head>
 <body>
@@ -241,10 +376,16 @@ a{text-decoration:none}
   </div>
 
   <div class="cube-categories" id="cubeCategories">
-    <a class="cat-item" href="#">אומנים</a>
-    <a class="cat-item" href="#">הפקות</a>
-    <a class="cat-item" href="#">שיווק</a>
-    <a class="cat-item" href="#">בוקינג</a>
+    <a class="cat-item" data-cat="artists" href="#">אומנים</a>
+    <a class="cat-item" data-cat="productions" href="#">הפקות</a>
+    <a class="cat-item" data-cat="marketing" href="#">שיווק</a>
+    <a class="cat-item" data-cat="booking" href="#">בוקינג</a>
+  </div>
+
+  <div class="cat-page" id="catPage">
+    <button class="cat-back" id="catBack">✕</button>
+    <div class="cat-title" id="catTitle"></div>
+    <div class="cat-content" id="catContent"></div>
   </div>
 </div>
 
@@ -630,6 +771,118 @@ var HERO_IMGS=[
       toggleCube();
     }
   });
+})();
+
+// === Category Page Navigation ===
+(function(){
+  var catPage=document.getElementById('catPage');
+  var catTitle=document.getElementById('catTitle');
+  var catContent=document.getElementById('catContent');
+  var catBack=document.getElementById('catBack');
+  var wrap=document.querySelector('.cube-wrap');
+  var cats=document.getElementById('cubeCategories');
+  var catItems=document.querySelectorAll('.cat-item');
+
+  // Artist data
+  var ARTISTS=[
+    {name:'Static & Ben El',nameHe:'סטטיק ובן אל',role:'פופ / מזרחית'},
+    {name:'Noa Kirel',nameHe:'נועה קירל',role:'פופ'},
+    {name:'Eden Ben Zaken',nameHe:'עדן בן זקן',role:'מזרחית / פופ'},
+    {name:'Omer Adam',nameHe:'עומר אדם',role:'מזרחית / פופ'},
+    {name:'Anna Zak',nameHe:'אנה זק',role:'פופ'},
+    {name:'Itay Levi',nameHe:'איתי לוי',role:'מזרחית'},
+    {name:'Mergui',nameHe:'מרגי',role:'R&B / פופ'},
+    {name:'Tuna',nameHe:'טונה',role:'היפ הופ'},
+    {name:'Stephane Legar',nameHe:'סטפן לגר',role:'אפרו-פופ'},
+    {name:'Subliminal',nameHe:'סאבלימינל',role:'היפ הופ'},
+    {name:'Ravid Plotnik',nameHe:'רביד פלוטניק',role:'ראפ'},
+    {name:'Harel Skaat',nameHe:'הראל סקעת',role:'פופ / סואל'}
+  ];
+
+  var EMOJIS=['🎤','🎵','🎸','🎹','🎶','🎧','🎺','🎻','🥁','🎷','🎼','🎙️'];
+
+  function buildArtistsGrid(){
+    var html='<div class="artist-grid">';
+    ARTISTS.forEach(function(a,i){
+      html+='<div class="artist-card" style="transition-delay:'+(0.8+i*0.06)+'s;opacity:0;transform:translateY(20px);"><div class="artist-icon">'+EMOJIS[i%EMOJIS.length]+'</div><div class="artist-name">'+a.nameHe+'</div><div class="artist-role">'+a.role+'</div></div>';
+    });
+    html+='</div>';
+    return html;
+  }
+
+  var CAT_DATA={
+    artists:{title:'אומנים',build:buildArtistsGrid},
+    productions:{title:'הפקות',build:function(){return '<div style="text-align:center;color:rgba(0,200,255,.4);font-size:1.3rem;padding:40px;">בקרוב...</div>';}},
+    marketing:{title:'שיווק',build:function(){return '<div style="text-align:center;color:rgba(0,200,255,.4);font-size:1.3rem;padding:40px;">בקרוב...</div>';}},
+    booking:{title:'בוקינג',build:function(){return '<div style="text-align:center;color:rgba(0,200,255,.4);font-size:1.3rem;padding:40px;">בקרוב...</div>';}}
+  };
+
+  var currentCat=null;
+
+  function openCategory(catKey){
+    var data=CAT_DATA[catKey];
+    if(!data)return;
+    currentCat=catKey;
+
+    // Build content
+    catTitle.textContent=data.title;
+    catContent.innerHTML=data.build();
+
+    // Quick close the cube categories
+    cats.classList.remove('visible');
+
+    // After a short beat, shrink cube and show category page
+    setTimeout(function(){
+      // Shrink cube to corner as decorative element
+      wrap.classList.add('cat-open');
+      // Show category page
+      catPage.classList.add('active');
+
+      // Animate artist cards in
+      setTimeout(function(){
+        var cards=catContent.querySelectorAll('.artist-card');
+        cards.forEach(function(c){c.style.opacity='1';c.style.transform='translateY(0)';});
+      },100);
+    },300);
+  }
+
+  function closeCategory(){
+    if(!currentCat)return;
+    currentCat=null;
+
+    // Hide category page
+    catPage.classList.remove('active');
+
+    // Restore cube
+    setTimeout(function(){
+      wrap.classList.remove('cat-open');
+    },200);
+  }
+
+  // Category click handlers
+  catItems.forEach(function(item){
+    item.addEventListener('click',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var catKey=item.getAttribute('data-cat');
+      openCategory(catKey);
+    });
+  });
+
+  // Back button
+  catBack.addEventListener('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    closeCategory();
+    // Re-open cube after returning
+    setTimeout(function(){
+      var tapZone=document.getElementById('cubeTap');
+      if(tapZone) tapZone.click();
+    },500);
+  });
+
+  window._openCategory=openCategory;
+  window._closeCategory=closeCategory;
 })();
 
 // === Animated Grid Background ===
