@@ -148,7 +148,7 @@ a{text-decoration:none}
 .cube-nav{
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap:12px;
   align-items:flex-end;
 }
 .cube-nav.visible{
@@ -157,75 +157,77 @@ a{text-decoration:none}
 }
 .nav-box{
   cursor:pointer;
-  perspective:380px;
+  perspective:600px;
   opacity:0;
-  transform:translateX(50px);
+  transform:translateX(60px);
 }
 .cube-nav.visible .nav-box{
-  animation:navBoxIn .5s cubic-bezier(.22,.68,.36,1) forwards;
+  animation:navBoxIn .5s cubic-bezier(.22,.68,.36,1.05) forwards;
 }
-.cube-nav.visible .nav-box:nth-child(1){animation-delay:.08s}
-.cube-nav.visible .nav-box:nth-child(2){animation-delay:.16s}
-.cube-nav.visible .nav-box:nth-child(3){animation-delay:.24s}
-.cube-nav.visible .nav-box:nth-child(4){animation-delay:.32s}
-.cube-nav.visible .nav-box:nth-child(5){animation-delay:.40s}
+.cube-nav.visible .nav-box:nth-child(1){animation-delay:.06s}
+.cube-nav.visible .nav-box:nth-child(2){animation-delay:.13s}
+.cube-nav.visible .nav-box:nth-child(3){animation-delay:.20s}
+.cube-nav.visible .nav-box:nth-child(4){animation-delay:.27s}
+.cube-nav.visible .nav-box:nth-child(5){animation-delay:.34s}
 .nav-box-inner{
-  width:88px;height:88px;
+  width:240px;height:80px;
   position:relative;
   transform-style:preserve-3d;
   transform:var(--cr);
   transition:transform .35s ease, filter .25s;
 }
 .nav-box:hover .nav-box-inner{
-  filter:brightness(1.5) drop-shadow(0 0 10px rgba(0,210,255,.7));
+  filter:brightness(1.6) drop-shadow(0 0 14px rgba(0,210,255,.8));
 }
 .nf{
   position:absolute;
-  width:88px;height:88px;
+  width:240px;height:80px;
   backface-visibility:hidden;
 }
 .nf-front{
-  background:rgba(4,18,44,.9);
-  border:1.5px solid rgba(0,200,255,.65);
-  transform:translateZ(44px);
+  background:rgba(4,18,44,.92);
+  border:1.5px solid rgba(0,200,255,.68);
+  transform:translateZ(10px);
   display:flex;align-items:center;justify-content:center;
   font-family:'Amatic SC','Rubik',cursive;
-  font-weight:900;font-size:1.15rem;
+  font-weight:900;font-size:1.55rem;
   color:#00d4ff;
-  text-shadow:0 0 8px rgba(0,200,255,.55);
-  letter-spacing:1px;
+  text-shadow:0 0 10px rgba(0,200,255,.6);
+  letter-spacing:2px;
   text-align:center;
-  padding:2px;
+  padding:4px;
 }
 .nf-right{
-  background:rgba(2,10,28,.8);
-  border:1.5px solid rgba(0,160,200,.4);
-  transform:translateX(44px) rotateY(90deg);
+  width:10px;height:80px;
+  background:rgba(2,10,28,.85);
+  border:1.5px solid rgba(0,160,200,.45);
+  transform:translateX(120px) rotateY(90deg);
 }
 .nf-top{
-  background:rgba(3,14,36,.72);
-  border:1.5px solid rgba(0,175,215,.4);
-  transform:translateY(-44px) rotateX(90deg);
+  width:240px;height:10px;
+  background:rgba(3,14,36,.75);
+  border:1.5px solid rgba(0,175,215,.45);
+  transform:translateY(-40px) rotateX(90deg);
 }
 @keyframes navBoxIn{
-  from{opacity:0;transform:translateX(50px)}
+  from{opacity:0;transform:translateX(60px)}
   to{opacity:1;transform:translateX(0)}
 }
 @media(max-width:768px){
-  .cube-nav{gap:12px}
-  .nav-box-inner{width:68px;height:68px}
-  .nf{width:68px;height:68px}
-  .nf-front{font-size:.9rem;transform:translateZ(34px)}
-  .nf-right{transform:translateX(34px) rotateY(90deg)}
-  .nf-top{transform:translateY(-34px) rotateX(90deg)}
+  .cube-nav{gap:10px}
+  .nav-box-inner{width:200px;height:68px}
+  .nf{width:200px;height:68px}
+  .nf-front{font-size:1.3rem;transform:translateZ(8px)}
+  .nf-right{width:8px;height:68px;transform:translateX(100px) rotateY(90deg)}
+  .nf-top{width:200px;height:8px;transform:translateY(-34px) rotateX(90deg)}
 }
 @media(max-width:480px){
   .cube-nav{gap:8px}
-  .nav-box-inner{width:58px;height:58px}
-  .nf{width:58px;height:58px}
-  .nf-front{font-size:.82rem;transform:translateZ(29px)}
-  .nf-right{transform:translateX(29px) rotateY(90deg)}
-  .nf-top{transform:translateY(-29px) rotateX(90deg)}
+  .nav-box-inner{width:170px;height:60px}
+  .nf{width:170px;height:60px}
+  .nf-front{font-size:1.15rem;transform:translateZ(7px)}
+  .nf-right{width:7px;height:60px;transform:translateX(85px) rotateY(90deg)}
+  .nf-top{width:170px;height:7px;transform:translateY(-30px) rotateX(90deg)}
 }
 
 </style>
@@ -260,7 +262,7 @@ a{text-decoration:none}
 
 <div class="cube-nav" id="cubeNav" style="position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:999;visibility:hidden;opacity:0;transition:opacity .4s,visibility .4s">
 
-  <div class="nav-box" style="--cr:rotateZ(22deg) rotateX(-20deg) rotateY(28deg)">
+  <div class="nav-box" style="--cr:rotateX(-18deg) rotateY(14deg) rotateZ(3deg)">
     <div class="nav-box-inner">
       <div class="nf nf-top"></div>
       <div class="nf nf-right"></div>
@@ -268,7 +270,7 @@ a{text-decoration:none}
     </div>
   </div>
 
-  <div class="nav-box" style="--cr:rotateX(-22deg) rotateY(18deg) rotateZ(3deg)">
+  <div class="nav-box" style="--cr:rotateX(-22deg) rotateY(-12deg) rotateZ(-2deg)">
     <div class="nav-box-inner">
       <div class="nf nf-top"></div>
       <div class="nf nf-right"></div>
@@ -276,7 +278,7 @@ a{text-decoration:none}
     </div>
   </div>
 
-  <div class="nav-box" style="--cr:rotateZ(-12deg) rotateX(-14deg) rotateY(-20deg)">
+  <div class="nav-box" style="--cr:rotateX(-16deg) rotateY(16deg) rotateZ(4deg)">
     <div class="nav-box-inner">
       <div class="nf nf-top"></div>
       <div class="nf nf-right"></div>
@@ -284,7 +286,7 @@ a{text-decoration:none}
     </div>
   </div>
 
-  <div class="nav-box" style="--cr:rotateX(-30deg) rotateY(-12deg) rotateZ(8deg)">
+  <div class="nav-box" style="--cr:rotateX(-24deg) rotateY(-10deg) rotateZ(-3deg)">
     <div class="nav-box-inner">
       <div class="nf nf-top"></div>
       <div class="nf nf-right"></div>
@@ -292,7 +294,7 @@ a{text-decoration:none}
     </div>
   </div>
 
-  <div class="nav-box" style="--cr:rotateZ(14deg) rotateX(-18deg) rotateY(26deg)">
+  <div class="nav-box" style="--cr:rotateX(-19deg) rotateY(12deg) rotateZ(2deg)">
     <div class="nav-box-inner">
       <div class="nf nf-top"></div>
       <div class="nf nf-right"></div>
