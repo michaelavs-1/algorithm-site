@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nir Tibor - Artists</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeIn 0.8s ease-in;
+  }
+
+  h1 {
+    font-size: 3em;
+    color: #fff;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  }
+
+  .subtitle {
+    font-size: 1.1em;
+    color: #b0b0b0;
+    margin-bottom: 30px;
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+  }
+
+  .nav-links a {
+    color: #a0a0a0;
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 1px solid #404040;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+
+  .nav-links a:hover {
+    color: #fff;
+    border-color: #666;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .nav-links a.active {
+    color: #fff;
+    border-color: #fff;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .artist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  .artist-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .artist-card:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+
+  .artist-name {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #fff;
+  }
+
+  .artist-genre {
+    color: #888;
+    font-size: 0.95em;
+    margin-bottom: 15px;
+    font-weight: 500;
+  }
+
+  .artist-description {
+    color: #b0b0b0;
+    font-size: 0.95em;
+    line-height: 1.5;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 2em;
+    }
+    .artist-grid {
+      grid-template-columns: 1fr;
+    }
+    .nav-links {
+      flex-direction: column;
+      align-items: center;
+    }
+    .nav-links a {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>אמנים</h1>
+  <p class="subtitle">הכירו את התיאומים של Nir Tibor</p>
+  <nav class="nav-links">
+    <a href="index.html">בית</a>
+    <a href="artists.html" class="active">אמנים</a>
+    <a href="productions.html">ייצורים</a>
+    <a href="marketing.html">שיווק</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="artist-grid">
+    <div class="artist-card">
+      <div class="artist-name">אמן 1</div>
+      <div class="artist-genre">ז'אנר: אלקטרוניקה</div>
+      <div class="artist-description">
+        אמן מעניין המתמחה במוזיקה אלקטרונית ניסיונית עם השפעות של techno ו-ambient.
+      </div>
+    </div>
+    <div class="artist-card">
+      <div class="artist-name">אמן 2</div>
+      <div class="artist-genre">ז'אנר: פופ</div>
+      <div class="artist-description">
+        זמר/זמרת שמתמקדת בפופ עכשווי עם מגעים של מוזיקה ערבית.
+      </div>
+    </div>
+    <div class="artist-card">
+      <div class="artist-name">אמן 3</div>
+      <div class="artist-genre">ז'אנר: ראפ</div>
+      <div class="artist-description">
+        ראפר בעל קול חזק המערבב בין טקסטים בעברית לחיצוניות גלובלית.
+      </div>
+    </div>
+    <div class="artist-card">
+      <div class="artist-name">אמן 4</div>
+      <div class="artist-genre">ז'אנר: קלאסי</div>
+      <div class="artist-description">
+        מנגן כלים קלאסיים מעניין עם נטיה לקומפוזיציות מודרניות.
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
