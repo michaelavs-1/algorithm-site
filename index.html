@@ -818,6 +818,7 @@ var HERO_IMGS=[
   };
 
   var currentCat=null;
+  var hubCenter=document.querySelector('.hub-center');
 
   function openCategory(catKey){
     var data=CAT_DATA[catKey];
@@ -828,13 +829,34 @@ var HERO_IMGS=[
     catTitle.textContent=data.title;
     catContent.innerHTML=data.build();
 
-    // Quick close the cube categories
+    // Step 1: Hide categories immediately
     cats.classList.remove('visible');
 
-    // After a short beat, shrink cube and show category page
+    // Step 2: Quickly reverse-fold the cube closed
+    // Trigger the close by restoring cubies
+    var cubies=window._cubies||[];
+    cubies.forEach(function(c,idx){
+      var saved=c._savedTransform;
+      if(!saved && window._cubeUpd){window._cubeUpd(c);saved=c.el.style.transform;}
+      if(saved){
+        c.el.style.transition='transform .4s cubic-bezier(.25,.46,.45,.94) '+(idx%9)*8+'ms';
+        c.el.style.transform=saved;
+      }
+      c.el.style.opacity='1';
+    });
+
+    // Step 3: After cube folds back, shrink it and show category page
     setTimeout(function(){
-      // Shrink cube to corner as decorative element
+      // Clean up cube state
+      wrap.classList.remove('exploded');
+      if(window._restoreCubies) window._restoreCubies();
+
+      // Now shrink cube to decorative background element
       wrap.classList.add('cat-open');
+      hubCenter.style.transition='opacity .4s ease';
+      hubCenter.style.opacity='0';
+      hubCenter.style.pointerEvents='none';
+
       // Show category page
       catPage.classList.add('active');
 
@@ -843,7 +865,7 @@ var HERO_IMGS=[
         var cards=catContent.querySelectorAll('.artist-card');
         cards.forEach(function(c){c.style.opacity='1';c.style.transform='translateY(0)';});
       },100);
-    },300);
+    },500);
   }
 
   function closeCategory(){
@@ -853,10 +875,12 @@ var HERO_IMGS=[
     // Hide category page
     catPage.classList.remove('active');
 
-    // Restore cube
+    // Restore hub-center and cube
     setTimeout(function(){
       wrap.classList.remove('cat-open');
-    },200);
+      hubCenter.style.opacity='1';
+      hubCenter.style.pointerEvents='';
+    },300);
   }
 
   // Category click handlers
@@ -874,11 +898,6 @@ var HERO_IMGS=[
     e.preventDefault();
     e.stopPropagation();
     closeCategory();
-    // Re-open cube after returning
-    setTimeout(function(){
-      var tapZone=document.getElementById('cubeTap');
-      if(tapZone) tapZone.click();
-    },500);
   });
 
   window._openCategory=openCategory;
