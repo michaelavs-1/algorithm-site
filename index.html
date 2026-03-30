@@ -109,10 +109,10 @@ a{text-decoration:none}
   opacity:1;
   transform:scale(1) var(--rot);
 }
-.cat-item:nth-child(1){top:22%;left:58%;--rot:rotate(-6deg);transition-delay:.1s,.1s,0s,0s,0s,0s;}
-.cat-item:nth-child(2){top:32%;left:22%;--rot:rotate(4deg);transition-delay:.2s,.2s,0s,0s,0s,0s;}
-.cat-item:nth-child(3){top:55%;left:52%;--rot:rotate(5deg);transition-delay:.3s,.3s,0s,0s,0s,0s;}
-.cat-item:nth-child(4){top:48%;left:15%;--rot:rotate(-3deg);transition-delay:.4s,.4s,0s,0s,0s,0s;}
+.cat-item:nth-child(1){top:28%;left:55%;--rot:rotate(-5deg);transition-delay:.5s,.5s,0s,0s,0s,0s;}
+.cat-item:nth-child(2){top:36%;left:18%;--rot:rotate(3deg);transition-delay:.6s,.6s,0s,0s,0s,0s;}
+.cat-item:nth-child(3){top:56%;left:50%;--rot:rotate(4deg);transition-delay:.7s,.7s,0s,0s,0s,0s;}
+.cat-item:nth-child(4){top:50%;left:12%;--rot:rotate(-4deg);transition-delay:.8s,.8s,0s,0s,0s,0s;}
 .cat-item:hover{
   background:rgba(0,60,100,.9);
   border-color:rgba(0,220,255,.6);
@@ -121,14 +121,14 @@ a{text-decoration:none}
   box-shadow:0 0 30px rgba(0,180,230,.35);
 }
 
-/* Cube explode state */
+/* Cube box-open state */
 .cube-wrap{cursor:pointer;}
 .cube-wrap.exploded .cube-root{
   animation-play-state:paused;
 }
-.cube-root .cubie{transition:transform .7s cubic-bezier(.25,.46,.45,.94);}
+.cube-root .cubie{transition:transform .9s cubic-bezier(.25,.46,.45,.94);}
 .cube-wrap.exploded .cube-root .cubie{
-  transition:transform .7s cubic-bezier(.25,.46,.45,.94);
+  transition:transform .9s cubic-bezier(.22,.68,.36,1.05);
 }
 
 /* Click hint */
@@ -347,8 +347,11 @@ var HERO_IMGS=[
   }
   // Store original transforms for restore after explode
   window._restoreCubies=function(){
-    cubies.forEach(function(c){ upd(c); c.el.style.opacity='1'; });
+    cubies.forEach(function(c){ upd(c); c.el.style.opacity='1'; c.el.style.transition=''; });
   };
+  window._cubies=cubies;
+  window._cubeStep=step;
+  window._cubeUpd=upd;
 
   // Very subtle periodic swaps
   setInterval(function(){swapRandomTiles(1);},6000);
@@ -393,61 +396,165 @@ var HERO_IMGS=[
   setTimeout(function(){doTurn();setInterval(doTurn,1600);},1200);
 })();
 
-// === Cube Click to Open/Close ===
+// === Cube Click to Open/Close (Box Unfolding) ===
 (function(){
   var wrap=document.querySelector('.cube-wrap');
   var cats=document.getElementById('cubeCategories');
   var hint=document.getElementById('clickHint');
   var isOpen=false;
+  var step=window._cubeStep||58;
 
-  // Get all cubie elements and store their original positions
-  var cubieEls=document.querySelectorAll('.cube-root > div');
+  // Assign each cubie to a face for the box unfolding
+  // Priority: top/bottom first, then front/back, then left/right
+  function getFace(c){
+    if(c.gy===-1) return 'top';
+    if(c.gy===1) return 'bottom';
+    if(c.gz===1) return 'front';
+    if(c.gz===-1) return 'back';
+    if(c.gx===-1) return 'left';
+    if(c.gx===1) return 'right';
+    return 'center';
+  }
+
+  // For each face, define the unfolding transform:
+  // We translate the face outward and rotate it around its hinge edge
+  // The hinge is the edge where the face connects to the bottom/base
+  function getBoxTransform(face, c){
+    var S=step; // 58px per unit
+    var angle=85; // degrees to fold open
+    var rad=angle*Math.PI/180;
+    var cos=Math.cos(rad), sin=Math.sin(rad);
+
+    // Each face gets: translate to hinge point, rotate around hinge, translate back
+    // We return extra translation (dx,dy,dz) and rotation for the cubie
+    switch(face){
+      case 'top':
+        // Top lid folds backward (rotates around X axis at back edge, z=-1)
+        // Hinge at gy=-1 plane, back edge
+        return {
+          dx: 0,
+          dy: -(1-cos)*S*2 - sin*S*0.5,
+          dz: -sin*S*2.2,
+          rx: -angle, ry: 0, rz: 0
+        };
+      case 'front':
+        // Front wall folds forward/down (rotates around X axis at bottom edge)
+        return {
+          dx: 0,
+          dy: sin*S*1.8,
+          dz: (1-cos)*S*1.5 + sin*S*1.2,
+          rx: angle*0.9, ry: 0, rz: 0
+        };
+      case 'back':
+        // Back wall folds backward/up
+        return {
+          dx: 0,
+          dy: -sin*S*0.8,
+          dz: -(1-cos)*S*1.5 - sin*S*1.2,
+          rx: -angle*0.9, ry: 0, rz: 0
+        };
+      case 'left':
+        // Left wall folds outward left
+        return {
+          dx: -(1-cos)*S*1.5 - sin*S*1.2,
+          dy: sin*S*0.5,
+          dz: 0,
+          rx: 0, ry: 0, rz: -angle*0.85
+        };
+      case 'right':
+        // Right wall folds outward right
+        return {
+          dx: (1-cos)*S*1.5 + sin*S*1.2,
+          dy: sin*S*0.5,
+          dz: 0,
+          rx: 0, ry: 0, rz: angle*0.85
+        };
+      case 'bottom':
+        // Bottom stays — slight settle downward
+        return { dx:0, dy:S*0.3, dz:0, rx:0, ry:0, rz:0 };
+      default:
+        return { dx:0, dy:0, dz:0, rx:0, ry:0, rz:0 };
+    }
+  }
 
   wrap.addEventListener('click',function(e){
     e.preventDefault();
     e.stopPropagation();
     isOpen=!isOpen;
 
+    var cubies=window._cubies||[];
+
     if(isOpen){
-      // Explode: push cubies outward with randomness — visible faces
       wrap.classList.add('exploded');
-      cubieEls.forEach(function(el,idx){
-        var st=el.style.transform;
-        var m=st.match(/matrix3d\(([^)]+)\)/);
-        if(m){
-          var vals=m[1].split(',').map(Number);
-          var tx=vals[12], ty=vals[13], tz=vals[14];
-          var dist=Math.sqrt(tx*tx+ty*ty+tz*tz)||1;
-          // Big explosion with randomness
-          var factor=4.5+Math.random()*2;
-          var jitterX=(Math.random()-.5)*80;
-          var jitterY=(Math.random()-.5)*80;
-          var jitterZ=(Math.random()-.5)*80;
-          vals[12]=tx/dist*factor*58+jitterX;
-          vals[13]=ty/dist*factor*58+jitterY;
-          vals[14]=tz/dist*factor*58+jitterZ;
-          // Add slight random rotation to each cubie
-          var rx=(Math.random()-.5)*0.3;
-          var ry=(Math.random()-.5)*0.3;
-          vals[0]+=rx; vals[1]+=ry; vals[4]-=rx; vals[5]+=ry;
-          var delay=idx*15;
-          el.style.transition='transform .8s cubic-bezier(.22,.68,.36,1.1) '+delay+'ms, opacity .6s ease '+delay+'ms';
-          el.style.transform='matrix3d('+vals.join(',')+')';
-          el.style.opacity='0.55';
-        }
+
+      // First, freeze current transforms
+      cubies.forEach(function(c){
+        var st=c.el.style.transform;
+        c._savedTransform=st;
       });
+
+      // Group by face and apply box-opening transforms
+      var faceOrder={bottom:0, left:1, right:2, back:3, front:4, top:5, center:0};
+      cubies.forEach(function(c,idx){
+        var face=getFace(c);
+        var bt=getBoxTransform(face, c);
+        var st=c._savedTransform||c.el.style.transform;
+        var m=st.match(/matrix3d\(([^)]+)\)/);
+        if(!m) return;
+
+        var vals=m[1].split(',').map(Number);
+        // Current position
+        var tx=vals[12], ty=vals[13], tz=vals[14];
+
+        // Apply face-specific translation
+        vals[12]=tx+bt.dx;
+        vals[13]=ty+bt.dy;
+        vals[14]=tz+bt.dz;
+
+        // Apply rotation via matrix multiplication
+        if(bt.rx||bt.ry||bt.rz){
+          var a,ca,sa;
+          if(bt.rx){
+            a=bt.rx*Math.PI/180; ca=Math.cos(a); sa=Math.sin(a);
+            // Rotate around X
+            var r1=vals[1], r5=vals[5], r9=vals[9];
+            var r2=vals[2], r6=vals[6], r10=vals[10];
+            vals[1]=r1*ca-r2*sa; vals[5]=r5*ca-r6*sa; vals[9]=r9*ca-r10*sa;
+            vals[2]=r1*sa+r2*ca; vals[6]=r5*sa+r6*ca; vals[10]=r9*sa+r10*ca;
+          }
+          if(bt.ry){
+            a=bt.ry*Math.PI/180; ca=Math.cos(a); sa=Math.sin(a);
+            var r0=vals[0], r4=vals[4], r8=vals[8];
+            var r2b=vals[2], r6b=vals[6], r10b=vals[10];
+            vals[0]=r0*ca+r2b*sa; vals[4]=r4*ca+r6b*sa; vals[8]=r8*ca+r10b*sa;
+            vals[2]=-r0*sa+r2b*ca; vals[6]=-r4*sa+r6b*ca; vals[10]=-r8*sa+r10b*ca;
+          }
+          if(bt.rz){
+            a=bt.rz*Math.PI/180; ca=Math.cos(a); sa=Math.sin(a);
+            var r0c=vals[0], r4c=vals[4], r8c=vals[8];
+            var r1c=vals[1], r5c=vals[5], r9c=vals[9];
+            vals[0]=r0c*ca-r1c*sa; vals[4]=r4c*ca-r5c*sa; vals[8]=r8c*ca-r9c*sa;
+            vals[1]=r0c*sa+r1c*ca; vals[5]=r4c*sa+r5c*ca; vals[9]=r8c*sa+r9c*ca;
+          }
+        }
+
+        // Staggered delay by face group
+        var delay=faceOrder[face]*60 + (idx%9)*12;
+        c.el.style.transition='transform .9s cubic-bezier(.22,.68,.36,1.05) '+delay+'ms';
+        c.el.style.transform='matrix3d('+vals.join(',')+')';
+        c.el.style.opacity='1'; // Keep faces fully visible!
+      });
+
       cats.classList.add('visible');
       if(hint) hint.style.display='none';
     } else {
-      // Close: restore cubies
+      // Close: fold back together
       wrap.classList.remove('exploded');
-      // Force re-render of cube by triggering upd on all cubies
-      cubieEls.forEach(function(el){
-        el.style.transition='transform .7s cubic-bezier(.25,.46,.45,.94), opacity .5s ease';
-        el.style.opacity='1';
+      cubies.forEach(function(c){
+        c.el.style.transition='transform .8s cubic-bezier(.25,.46,.45,.94), opacity .5s ease';
+        c.el.style.opacity='1';
       });
       cats.classList.remove('visible');
-      // Need to restore original transforms - trigger rebuild
       if(window._restoreCubies) window._restoreCubies();
     }
   });
