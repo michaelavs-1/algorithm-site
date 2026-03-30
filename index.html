@@ -240,6 +240,14 @@ a{text-decoration:none}
   z-index:11;
   opacity:1 !important;
   transition:none !important;
+  /* Shift content to top so it doesn't block the 3D room floor */
+  align-items:center;
+  justify-content:flex-start;
+  padding-top:60px;
+  pointer-events:none;
+}
+.cat-page.cube-tour .cat-back{
+  pointer-events:auto;
 }
 
 /* Inner cube walls — simulates being inside the opened cube */
@@ -348,8 +356,8 @@ a{text-decoration:none}
 /* Full-screen scene — the camera viewport */
 .pov-camera-scene{
   position:fixed;z-index:10;inset:0;
-  perspective:600px;
-  perspective-origin:50% 35%;
+  perspective:700px;
+  perspective-origin:50% 30%;
   display:none;
   overflow:hidden;
   background:radial-gradient(ellipse at 50% 60%,rgba(0,30,60,.95) 0%,rgba(2,8,18,1) 70%);
@@ -359,7 +367,7 @@ a{text-decoration:none}
 /* Vignette overlay */
 .pov-camera-scene::after{
   content:'';position:absolute;inset:0;z-index:100;
-  background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(0,0,0,.6) 100%);
+  background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(0,0,0,.55) 100%);
   pointer-events:none;opacity:0;transition:opacity .8s ease .2s;
 }
 .pov-camera-scene.active::after{ opacity:1; }
@@ -367,21 +375,21 @@ a{text-decoration:none}
 /* The 3D camera rig — this element gets transformed to simulate camera movement */
 .pov-camera-rig{
   position:absolute;
-  left:50%;top:50%;
+  left:50%;top:40%;
   width:0;height:0;
   transform-style:preserve-3d;
   /* Start: camera above looking down */
-  transform:translate(-50%,-50%) translateY(-350px) translateZ(-600px) rotateX(70deg);
+  transform:translate(-50%,-50%) translateY(-400px) translateZ(-500px) rotateX(75deg);
   transition:transform 2s cubic-bezier(.25,.46,.45,.94);
 }
 /* Phase: camera dives into the room */
 .pov-camera-rig.entered{
-  transform:translate(-50%,-50%) translateY(-80px) translateZ(50px) rotateX(30deg);
+  transform:translate(-50%,-50%) translateY(-120px) translateZ(120px) rotateX(42deg);
   transition:transform 2.2s cubic-bezier(.22,.68,.36,1);
 }
 /* Phase: camera settles — looking down at the floor cards */
 .pov-camera-rig.settled{
-  transform:translate(-50%,-50%) translateY(-60px) translateZ(100px) rotateX(25deg);
+  transform:translate(-50%,-50%) translateY(-100px) translateZ(160px) rotateX(38deg);
   transition:transform 1.5s cubic-bezier(.25,.46,.45,.94);
 }
 
@@ -560,8 +568,8 @@ a{text-decoration:none}
 
 /* Subtle breathing animation on the room for ambiance */
 @keyframes roomBreathe{
-  0%,100%{ transform:translate(-50%,-50%) translateY(-60px) translateZ(100px) rotateX(25deg) rotateY(0deg); }
-  50%{ transform:translate(-50%,-50%) translateY(-63px) translateZ(100px) rotateX(25.5deg) rotateY(.4deg); }
+  0%,100%{ transform:translate(-50%,-50%) translateY(-100px) translateZ(160px) rotateX(38deg) rotateY(0deg); }
+  50%{ transform:translate(-50%,-50%) translateY(-103px) translateZ(160px) rotateX(38.5deg) rotateY(.5deg); }
 }
 .pov-camera-rig.breathing{
   animation:roomBreathe 6s ease-in-out infinite;
