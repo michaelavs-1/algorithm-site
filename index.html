@@ -1386,6 +1386,7 @@ var HERO_IMGS=[
     hubCenter.style.pointerEvents='none';
 
     // Save box-fold transforms for restoration on close
+    var cubies=window._cubies||[];
     cubies.forEach(function(c){
       c._boxFoldTransform=c.el.style.transform;
     });
