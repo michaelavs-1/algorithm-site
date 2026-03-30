@@ -365,6 +365,12 @@ a{text-decoration:none}
   transform:translateX(-50%) translateY(-40%) translateZ(350px) rotateX(-30deg) rotateY(0deg);
 }
 
+/* After landing, straighten to flat readable grid */
+.pov-cube-container.landed{
+  transform:translateX(-50%) translateY(-50%) translateZ(300px) rotateX(0deg) rotateY(0deg);
+  width:min(90vw, 480px);height:min(90vw, 480px);
+}
+
 /* Inner face container for rotating to bottom face */
 .pov-cube-inner{
   position:absolute;
@@ -377,6 +383,11 @@ a{text-decoration:none}
 
 .pov-cube-container.diving .pov-cube-inner{
   transform:rotateX(90deg);
+}
+
+.pov-cube-container.landed .pov-cube-inner{
+  transform:rotateX(0deg);
+  transition:transform .6s cubic-bezier(.25,.46,.45,.94);
 }
 
 /* Bottom face cubies clones — 3x3 grid inside the dive */
@@ -402,11 +413,18 @@ a{text-decoration:none}
 .pov-cubie-clone[data-gx="0"][data-gy="1"]{ left:calc(50% - 28px);bottom:5px; }
 .pov-cubie-clone[data-gx="1"][data-gy="1"]{ right:5px;bottom:5px; }
 
-/* Cards spread out after dive */
+/* Cards spread out after landing — fill 3x3 grid */
 .pov-cube-container.landed .pov-cubie-clone{
-  width:100px;height:100px;
-  transform:translateZ(60px) scale(1);
+  width:calc(33.33% - 6px);height:calc(33.33% - 6px);
+  transform:translateZ(0) scale(1);
+  border-radius:8px;
 }
+.pov-cube-container.landed .pov-cubie-clone[data-gx="-1"]{ left:0; }
+.pov-cube-container.landed .pov-cubie-clone[data-gx="0"]{ left:calc(33.33% + 3px); }
+.pov-cube-container.landed .pov-cubie-clone[data-gx="1"]{ left:auto;right:0; }
+.pov-cube-container.landed .pov-cubie-clone[data-gy="-1"]{ top:0; }
+.pov-cube-container.landed .pov-cubie-clone[data-gy="0"]{ top:calc(33.33% + 3px); }
+.pov-cube-container.landed .pov-cubie-clone[data-gy="1"]{ top:auto;bottom:0; }
 
 /* Cubie visual inner */
 .pov-cubie-visual{
