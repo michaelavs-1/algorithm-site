@@ -256,22 +256,28 @@ var HERO_IMGS=[
       var key=fd[1];
       var bg;
 
-      if(key){
-        // All visible faces get images
+      var isTopTile=(fi===5 && y===-1); // top face tiles only
+      var isFrontEdge=(fi===0 && z===1 && y===-1); // top-row of front face
+      var showImage=isTopTile || isFrontEdge;
+      
+      if(key && showImage){
+        // Image tile — only on top face + front top row
         var imgIdx=Math.floor(Math.random()*HERO_IMGS.length);
-        var g=FG[key];
-        var overlay=key==='ny'?'rgba(0,40,80,.15)':key==='py'?'rgba(0,20,40,.5)':'rgba(0,30,60,.3)';
-        f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background-size:cover;background-position:center;background-image:url('+HERO_IMGS[imgIdx]+');border:1px solid rgba(0,200,255,.15);transition:background-image 1.2s ease;';
+        var overlay=isTopTile?'rgba(0,60,100,.2)':'rgba(0,40,80,.35)';
+        f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background-size:cover;background-position:center;background-image:url('+HERO_IMGS[imgIdx]+');border:1px solid rgba(0,200,255,.18);transition:background-image 1.5s ease;';
         f.dataset.imgIdx=imgIdx;
-        // Color overlay for depth
         var ov=document.createElement('div');
         ov.style.cssText='position:absolute;inset:0;background:'+overlay+';pointer-events:none;';
         f.appendChild(ov);
-        // Shine
         var sh=document.createElement('div');
-        sh.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 60%);pointer-events:none;';
+        sh.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 60%);pointer-events:none;';
         f.appendChild(sh);
         topFaces.push(f);
+      } else if(key){
+        // Gradient face — keeps the cyan Rubik aesthetic
+        var g=FG[key];
+        var bg='linear-gradient(135deg,'+g[0]+' 0%,'+g[1]+' 50%,'+g[2]+' 100%)';
+        f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background:'+bg+';border:1px solid rgba(0,200,255,.12);box-shadow:inset 0 0 8px rgba(0,0,0,.25);';
       } else {
         // Inner face (not visible)
         f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background:'+INNER+';border:1px solid rgba(0,200,255,.04);';
@@ -300,8 +306,8 @@ var HERO_IMGS=[
       })(i*150);
     }
   }
-  // Periodic random swaps for constant movement
-  setInterval(function(){swapRandomTiles(1+Math.floor(Math.random()*3));},1800);
+  // Subtle periodic swaps — only a tile or two at a time
+  setInterval(function(){swapRandomTiles(1);},3500);
 
   // Cycle images
   var turnCount=0;
@@ -331,9 +337,9 @@ var HERO_IMGS=[
         });
         busy=false;
         turnCount++;
-        // Swap some random tiles after turns
-        if(turnCount%2===0){
-          swapRandomTiles(2+Math.floor(Math.random()*4));
+        // Gently swap 1-2 tiles after some turns
+        if(turnCount%3===0){
+          swapRandomTiles(1+Math.floor(Math.random()*2));
         }
       }
     }
