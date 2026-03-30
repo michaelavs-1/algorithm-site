@@ -144,54 +144,80 @@ a{text-decoration:none}
   .scatter-dot,.scatter-line{display:none}
 }
 
-/* === Side Nav - hidden until cube opens, vertical list on the right === */
+/* === Nav Cubes - 3D boxes that appear when cube opens === */
 .cube-nav{
-  position:fixed;
-  right:48px;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:30;
-  visibility:hidden;
-  opacity:0;
-  transition:opacity .3s, visibility .3s;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  align-items:flex-end;
 }
 .cube-nav.visible{
   visibility:visible !important;
   opacity:1 !important;
 }
-.cube-nav-item{
-  display:block;
-  font-family:'Amatic SC','Rubik',cursive;
-  font-weight:900;
-  font-size:1.8rem;
-  color:#00d4ff;
-  padding:6px 0;
+.nav-box{
   cursor:pointer;
-  letter-spacing:1px;
-  white-space:nowrap;
+  perspective:280px;
   opacity:0;
-  transform:translateX(-40px);
-  transition:color .2s, text-shadow .2s;
+  transform:translateX(50px);
 }
-.cube-nav.visible .cube-nav-item{
-  animation:navIn .4s cubic-bezier(.22,.68,.36,1) forwards;
+.cube-nav.visible .nav-box{
+  animation:navBoxIn .5s cubic-bezier(.22,.68,.36,1) forwards;
 }
-.cube-nav.visible .cube-nav-item:nth-child(1){animation-delay:.05s}
-.cube-nav.visible .cube-nav-item:nth-child(2){animation-delay:.12s}
-.cube-nav.visible .cube-nav-item:nth-child(3){animation-delay:.19s}
-.cube-nav.visible .cube-nav-item:nth-child(4){animation-delay:.26s}
-.cube-nav.visible .cube-nav-item:nth-child(5){animation-delay:.33s}
-.cube-nav-item:hover{
-  color:#88ffff;
-  text-shadow:0 0 15px rgba(0,200,255,.4);
+.cube-nav.visible .nav-box:nth-child(1){animation-delay:.08s}
+.cube-nav.visible .nav-box:nth-child(2){animation-delay:.16s}
+.cube-nav.visible .nav-box:nth-child(3){animation-delay:.24s}
+.cube-nav.visible .nav-box:nth-child(4){animation-delay:.32s}
+.cube-nav.visible .nav-box:nth-child(5){animation-delay:.40s}
+.nav-box-inner{
+  width:64px;height:64px;
+  position:relative;
+  transform-style:preserve-3d;
+  transform:var(--cr);
+  transition:transform .35s ease, filter .25s;
 }
-@keyframes navIn{
-  from{opacity:0;transform:translateX(-40px)}
+.nav-box:hover .nav-box-inner{
+  filter:brightness(1.5) drop-shadow(0 0 10px rgba(0,210,255,.7));
+}
+.nf{
+  position:absolute;
+  width:64px;height:64px;
+  backface-visibility:hidden;
+}
+.nf-front{
+  background:rgba(4,18,44,.9);
+  border:1.5px solid rgba(0,200,255,.65);
+  transform:translateZ(32px);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Amatic SC','Rubik',cursive;
+  font-weight:900;font-size:1rem;
+  color:#00d4ff;
+  text-shadow:0 0 8px rgba(0,200,255,.55);
+  letter-spacing:1px;
+  text-align:center;
+  padding:2px;
+}
+.nf-right{
+  background:rgba(2,10,28,.8);
+  border:1.5px solid rgba(0,160,200,.4);
+  transform:translateX(32px) rotateY(90deg);
+}
+.nf-top{
+  background:rgba(3,14,36,.72);
+  border:1.5px solid rgba(0,175,215,.4);
+  transform:translateY(-32px) rotateX(90deg);
+}
+@keyframes navBoxIn{
+  from{opacity:0;transform:translateX(50px)}
   to{opacity:1;transform:translateX(0)}
 }
 @media(max-width:768px){
-  .cube-nav{right:20px;}
-  .cube-nav-item{font-size:1.4rem;}
+  .cube-nav{gap:14px}
+  .nav-box-inner{width:52px;height:52px}
+  .nf{width:52px;height:52px}
+  .nf-front{font-size:.82rem;transform:translateZ(26px)}
+  .nf-right{transform:translateX(26px) rotateY(90deg)}
+  .nf-top{transform:translateY(-26px) rotateX(90deg)}
 }
 
 </style>
@@ -224,12 +250,48 @@ a{text-decoration:none}
 
 </div>
 
-<div class="cube-nav" id="cubeNav" style="position:fixed;right:48px;top:50%;transform:translateY(-50%);z-index:30;visibility:hidden;opacity:0;transition:opacity .3s,visibility .3s">
-  <div class="cube-nav-item">אומנים</div>
-  <div class="cube-nav-item">הפקות</div>
-  <div class="cube-nav-item">שיווק</div>
-  <div class="cube-nav-item">בוקינג</div>
-  <div class="cube-nav-item">צור קשר</div>
+<div class="cube-nav" id="cubeNav" style="position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:999;visibility:hidden;opacity:0;transition:opacity .4s,visibility .4s">
+
+  <div class="nav-box" style="--cr:rotateZ(45deg) rotateX(-12deg) rotateY(22deg)">
+    <div class="nav-box-inner">
+      <div class="nf nf-top"></div>
+      <div class="nf nf-right"></div>
+      <div class="nf nf-front">אומנים</div>
+    </div>
+  </div>
+
+  <div class="nav-box" style="--cr:rotateX(-22deg) rotateY(18deg) rotateZ(3deg)">
+    <div class="nav-box-inner">
+      <div class="nf nf-top"></div>
+      <div class="nf nf-right"></div>
+      <div class="nf nf-front">הפקות</div>
+    </div>
+  </div>
+
+  <div class="nav-box" style="--cr:rotateZ(-28deg) rotateX(-8deg) rotateY(-22deg)">
+    <div class="nav-box-inner">
+      <div class="nf nf-top"></div>
+      <div class="nf nf-right"></div>
+      <div class="nf nf-front">שיווק</div>
+    </div>
+  </div>
+
+  <div class="nav-box" style="--cr:rotateX(-30deg) rotateY(-12deg) rotateZ(8deg)">
+    <div class="nav-box-inner">
+      <div class="nf nf-top"></div>
+      <div class="nf nf-right"></div>
+      <div class="nf nf-front">בוקינג</div>
+    </div>
+  </div>
+
+  <div class="nav-box" style="--cr:rotateZ(18deg) rotateX(-14deg) rotateY(28deg)">
+    <div class="nav-box-inner">
+      <div class="nf nf-top"></div>
+      <div class="nf nf-right"></div>
+      <div class="nf nf-front">צור קשר</div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -584,7 +646,7 @@ var HERO_IMGS=[
       if(nav){
         nav.classList.remove('visible');
         // Reset item animations so they replay next time
-        var items=nav.querySelectorAll('.cube-nav-item');
+        var items=nav.querySelectorAll('.nav-box');
         items.forEach(function(it){
           it.style.animation='none';
           it.offsetHeight;
