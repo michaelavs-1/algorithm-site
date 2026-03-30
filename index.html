@@ -238,6 +238,8 @@ a{text-decoration:none}
 }
 .cat-page.cube-tour{
   z-index:11;
+  opacity:1 !important;
+  transition:none !important;
 }
 
 /* Inner cube walls — simulates being inside the opened cube */
@@ -1474,12 +1476,13 @@ var HERO_IMGS=[
         // Phase 2: Camera lands inside, grid expands (landed)
         setTimeout(function(){
           povCubeContainer.classList.add('landed');
-          // Force UI elements visible (CSS transition may not fire due to parent opacity timing)
-          catBack.style.opacity='1';
-          catBack.style.transform='translateX(-50%) translateY(0)';
-          catTitleLabel.style.opacity='1';
-          catTitleLabel.style.transform='translateY(0) scale(1)';
-          indicator.style.opacity='1';
+          // Force UI elements visible (kill transitions, set directly)
+          var _b=document.getElementById('catBack');
+          var _t=document.getElementById('catTitleLabel');
+          var _i=document.getElementById('faceIndicator');
+          if(_b){_b.style.transition='none';_b.style.opacity='1';_b.style.transform='translateX(-50%) translateY(0)';}
+          if(_t){_t.style.transition='none';_t.style.opacity='1';_t.style.transform='translateY(0) scale(1)';}
+          if(_i){_i.style.transition='none';_i.style.opacity='1';}
           isAnimating=false;
         },900);
       },50);
@@ -1521,10 +1524,12 @@ var HERO_IMGS=[
     currentCat=null;
 
     // Hide UI elements
-    catBack.style.opacity='0';
-    catBack.style.transform='translateX(-50%) translateY(-20px)';
-    catTitleLabel.style.opacity='0';
-    indicator.style.opacity='0';
+    var _b=document.getElementById('catBack');
+    var _t=document.getElementById('catTitleLabel');
+    var _i=document.getElementById('faceIndicator');
+    if(_b){_b.style.transition='opacity .3s ease, transform .3s ease';_b.style.opacity='0';_b.style.transform='translateX(-50%) translateY(-20px)';}
+    if(_t){_t.style.transition='opacity .3s ease';_t.style.opacity='0';}
+    if(_i){_i.style.transition='opacity .3s ease';_i.style.opacity='0';}
 
     // Reverse dive
     povCubeContainer.classList.remove('landed');
@@ -1537,11 +1542,12 @@ var HERO_IMGS=[
         catPage.classList.remove('cube-tour');
         povScene.classList.remove('active');
         // Reset inline styles
-        catBack.style.opacity='';
-        catBack.style.transform='';
-        catTitleLabel.style.opacity='';
-        catTitleLabel.style.transform='';
-        indicator.style.opacity='';
+        var _b2=document.getElementById('catBack');
+        var _t2=document.getElementById('catTitleLabel');
+        var _i2=document.getElementById('faceIndicator');
+        if(_b2){_b2.style.transition='';_b2.style.opacity='';_b2.style.transform='';}
+        if(_t2){_t2.style.transition='';_t2.style.opacity='';_t2.style.transform='';}
+        if(_i2){_i2.style.transition='';_i2.style.opacity='';}
 
         // Restore cubies
         var cubies=window._cubies||[];
