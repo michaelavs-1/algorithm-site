@@ -338,30 +338,68 @@ a{text-decoration:none}
   border-color:rgba(0,220,255,.6);
 }
 
-/* Face Grid — 3D with perspective, zooms from cube center */
-.face-grid-wrap{
-  perspective:700px;
-  transform-style:preserve-3d;
+/* ========== 3D Flip Grid System ========== */
+
+/* Scene — perspective container for the flip */
+.face-grid-scene{
+  perspective:1200px;
+  perspective-origin:50% 50%;
+  width:min(82vw,420px);
+  aspect-ratio:1;
+  margin:0 auto;
 }
-.face-grid{
+
+/* Flipper — the rotating 3D card */
+.face-grid-flipper{
+  width:100%;height:100%;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .85s cubic-bezier(.4,.0,.2,1);
+}
+.face-grid-flipper.flipping{
+  transform:rotateY(180deg);
+}
+.face-grid-flipper.flip-vertical{
+  transition:transform .85s cubic-bezier(.4,.0,.2,1);
+}
+.face-grid-flipper.flip-vertical.flipping{
+  transform:rotateX(180deg);
+}
+
+/* Front & Back faces of the flip card */
+.face-grid-front,
+.face-grid-back{
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:5px;
-  width:min(82vw,420px);
-  aspect-ratio:1;
-  transform:scale(0.08) rotateX(25deg) rotateY(-5deg) translateZ(60px);
-  opacity:0;
-  transition:transform .7s cubic-bezier(.22,.68,.36,1.05), opacity .35s ease;
-  transform-origin:center center;
   transform-style:preserve-3d;
 }
-.cat-page.active .face-grid{
-  transform:scale(1) rotateX(6deg) rotateY(-2deg) translateZ(0px);
+.face-grid-back{
+  transform:rotateY(180deg);
+}
+.face-grid-flipper.flip-vertical .face-grid-back{
+  transform:rotateX(180deg);
+}
+
+/* Initial state: grid starts small from cube center */
+.face-grid-scene{
+  transform:scale(0.06) rotateX(30deg) rotateY(-8deg);
+  opacity:0;
+  transition:transform .75s cubic-bezier(.22,.68,.36,1.05), opacity .35s ease;
+  transform-origin:center center;
+}
+.cat-page.active .face-grid-scene{
+  transform:scale(1) rotateX(5deg) rotateY(-2deg);
   opacity:1;
 }
+
+/* Face cell — individual grid tile */
 .face-cell{
   position:relative;
-  border-radius:6px;
+  border-radius:8px;
   overflow:hidden;
   background:rgba(0,20,40,.7);
   border:1px solid rgba(0,200,255,.15);
@@ -379,16 +417,21 @@ a{text-decoration:none}
 }
 .face-cell:hover{
   border-color:rgba(0,220,255,.5);
-  transform:scale(1.04) translateZ(18px)!important;
-  box-shadow:0 8px 30px rgba(0,200,255,.15), 0 0 20px rgba(0,200,255,.1);
+  transform:scale(1.04) translateZ(22px)!important;
+  box-shadow:0 8px 32px rgba(0,200,255,.18), 0 0 24px rgba(0,200,255,.12), inset 0 0 12px rgba(0,200,255,.04);
+}
+.face-cell:active{
+  transform:scale(0.97) translateZ(8px)!important;
+  transition-duration:.1s;
 }
 .face-cell-bg{
   position:absolute;inset:0;
   background-size:cover;background-position:center;
   opacity:.72;
-  transition:opacity .4s ease;
+  transition:opacity .4s ease, transform .6s ease;
+  transform:scale(1.05);
 }
-.face-cell:hover .face-cell-bg{opacity:.92;}
+.face-cell:hover .face-cell-bg{opacity:.92;transform:scale(1);}
 .face-cell-overlay{
   position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(0,10,20,.05) 0%,rgba(0,10,20,.7) 85%);
@@ -404,9 +447,11 @@ a{text-decoration:none}
   padding:10px 6px;
   width:100%;
   text-shadow:0 2px 8px rgba(0,0,0,.6);
+  transition:color .3s ease, text-shadow .3s ease;
 }
 .face-cell:hover .face-cell-name{
   color:#88ffff;
+  text-shadow:0 2px 12px rgba(0,200,255,.3), 0 2px 8px rgba(0,0,0,.6);
 }
 .face-cell-empty{
   background:rgba(0,12,24,.5);
@@ -427,43 +472,85 @@ a{text-decoration:none}
 .cat-title-label{
   font-family:'Amatic SC','Rubik',cursive;
   font-weight:700;
-  font-size:2rem;
-  color:rgba(0,200,255,.25);
+  font-size:2.2rem;
+  color:rgba(0,200,255,.3);
   letter-spacing:3px;
   margin-bottom:1rem;
   opacity:0;
-  transform:translateY(10px);
-  transition:opacity .4s ease .3s, transform .4s ease .3s;
+  transform:translateY(15px) scale(0.9);
+  transition:opacity .4s ease .3s, transform .5s cubic-bezier(.22,.68,.36,1.05) .3s;
 }
 .cat-page.active .cat-title-label{
   opacity:1;
-  transform:translateY(0);
+  transform:translateY(0) scale(1);
 }
 
 /* Stagger face cells */
 .face-cell:nth-child(1){transition-delay:.08s}
-.face-cell:nth-child(2){transition-delay:.12s}
-.face-cell:nth-child(3){transition-delay:.16s}
-.face-cell:nth-child(4){transition-delay:.2s}
-.face-cell:nth-child(5){transition-delay:.24s}
-.face-cell:nth-child(6){transition-delay:.28s}
-.face-cell:nth-child(7){transition-delay:.32s}
-.face-cell:nth-child(8){transition-delay:.36s}
-.face-cell:nth-child(9){transition-delay:.4s}
+.face-cell:nth-child(2){transition-delay:.13s}
+.face-cell:nth-child(3){transition-delay:.18s}
+.face-cell:nth-child(4){transition-delay:.22s}
+.face-cell:nth-child(5){transition-delay:.26s}
+.face-cell:nth-child(6){transition-delay:.30s}
+.face-cell:nth-child(7){transition-delay:.34s}
+.face-cell:nth-child(8){transition-delay:.38s}
+.face-cell:nth-child(9){transition-delay:.42s}
 
+/* Cube face indicator dots */
+.face-indicator{
+  display:flex;gap:8px;justify-content:center;
+  margin-top:12px;
+  opacity:0;
+  transition:opacity .4s ease .5s;
+}
+.cat-page.active .face-indicator{opacity:1;}
+.face-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(0,200,255,.15);
+  border:1px solid rgba(0,200,255,.2);
+  transition:background .3s, border-color .3s, transform .3s, box-shadow .3s;
+  cursor:pointer;
+}
+.face-dot.active{
+  background:rgba(0,200,255,.5);
+  border-color:rgba(0,220,255,.7);
+  transform:scale(1.3);
+  box-shadow:0 0 8px rgba(0,200,255,.3);
+}
+.face-dot:hover:not(.active){
+  background:rgba(0,200,255,.25);
+  border-color:rgba(0,200,255,.4);
+}
+
+/* Particle burst on category open */
+@keyframes particleBurst{
+  0%{transform:translate(0,0) scale(1);opacity:.8;}
+  100%{transform:translate(var(--px),var(--py)) scale(0);opacity:0;}
+}
+.grid-particle{
+  position:absolute;
+  width:4px;height:4px;border-radius:50%;
+  background:rgba(0,200,255,.6);
+  pointer-events:none;
+  animation:particleBurst .7s ease-out forwards;
+}
+
+/* Responsive */
 @media(max-width:768px){
-  .face-grid{
+  .face-grid-scene{
     width:min(92vw,340px);
-    gap:3px;
   }
-  .cat-page.active .face-grid{
-    transform:scale(1) rotateX(4deg) rotateY(-1deg) translateZ(0);
+  .face-grid-front,.face-grid-back{gap:3px;}
+  .cat-page.active .face-grid-scene{
+    transform:scale(1) rotateX(3deg) rotateY(-1deg);
   }
   .face-cell-name{font-size:.9rem;padding:7px 4px;}
   .cat-back{top:12px;padding:8px 20px;font-size:1.1rem;}
-  .cat-title-label{font-size:1.5rem;margin-bottom:.6rem;}
+  .cat-title-label{font-size:1.6rem;margin-bottom:.6rem;}
   .cube-wall--top,.cube-wall--bottom{height:18%;}
   .cube-wall--left,.cube-wall--right{width:12%;}
+  .face-dot{width:7px;height:7px;}
+  .face-indicator{gap:6px;margin-top:8px;}
 }
 </style>
 </head>
@@ -508,9 +595,13 @@ a{text-decoration:none}
     </div>
     <button class="cat-back" id="catBack">✕ חזרה</button>
     <div class="cat-title-label" id="catTitleLabel"></div>
-    <div class="face-grid-wrap">
-      <div class="face-grid" id="faceGrid"></div>
+    <div class="face-grid-scene" id="faceGridScene">
+      <div class="face-grid-flipper" id="faceGridFlipper">
+        <div class="face-grid-front face-grid" id="faceGridFront"></div>
+        <div class="face-grid-back face-grid" id="faceGridBack"></div>
+      </div>
     </div>
+    <div class="face-indicator" id="faceIndicator"></div>
   </div>
 </div>
 
@@ -625,6 +716,7 @@ var HERO_IMGS=[
     });
 
     var c={el:el,gx:x,gy:y,gz:z,r:[[1,0,0],[0,1,0],[0,0,1]],origY:y};
+    c.face=(y===1)?'bottom':(y===-1)?'top':(z===1)?'front':(z===-1)?'back':(x===-1)?'left':(x===1)?'right':'center';
     cubies.push(c);
     root.appendChild(el);
     upd(c);
@@ -694,7 +786,8 @@ var HERO_IMGS=[
     }
     requestAnimationFrame(tick);
   }
-  setTimeout(function(){doTurn();setInterval(doTurn,1600);},1200);
+  // Rubik turns disabled — keep faces stable for navigation
+  // setTimeout(function(){doTurn();setInterval(doTurn,1600);},1200);
 })();
 
 // === Cube Click to Open/Close (Box Unfolding) ===
@@ -786,12 +879,20 @@ var HERO_IMGS=[
     var cubies=window._cubies||[];
 
     if(isOpen){
+      // Snap cube to fixed angle for consistent look
+      var root=document.getElementById('cubeRoot');
+      root.style.animation='none';
+      root.offsetHeight; // force reflow
+      root.style.transform='rotateX(-35deg) rotateY(-30deg)';
+
       wrap.classList.add('exploded');
 
-      // First, freeze current transforms
+      // Re-compute cubie positions at the fixed angle, then freeze
       cubies.forEach(function(c){
-        var st=c.el.style.transform;
-        c._savedTransform=st;
+        if(window._cubeUpd) window._cubeUpd(c);
+      });
+      cubies.forEach(function(c){
+        c._savedTransform=c.el.style.transform;
       });
 
       // Group by face and apply box-opening transforms
@@ -875,6 +976,9 @@ var HERO_IMGS=[
       setTimeout(function(){
         wrap.classList.remove('exploded');
         if(window._restoreCubies) window._restoreCubies();
+        // Resume spinning animation
+        var root=document.getElementById('cubeRoot');
+        root.style.animation='cubeSpin 20s linear infinite';
       }, maxDelay+50);
     }
   }
@@ -899,18 +1003,20 @@ var HERO_IMGS=[
   });
 })();
 
-// === Category Page Navigation ===
+// === Category Page Navigation — 3D Face Zoom + Flip ===
 (function(){
   var catPage=document.getElementById('catPage');
   var catTitleLabel=document.getElementById('catTitleLabel');
-  var faceGrid=document.getElementById('faceGrid');
+  var gridFront=document.getElementById('faceGridFront');
+  var gridBack=document.getElementById('faceGridBack');
+  var flipper=document.getElementById('faceGridFlipper');
+  var indicator=document.getElementById('faceIndicator');
   var catBack=document.getElementById('catBack');
   var wrap=document.querySelector('.cube-wrap');
   var cats=document.getElementById('cubeCategories');
   var catItems=document.querySelectorAll('.cat-item');
   var hubCenter=document.querySelector('.hub-center');
 
-  // Artist gradients for card backgrounds
   var ARTIST_GRADIENTS=[
     'linear-gradient(135deg,#0a2463 0%,#1e6091 50%,#168aad 100%)',
     'linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)',
@@ -919,11 +1025,9 @@ var HERO_IMGS=[
     'linear-gradient(135deg,#001219 0%,#005f73 50%,#0a9396 100%)'
   ];
 
+  var CAT_KEYS=['artists','productions','marketing','booking'];
   var CAT_DATA={
-    artists:{
-      title:'אומנים',
-      names:["ג׳ימבו ג׳י","אקו","אלי לוזון","מאור אשכנזי","נרקיס"]
-    },
+    artists:{title:'אומנים',names:["ג׳ימבו ג׳י","אקו","אלי לוזון","מאור אשכנזי","נרקיס"]},
     productions:{title:'הפקות',names:['בקרוב...']},
     marketing:{title:'שיווק',names:['בקרוב...']},
     booking:{title:'בוקינג',names:['בקרוב...']}
@@ -931,34 +1035,28 @@ var HERO_IMGS=[
 
   var currentCat=null;
   var flyClones=[];
+  var isFlipping=false;
+  var flipCount=0; // Track total flips for alternating direction
 
-  // Build the 3x3 face grid for a category
-  function buildFaceGrid(data){
-    faceGrid.innerHTML='';
+  // Build 3x3 grid content into a target element
+  function buildGrid(target,data){
+    target.innerHTML='';
     var imgs=window._heroImgs||[];
     for(var i=0;i<9;i++){
       var cell=document.createElement('div');
       if(i<data.names.length && data.names[i]!=='בקרוב...'){
         cell.className='face-cell';
-
-        // Background image from hero pool or gradient
         var bg=document.createElement('div');
         bg.className='face-cell-bg';
         if(imgs.length>0){
           bg.style.backgroundImage='url('+imgs[i%imgs.length]+')';
-          bg.style.backgroundSize='cover';
-          bg.style.backgroundPosition='center';
         } else {
           bg.style.background=ARTIST_GRADIENTS[i%ARTIST_GRADIENTS.length];
         }
         cell.appendChild(bg);
-
-        // Gradient overlay for readability
         var ov=document.createElement('div');
         ov.className='face-cell-overlay';
         cell.appendChild(ov);
-
-        // Artist name
         var nm=document.createElement('div');
         nm.className='face-cell-name';
         nm.textContent=data.names[i];
@@ -973,32 +1071,73 @@ var HERO_IMGS=[
       } else {
         cell.className='face-cell face-cell-empty';
       }
-      faceGrid.appendChild(cell);
+      target.appendChild(cell);
     }
   }
 
-  // Fly cubies to edges as fixed-position clones (outside perspective container)
-  function flyCubiesToEdges(){
+  // Build face indicator dots
+  function buildIndicator(activeCat){
+    indicator.innerHTML='';
+    CAT_KEYS.forEach(function(key){
+      var dot=document.createElement('div');
+      dot.className='face-dot'+(key===activeCat?' active':'');
+      dot.setAttribute('data-cat',key);
+      dot.addEventListener('click',function(e){
+        e.stopPropagation();
+        if(key!==currentCat && !isFlipping){
+          switchCategory(key);
+        }
+      });
+      indicator.appendChild(dot);
+    });
+  }
+
+  // Spawn particle burst at grid center
+  function spawnParticles(){
+    var scene=document.getElementById('faceGridScene');
+    if(!scene)return;
+    var rect=scene.getBoundingClientRect();
+    var cx=rect.width/2, cy=rect.height/2;
+    for(var i=0;i<16;i++){
+      var p=document.createElement('div');
+      p.className='grid-particle';
+      var angle=Math.random()*Math.PI*2;
+      var dist=80+Math.random()*120;
+      p.style.cssText='left:'+cx+'px;top:'+cy+'px;'+
+        '--px:'+(Math.cos(angle)*dist)+'px;--py:'+(Math.sin(angle)*dist)+'px;'+
+        'animation-delay:'+(Math.random()*0.15)+'s;'+
+        'width:'+(3+Math.random()*4)+'px;height:'+(3+Math.random()*4)+'px;'+
+        'background:rgba('+(Math.random()>0.5?'0,200,255':'100,220,255')+','+(0.4+Math.random()*0.4)+');';
+      scene.appendChild(p);
+      (function(el){setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},900);})(p);
+    }
+  }
+
+  // Fly cubies to edges as fixed-position clones
+  function flyCubiesToEdges(onlyNonBottom){
     var cubies=window._cubies||[];
     var vw=window.innerWidth, vh=window.innerHeight;
-
-    // 8 directions: 4 corners + 4 edges
     var targets=[
-      {x:-80, y:-80},
-      {x:vw/2, y:-100},
-      {x:vw+80, y:-80},
-      {x:vw+100, y:vh/2},
-      {x:vw+80, y:vh+80},
-      {x:vw/2, y:vh+100},
-      {x:-80, y:vh+80},
-      {x:-100, y:vh/2}
+      {x:-80,y:-80},{x:vw/2,y:-100},{x:vw+80,y:-80},
+      {x:vw+100,y:vh/2},{x:vw+80,y:vh+80},{x:vw/2,y:vh+100},
+      {x:-80,y:vh+80},{x:-100,y:vh/2}
     ];
 
-    // Clean up existing clones
     flyClones.forEach(function(cl){if(cl.parentNode)cl.parentNode.removeChild(cl);});
     flyClones=[];
 
-    cubies.forEach(function(c,idx){
+    var filtered=onlyNonBottom?cubies.filter(function(c){return c.face!=='bottom';}):cubies;
+    var bottomCubies=onlyNonBottom?cubies.filter(function(c){return c.face==='bottom';}):[];
+
+    // Bottom face cubies: zoom forward and fade out (they become the grid)
+    bottomCubies.forEach(function(c,idx){
+      c.el.style.transition='transform .5s cubic-bezier(.22,.68,.36,1.05) '+(idx*20)+'ms, opacity .35s ease '+(idx*20)+'ms';
+      c.el.style.transform=c._savedTransform+' scale(2.5) translateZ(200px)';
+      c.el.style.opacity='0';
+    });
+
+    // Other cubies: fly to edges via clones
+    filtered.forEach(function(c,idx){
       var rect=c.el.getBoundingClientRect();
       var cx=rect.left+rect.width/2;
       var cy=rect.top+rect.height/2;
@@ -1009,35 +1148,32 @@ var HERO_IMGS=[
         'left:'+cx+'px;top:'+cy+'px;transform:translate(-50%,-50%);'+
         'background:linear-gradient(135deg,rgba(0,100,180,.2),rgba(0,200,255,.1));'+
         'border:1px solid rgba(0,200,255,.18);border-radius:4px;pointer-events:none;'+
-        'transition:left .5s cubic-bezier(.23,.73,.35,1), top .5s cubic-bezier(.23,.73,.35,1), '+
-        'opacity .35s ease, transform .5s ease;';
+        'transition:left .55s cubic-bezier(.23,.73,.35,1), top .55s cubic-bezier(.23,.73,.35,1), '+
+        'opacity .4s ease, transform .55s ease;';
       document.body.appendChild(clone);
       flyClones.push(clone);
 
-      // Hide original
       c.el.style.transition='opacity .12s ease';
       c.el.style.opacity='0';
 
-      // Fly to target
       var target=targets[idx%targets.length];
       var jx=(Math.random()-0.5)*120;
       var jy=(Math.random()-0.5)*120;
       var rot=(Math.random()-0.5)*120;
-      var delay=idx*12;
+      var delay=idx*14;
 
       setTimeout(function(){
         clone.style.left=(target.x+jx)+'px';
         clone.style.top=(target.y+jy)+'px';
         clone.style.opacity='0';
-        clone.style.transform='translate(-50%,-50%) rotate('+rot+'deg) scale(0.4)';
+        clone.style.transform='translate(-50%,-50%) rotate('+rot+'deg) scale(0.3)';
       },delay+15);
     });
   }
 
-  // Return clones to cube and show cubies (keep exploded state)
+  // Return clones to cube and show cubies in exploded positions
   function flyClonesToExploded(){
     var cubies=window._cubies||[];
-
     cubies.forEach(function(c,idx){
       var rect=c.el.getBoundingClientRect();
       var cx=rect.left+rect.width/2;
@@ -1056,9 +1192,11 @@ var HERO_IMGS=[
     });
 
     setTimeout(function(){
-      // Show cubies in their current (exploded) positions — do NOT call _restoreCubies
       cubies.forEach(function(c){
-        c.el.style.transition='opacity .25s ease';
+        if(c._savedTransform){
+          c.el.style.transition='opacity .25s ease, transform .3s ease';
+          c.el.style.transform=c._savedTransform;
+        }
         c.el.style.opacity='1';
       });
       setTimeout(function(){
@@ -1068,54 +1206,134 @@ var HERO_IMGS=[
     },450);
   }
 
+  // ===== Open Category: zoom into bottom face =====
   function openCategory(catKey){
     var data=CAT_DATA[catKey];
     if(!data)return;
     currentCat=catKey;
+    flipCount=0;
 
-    // Build the face grid content
+    // Reset flipper state
+    flipper.classList.remove('flipping','flip-vertical');
+    flipper.style.transform='';
+
+    // Build grid on front face
+    buildGrid(gridFront,data);
+    gridBack.innerHTML='';
     catTitleLabel.textContent=data.title;
-    buildFaceGrid(data);
+    buildIndicator(catKey);
 
-    // Hide category links
+    // Hide category arc
     cats.classList.remove('visible');
 
     setTimeout(function(){
-      // Hide glow and hint
       var glow=document.querySelector('.cube-glow');
       var hint=document.getElementById('clickHint');
       if(glow) glow.style.opacity='0';
       if(hint) hint.style.display='none';
       hubCenter.style.pointerEvents='none';
 
-      // Fly cubies outward
-      flyCubiesToEdges();
+      // Bottom cubies zoom forward, others fly to edges
+      flyCubiesToEdges(true);
 
-      // Show the face grid (zoom in from cube center)
+      // Particle burst + show grid
       setTimeout(function(){
+        spawnParticles();
         catPage.classList.add('active');
-      },200);
-    },100);
+      },250);
+    },80);
   }
 
+  // ===== Switch Category: 3D flip to new face =====
+  function switchCategory(newCatKey){
+    if(isFlipping || newCatKey===currentCat)return;
+    var data=CAT_DATA[newCatKey];
+    if(!data)return;
+    isFlipping=true;
+    flipCount++;
+
+    // Determine flip direction — alternate between Y and X rotations
+    var useVertical=(flipCount%2===0);
+    var currentIdx=CAT_KEYS.indexOf(currentCat);
+    var newIdx=CAT_KEYS.indexOf(newCatKey);
+
+    // Build new content on the back face
+    var backGrid=flipper.classList.contains('flipping')?gridFront:gridBack;
+    buildGrid(backGrid,data);
+
+    // Calculate cumulative rotation
+    var deg=180*flipCount;
+    var axis=useVertical?'X':'Y';
+    // Alternate direction based on relative position
+    var direction=(newIdx>currentIdx)?1:-1;
+
+    flipper.style.transition='transform .85s cubic-bezier(.4,.0,.2,1)';
+
+    if(useVertical){
+      flipper.style.transform='rotateX('+deg*direction+'deg)';
+    } else {
+      flipper.style.transform='rotateY('+deg*direction+'deg)';
+    }
+
+    // Update back face transform to match
+    backGrid.style.transform=(useVertical?'rotateX(':'rotateY(')+(deg*direction*-1)+'deg)';
+
+    // Update title with a crossfade
+    catTitleLabel.style.transition='opacity .2s ease';
+    catTitleLabel.style.opacity='0';
+    setTimeout(function(){
+      catTitleLabel.textContent=data.title;
+      catTitleLabel.style.opacity='1';
+    },350);
+
+    currentCat=newCatKey;
+    buildIndicator(newCatKey);
+
+    // Spawn particles during flip
+    setTimeout(function(){spawnParticles();},200);
+
+    setTimeout(function(){
+      isFlipping=false;
+      // Swap: what was back becomes front for next flip
+      // Reset flipper cleanly
+      var activeGrid=backGrid;
+      var inactiveGrid=(backGrid===gridFront)?gridBack:gridFront;
+      // Copy content from active to front, reset transforms
+      gridFront.innerHTML=activeGrid.innerHTML;
+      gridBack.innerHTML='';
+      flipper.style.transition='none';
+      flipper.style.transform='';
+      gridFront.style.transform='';
+      gridBack.style.transform='rotateY(180deg)';
+      // Re-trigger cell animations
+      var cells=gridFront.querySelectorAll('.face-cell');
+      cells.forEach(function(c){c.style.opacity='1';c.style.transform='scale(1) translateZ(0)';});
+    },900);
+  }
+
+  // ===== Close Category: reverse zoom, return to cube =====
   function closeCategory(){
     if(!currentCat)return;
     currentCat=null;
+    isFlipping=false;
+    flipCount=0;
 
-    // Hide the face grid (zoom out)
     catPage.classList.remove('active');
 
-    // Return to exploded cube with categories visible (not closed cube)
     setTimeout(function(){
-      // Bring cubies back to exploded positions (not original)
       flyClonesToExploded();
       hubCenter.style.pointerEvents='';
 
-      // Show categories again after cubies return
       setTimeout(function(){
         cats.classList.add('visible');
         var hint=document.getElementById('clickHint');
         if(hint) hint.style.display='none';
+        // Reset flipper
+        flipper.classList.remove('flipping','flip-vertical');
+        flipper.style.transform='';
+        gridFront.innerHTML='';
+        gridBack.innerHTML='';
+        gridBack.style.transform='rotateY(180deg)';
       },600);
     },350);
   }
@@ -1125,7 +1343,13 @@ var HERO_IMGS=[
     item.addEventListener('click',function(e){
       e.preventDefault();
       e.stopPropagation();
-      openCategory(item.getAttribute('data-cat'));
+      var catKey=item.getAttribute('data-cat');
+      if(currentCat && currentCat!==catKey){
+        // Already in a category — flip to new one
+        switchCategory(catKey);
+      } else if(!currentCat){
+        openCategory(catKey);
+      }
     });
   });
 
@@ -1136,8 +1360,31 @@ var HERO_IMGS=[
     closeCategory();
   });
 
+  // Swipe gesture support for mobile — swipe left/right to switch categories
+  (function(){
+    var startX=0,startY=0,startTime=0;
+    catPage.addEventListener('touchstart',function(e){
+      startX=e.touches[0].clientX;
+      startY=e.touches[0].clientY;
+      startTime=Date.now();
+    },{passive:true});
+    catPage.addEventListener('touchend',function(e){
+      if(!currentCat||isFlipping)return;
+      var dx=e.changedTouches[0].clientX-startX;
+      var dy=e.changedTouches[0].clientY-startY;
+      var dt=Date.now()-startTime;
+      if(dt>500||Math.abs(dx)<50)return;
+      if(Math.abs(dy)>Math.abs(dx))return; // vertical swipe
+      var idx=CAT_KEYS.indexOf(currentCat);
+      // RTL: swipe left = next, swipe right = prev
+      var nextIdx=(dx<0)?(idx+1)%CAT_KEYS.length:(idx-1+CAT_KEYS.length)%CAT_KEYS.length;
+      switchCategory(CAT_KEYS[nextIdx]);
+    },{passive:true});
+  })();
+
   window._openCategory=openCategory;
   window._closeCategory=closeCategory;
+  window._switchCategory=switchCategory;
 })();
 
 // === Animated Grid Background ===
