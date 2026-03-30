@@ -73,7 +73,7 @@ a{text-decoration:none}
 }
 .hub-hero-link:hover{transform:scale(1.03)}
 
-/* Inner categories (revealed on click) */
+/* Inner categories — semi-circle arc above the cube */
 .cube-categories{
   position:absolute;z-index:5;
   top:0;left:0;width:100%;height:100%;
@@ -89,12 +89,12 @@ a{text-decoration:none}
   position:absolute;
   font-family:'Amatic SC','Rubik',cursive;
   font-weight:900;
-  font-size:3rem;
+  font-size:2.4rem;
   white-space:nowrap;
   text-align:center;
-  padding:14px 28px;
+  padding:10px 22px;
   border-radius:14px;
-  background:rgba(0,15,30,.75);
+  background:rgba(0,15,30,.8);
   border:1px solid rgba(0,200,255,.3);
   color:#00d4ff;
   cursor:pointer;
@@ -103,41 +103,45 @@ a{text-decoration:none}
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   opacity:0;
-  /* Start at cube center, then fly out */
+  /* Start at cube center */
   top:50%;left:50%;
-  transform:translate(-50%,-50%) scale(0.3);
-  transition:all .7s cubic-bezier(.34,1.56,.64,1);
+  transform:translate(-50%,-50%) scale(0.2) translateY(0);
+  transition:all .6s cubic-bezier(.34,1.56,.64,1);
   box-shadow:0 0 15px rgba(0,180,230,.1);
   letter-spacing:1px;
 }
 .cube-categories.visible .cat-item{
   opacity:1;
 }
+/* 4 items in inverted smile arc above cube — positions along arc */
+/* Arc: items spread horizontally, with outer items slightly lower (inverted smile) */
 .cube-categories.visible .cat-item:nth-child(1){
   top:var(--ty);left:var(--tx);
-  transform:translate(-50%,-50%) scale(1) var(--rot);
+  transform:translate(-50%,-50%) scale(1);
 }
 .cube-categories.visible .cat-item:nth-child(2){
   top:var(--ty);left:var(--tx);
-  transform:translate(-50%,-50%) scale(1) var(--rot);
+  transform:translate(-50%,-50%) scale(1);
 }
 .cube-categories.visible .cat-item:nth-child(3){
   top:var(--ty);left:var(--tx);
-  transform:translate(-50%,-50%) scale(1) var(--rot);
+  transform:translate(-50%,-50%) scale(1);
 }
 .cube-categories.visible .cat-item:nth-child(4){
   top:var(--ty);left:var(--tx);
-  transform:translate(-50%,-50%) scale(1) var(--rot);
+  transform:translate(-50%,-50%) scale(1);
 }
-.cat-item:nth-child(1){--tx:72%;--ty:25%;--rot:rotate(-5deg);transition-delay:.4s;}
-.cat-item:nth-child(2){--tx:22%;--ty:35%;--rot:rotate(3deg);transition-delay:.5s;}
-.cat-item:nth-child(3){--tx:68%;--ty:60%;--rot:rotate(4deg);transition-delay:.6s;}
-.cat-item:nth-child(4){--tx:18%;--ty:55%;--rot:rotate(-4deg);transition-delay:.7s;}
+/* Inverted smile: center items higher, outer items lower */
+/* Order RTL: 1=rightmost, 4=leftmost */
+.cat-item:nth-child(1){--tx:72%;--ty:12%;transition-delay:.35s;}
+.cat-item:nth-child(2){--tx:57%;--ty:4%;transition-delay:.42s;}
+.cat-item:nth-child(3){--tx:42%;--ty:4%;transition-delay:.49s;}
+.cat-item:nth-child(4){--tx:27%;--ty:12%;transition-delay:.56s;}
 .cat-item:hover{
   background:rgba(0,60,100,.9);
   border-color:rgba(0,220,255,.6);
   color:#88ffff;
-  transform:scale(1.12) var(--rot);
+  transform:translate(-50%,-50%) scale(1.1)!important;
   box-shadow:0 0 30px rgba(0,180,230,.35);
 }
 
@@ -226,11 +230,88 @@ a{text-decoration:none}
   pointer-events:none;
   opacity:0;
   transition:opacity .35s ease;
+  perspective:900px;
 }
 .cat-page.active{
   pointer-events:auto;
   opacity:1;
 }
+
+/* Inner cube walls — simulates being inside the opened cube */
+.cube-walls{
+  position:absolute;inset:0;pointer-events:none;
+  perspective:800px;
+  transform-style:preserve-3d;
+}
+.cube-wall{
+  position:absolute;
+  background:linear-gradient(180deg,rgba(0,30,60,.0) 0%,rgba(0,60,120,.12) 50%,rgba(0,30,60,.0) 100%);
+  border:1px solid rgba(0,200,255,.0);
+  transition:all .7s cubic-bezier(.22,.68,.36,1.05);
+  opacity:0;
+}
+.cat-page.active .cube-wall{opacity:1;}
+/* Top wall — folds down from top */
+.cube-wall--top{
+  top:0;left:5%;right:5%;height:22%;
+  transform-origin:top center;
+  transform:rotateX(75deg);
+  background:linear-gradient(180deg,rgba(0,40,80,.2) 0%,rgba(0,20,50,.05) 100%);
+  border-bottom:1px solid rgba(0,200,255,.08);
+}
+.cat-page.active .cube-wall--top{transform:rotateX(68deg);border-bottom-color:rgba(0,200,255,.12);}
+/* Bottom wall — folds up from bottom */
+.cube-wall--bottom{
+  bottom:0;left:5%;right:5%;height:22%;
+  transform-origin:bottom center;
+  transform:rotateX(-75deg);
+  background:linear-gradient(0deg,rgba(0,40,80,.2) 0%,rgba(0,20,50,.05) 100%);
+  border-top:1px solid rgba(0,200,255,.08);
+}
+.cat-page.active .cube-wall--bottom{transform:rotateX(-68deg);border-top-color:rgba(0,200,255,.12);}
+/* Left wall */
+.cube-wall--left{
+  left:0;top:8%;bottom:8%;width:16%;
+  transform-origin:left center;
+  transform:rotateY(-75deg);
+  background:linear-gradient(90deg,rgba(0,40,80,.18) 0%,rgba(0,20,50,.03) 100%);
+  border-right:1px solid rgba(0,200,255,.08);
+}
+.cat-page.active .cube-wall--left{transform:rotateY(-68deg);border-right-color:rgba(0,200,255,.1);}
+/* Right wall */
+.cube-wall--right{
+  right:0;top:8%;bottom:8%;width:16%;
+  transform-origin:right center;
+  transform:rotateY(75deg);
+  background:linear-gradient(-90deg,rgba(0,40,80,.18) 0%,rgba(0,20,50,.03) 100%);
+  border-left:1px solid rgba(0,200,255,.08);
+}
+.cat-page.active .cube-wall--right{transform:rotateY(68deg);border-left-color:rgba(0,200,255,.1);}
+
+/* Corner glow accents */
+.cube-wall::after{
+  content:'';position:absolute;
+  width:60px;height:60px;
+  background:radial-gradient(circle,rgba(0,200,255,.06),transparent 70%);
+  border-radius:50%;
+}
+.cube-wall--top::after{bottom:-30px;left:50%;transform:translateX(-50%);}
+.cube-wall--bottom::after{top:-30px;left:50%;transform:translateX(-50%);}
+.cube-wall--left::after{right:-30px;top:50%;transform:translateY(-50%);}
+.cube-wall--right::after{left:-30px;top:50%;transform:translateY(-50%);}
+
+/* Edge glow lines where walls meet */
+.cube-edge{
+  position:absolute;
+  background:rgba(0,200,255,.0);
+  transition:background .6s ease .2s;
+}
+.cat-page.active .cube-edge{background:rgba(0,200,255,.06);}
+.cube-edge--tl{top:0;left:0;width:1px;height:20%;background:linear-gradient(180deg,rgba(0,200,255,.1),transparent)!important;}
+.cube-edge--tr{top:0;right:0;width:1px;height:20%;background:linear-gradient(180deg,rgba(0,200,255,.1),transparent)!important;}
+.cube-edge--bl{bottom:0;left:0;width:1px;height:20%;background:linear-gradient(0deg,rgba(0,200,255,.1),transparent)!important;}
+.cube-edge--br{bottom:0;right:0;width:1px;height:20%;background:linear-gradient(0deg,rgba(0,200,255,.1),transparent)!important;}
+
 .cat-back{
   position:fixed;top:20px;left:50%;z-index:20;
   background:rgba(0,15,30,.85);
@@ -257,20 +338,25 @@ a{text-decoration:none}
   border-color:rgba(0,220,255,.6);
 }
 
-/* Face Grid — zooms from cube center */
+/* Face Grid — 3D with perspective, zooms from cube center */
+.face-grid-wrap{
+  perspective:700px;
+  transform-style:preserve-3d;
+}
 .face-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:5px;
-  width:min(82vw,400px);
+  width:min(82vw,420px);
   aspect-ratio:1;
-  transform:scale(0.12) rotateX(8deg);
+  transform:scale(0.08) rotateX(25deg) rotateY(-5deg) translateZ(60px);
   opacity:0;
-  transition:transform .65s cubic-bezier(.22,.68,.36,1.08), opacity .35s ease;
+  transition:transform .7s cubic-bezier(.22,.68,.36,1.05), opacity .35s ease;
   transform-origin:center center;
+  transform-style:preserve-3d;
 }
 .cat-page.active .face-grid{
-  transform:scale(1) rotateX(0);
+  transform:scale(1) rotateX(6deg) rotateY(-2deg) translateZ(0px);
   opacity:1;
 }
 .face-cell{
@@ -283,17 +369,18 @@ a{text-decoration:none}
   align-items:center;justify-content:flex-end;
   cursor:pointer;
   opacity:0;
-  transform:scale(0.7);
+  transform:scale(0.7) translateZ(0);
   transition:opacity .45s ease, transform .5s cubic-bezier(.22,.68,.36,1.08), border-color .3s, box-shadow .3s;
+  transform-style:preserve-3d;
 }
 .cat-page.active .face-cell{
   opacity:1;
-  transform:scale(1);
+  transform:scale(1) translateZ(0);
 }
 .face-cell:hover{
   border-color:rgba(0,220,255,.5);
-  transform:scale(1.06)!important;
-  box-shadow:0 0 25px rgba(0,200,255,.2);
+  transform:scale(1.04) translateZ(18px)!important;
+  box-shadow:0 8px 30px rgba(0,200,255,.15), 0 0 20px rgba(0,200,255,.1);
 }
 .face-cell-bg{
   position:absolute;inset:0;
@@ -331,7 +418,7 @@ a{text-decoration:none}
   background:linear-gradient(135deg,rgba(0,40,80,.08),transparent);
 }
 .face-cell-empty:hover{
-  transform:scale(1)!important;
+  transform:scale(1) translateZ(0)!important;
   border-color:rgba(0,200,255,.05);
   box-shadow:none;
 }
@@ -369,9 +456,14 @@ a{text-decoration:none}
     width:min(92vw,340px);
     gap:3px;
   }
+  .cat-page.active .face-grid{
+    transform:scale(1) rotateX(4deg) rotateY(-1deg) translateZ(0);
+  }
   .face-cell-name{font-size:.9rem;padding:7px 4px;}
   .cat-back{top:12px;padding:8px 20px;font-size:1.1rem;}
   .cat-title-label{font-size:1.5rem;margin-bottom:.6rem;}
+  .cube-wall--top,.cube-wall--bottom{height:18%;}
+  .cube-wall--left,.cube-wall--right{width:12%;}
 }
 </style>
 </head>
@@ -404,9 +496,21 @@ a{text-decoration:none}
   </div>
 
   <div class="cat-page" id="catPage">
+    <div class="cube-walls">
+      <div class="cube-wall cube-wall--top"></div>
+      <div class="cube-wall cube-wall--bottom"></div>
+      <div class="cube-wall cube-wall--left"></div>
+      <div class="cube-wall cube-wall--right"></div>
+      <div class="cube-edge cube-edge--tl"></div>
+      <div class="cube-edge cube-edge--tr"></div>
+      <div class="cube-edge cube-edge--bl"></div>
+      <div class="cube-edge cube-edge--br"></div>
+    </div>
     <button class="cat-back" id="catBack">✕ חזרה</button>
     <div class="cat-title-label" id="catTitleLabel"></div>
-    <div class="face-grid" id="faceGrid"></div>
+    <div class="face-grid-wrap">
+      <div class="face-grid" id="faceGrid"></div>
+    </div>
   </div>
 </div>
 
@@ -1001,13 +1105,18 @@ var HERO_IMGS=[
     // Hide the face grid (zoom out)
     catPage.classList.remove('active');
 
-    // After grid shrinks, bring cubies back
+    // Return to exploded cube with categories visible (not closed cube)
     setTimeout(function(){
-      wrap.classList.remove('exploded');
+      // Bring cubies back to their exploded positions
       flyClonesToCube();
       hubCenter.style.pointerEvents='';
-      var glow=document.querySelector('.cube-glow');
-      if(glow){glow.style.transition='opacity .5s ease .6s';glow.style.opacity='1';}
+
+      // Show categories again after cubies return
+      setTimeout(function(){
+        cats.classList.add('visible');
+        var hint=document.getElementById('clickHint');
+        if(hint) hint.style.display='none';
+      },500);
     },350);
   }
 
