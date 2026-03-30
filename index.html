@@ -338,65 +338,130 @@ a{text-decoration:none}
   border-color:rgba(0,220,255,.6);
 }
 
-/* ========== 3D Flip Grid System ========== */
+/* ========== Cube Face Morph System ========== */
 
-/* Scene — perspective container for the flip */
-.face-grid-scene{
-  perspective:1200px;
-  perspective-origin:50% 50%;
-  width:min(82vw,420px);
-  aspect-ratio:1;
-  margin:0 auto;
-}
-
-/* Flipper — the rotating 3D card */
-.face-grid-flipper{
-  width:100%;height:100%;
-  position:relative;
-  transform-style:preserve-3d;
-  transition:transform .85s cubic-bezier(.4,.0,.2,1);
-}
-.face-grid-flipper.flipping{
-  transform:rotateY(180deg);
-}
-.face-grid-flipper.flip-vertical{
-  transition:transform .85s cubic-bezier(.4,.0,.2,1);
-}
-.face-grid-flipper.flip-vertical.flipping{
-  transform:rotateX(180deg);
+/* Morph clones: fixed-position elements that animate from cube to grid */
+.morph-clone{
+  position:fixed;z-index:10;
+  transform-origin:center center;
+  transition:left .6s cubic-bezier(.22,.68,.36,1), top .6s cubic-bezier(.22,.68,.36,1),
+             width .6s cubic-bezier(.22,.68,.36,1), height .6s cubic-bezier(.22,.68,.36,1),
+             border-radius .6s ease, opacity .6s ease;
+  border-radius:6px;
+  overflow:hidden;
 }
 
-/* Front & Back faces of the flip card */
-.face-grid-front,
-.face-grid-back{
+/* Inner cubie visual — fades out as card fades in */
+.morph-cubie{
   position:absolute;inset:0;
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
+  background:linear-gradient(135deg,#00e5ff,#0088bb);
+  border:1px solid rgba(0,200,255,.3);
+  border-radius:4px;
+  opacity:1;
+  transition:opacity .4s ease;
+  transition-delay:.15s;
+}
+
+/* Inner card — fades in as cubie fades out */
+.morph-card{
+  position:absolute;inset:0;
+  border-radius:4px;
+  overflow:hidden;
+  opacity:0;
+  transition:opacity .4s ease;
+  transition-delay:.15s;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-end;
+}
+
+.morph-card-bg{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  opacity:.72;
+  transition:opacity .4s ease, transform .6s ease;
+  transform:scale(1.05);
+}
+
+.morph-card:hover .morph-card-bg{
+  opacity:.92;
+  transform:scale(1);
+}
+
+.morph-card-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,10,20,.05) 0%,rgba(0,10,20,.7) 85%);
+  z-index:1;
+}
+
+.morph-card-name{
+  position:relative;z-index:2;
+  font-family:'Frank Ruhl Libre','Heebo',serif;
+  font-weight:700;
+  font-size:1.15rem;
+  color:#e4eaf0;
+  text-align:center;
+  padding:10px 6px;
+  width:100%;
+  text-shadow:0 2px 8px rgba(0,0,0,.6);
+}
+
+/* Target grid (invisible reference) */
+.morph-grid-target{
+  position:absolute;
+  width:100%;height:100%;
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:5px;
+  pointer-events:none;
+}
+
+.morph-grid-target-cell{
+  position:relative;
+}
+
+/* 3D Grid container — used for switching categories */
+.face-grid-3d{
+  perspective:1200px;
+  width:min(82vw,420px);
+  aspect-ratio:1;
+  margin:0 auto;
+  position:relative;
+  display:none;
   transform-style:preserve-3d;
 }
-.face-grid-back{
+
+.cat-page.active .face-grid-3d{
+  display:block;
+}
+
+.face-grid-face{
+  position:absolute;inset:0;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  transform-style:preserve-3d;
+  transition:transform .7s cubic-bezier(.4,.0,.2,1);
+}
+
+.face-grid-face--front{
+  transform:rotateY(0deg);
+}
+
+.face-grid-face--back{
   transform:rotateY(180deg);
 }
-.face-grid-flipper.flip-vertical .face-grid-back{
-  transform:rotateX(180deg);
+
+.face-grid-3d.flipping .face-grid-face--front{
+  transform:rotateY(180deg);
 }
 
-/* Initial state: grid starts small from cube center */
-.face-grid-scene{
-  transform:scale(0.08) rotateX(20deg) rotateY(-5deg);
-  opacity:0;
-  transition:transform .55s cubic-bezier(.22,.68,.36,1.05), opacity .25s ease;
-  transform-origin:center center;
-}
-.cat-page.active .face-grid-scene{
-  transform:scale(1) rotateX(5deg) rotateY(-2deg);
-  opacity:1;
+.face-grid-3d.flipping .face-grid-face--back{
+  transform:rotateY(0deg);
 }
 
-/* Face cell — individual grid tile */
+/* Artist cards in grid */
 .face-cell{
   position:relative;
   border-radius:8px;
@@ -406,24 +471,23 @@ a{text-decoration:none}
   display:flex;flex-direction:column;
   align-items:center;justify-content:flex-end;
   cursor:pointer;
-  opacity:0;
-  transform:scale(0.7) translateZ(0);
+  opacity:1;
+  transform:scale(1) translateZ(0);
   transition:opacity .45s ease, transform .5s cubic-bezier(.22,.68,.36,1.08), border-color .3s, box-shadow .3s;
   transform-style:preserve-3d;
 }
-.cat-page.active .face-cell{
-  opacity:1;
-  transform:scale(1) translateZ(0);
-}
+
 .face-cell:hover{
   border-color:rgba(0,220,255,.5);
   transform:scale(1.04) translateZ(22px)!important;
   box-shadow:0 8px 32px rgba(0,200,255,.18), 0 0 24px rgba(0,200,255,.12), inset 0 0 12px rgba(0,200,255,.04);
 }
+
 .face-cell:active{
   transform:scale(0.97) translateZ(8px)!important;
   transition-duration:.1s;
 }
+
 .face-cell-bg{
   position:absolute;inset:0;
   background-size:cover;background-position:center;
@@ -431,12 +495,18 @@ a{text-decoration:none}
   transition:opacity .4s ease, transform .6s ease;
   transform:scale(1.05);
 }
-.face-cell:hover .face-cell-bg{opacity:.92;transform:scale(1);}
+
+.face-cell:hover .face-cell-bg{
+  opacity:.92;
+  transform:scale(1);
+}
+
 .face-cell-overlay{
   position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(0,10,20,.05) 0%,rgba(0,10,20,.7) 85%);
   z-index:1;
 }
+
 .face-cell-name{
   position:relative;z-index:2;
   font-family:'Frank Ruhl Libre','Heebo',serif;
@@ -449,19 +519,23 @@ a{text-decoration:none}
   text-shadow:0 2px 8px rgba(0,0,0,.6);
   transition:color .3s ease, text-shadow .3s ease;
 }
+
 .face-cell:hover .face-cell-name{
   color:#88ffff;
   text-shadow:0 2px 12px rgba(0,200,255,.3), 0 2px 8px rgba(0,0,0,.6);
 }
+
 .face-cell-empty{
   background:rgba(0,12,24,.5);
   border-color:rgba(0,200,255,.05);
   cursor:default;
 }
+
 .face-cell-empty::after{
   content:'';position:absolute;inset:0;
   background:linear-gradient(135deg,rgba(0,40,80,.08),transparent);
 }
+
 .face-cell-empty:hover{
   transform:scale(1) translateZ(0)!important;
   border-color:rgba(0,200,255,.05);
@@ -480,21 +554,11 @@ a{text-decoration:none}
   transform:translateY(15px) scale(0.9);
   transition:opacity .4s ease .3s, transform .5s cubic-bezier(.22,.68,.36,1.05) .3s;
 }
+
 .cat-page.active .cat-title-label{
   opacity:1;
   transform:translateY(0) scale(1);
 }
-
-/* Stagger face cells */
-.face-cell:nth-child(1){transition-delay:.08s}
-.face-cell:nth-child(2){transition-delay:.13s}
-.face-cell:nth-child(3){transition-delay:.18s}
-.face-cell:nth-child(4){transition-delay:.22s}
-.face-cell:nth-child(5){transition-delay:.26s}
-.face-cell:nth-child(6){transition-delay:.30s}
-.face-cell:nth-child(7){transition-delay:.34s}
-.face-cell:nth-child(8){transition-delay:.38s}
-.face-cell:nth-child(9){transition-delay:.42s}
 
 /* Cube face indicator dots */
 .face-indicator{
@@ -503,7 +567,11 @@ a{text-decoration:none}
   opacity:0;
   transition:opacity .4s ease .5s;
 }
-.cat-page.active .face-indicator{opacity:1;}
+
+.cat-page.active .face-indicator{
+  opacity:1;
+}
+
 .face-dot{
   width:8px;height:8px;border-radius:50%;
   background:rgba(0,200,255,.15);
@@ -511,12 +579,14 @@ a{text-decoration:none}
   transition:background .3s, border-color .3s, transform .3s, box-shadow .3s;
   cursor:pointer;
 }
+
 .face-dot.active{
   background:rgba(0,200,255,.5);
   border-color:rgba(0,220,255,.7);
   transform:scale(1.3);
   box-shadow:0 0 8px rgba(0,200,255,.3);
 }
+
 .face-dot:hover:not(.active){
   background:rgba(0,200,255,.25);
   border-color:rgba(0,200,255,.4);
@@ -527,6 +597,7 @@ a{text-decoration:none}
   0%{transform:translate(0,0) scale(1);opacity:.8;}
   100%{transform:translate(var(--px),var(--py)) scale(0);opacity:0;}
 }
+
 .grid-particle{
   position:absolute;
   width:4px;height:4px;border-radius:50%;
@@ -535,22 +606,49 @@ a{text-decoration:none}
   animation:particleBurst .7s ease-out forwards;
 }
 
+/* Immersive vignette when in cube tour */
+.cat-page.cube-tour::before{
+  content:'';position:fixed;inset:0;z-index:9;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.35) 100%);
+  pointer-events:none;
+  opacity:1;
+}
+
 /* Responsive */
 @media(max-width:768px){
-  .face-grid-scene{
+  .face-grid-3d{
     width:min(92vw,340px);
   }
-  .face-grid-front,.face-grid-back{gap:3px;}
-  .cat-page.active .face-grid-scene{
-    transform:scale(1) rotateX(3deg) rotateY(-1deg);
+  .face-grid-face{
+    gap:3px;
   }
-  .face-cell-name{font-size:.9rem;padding:7px 4px;}
-  .cat-back{top:12px;padding:8px 20px;font-size:1.1rem;}
-  .cat-title-label{font-size:1.6rem;margin-bottom:.6rem;}
-  .cube-wall--top,.cube-wall--bottom{height:18%;}
-  .cube-wall--left,.cube-wall--right{width:12%;}
-  .face-dot{width:7px;height:7px;}
-  .face-indicator{gap:6px;margin-top:8px;}
+  .face-cell-name{
+    font-size:.9rem;
+    padding:7px 4px;
+  }
+  .cat-back{
+    top:12px;
+    padding:8px 20px;
+    font-size:1.1rem;
+  }
+  .cat-title-label{
+    font-size:1.6rem;
+    margin-bottom:.6rem;
+  }
+  .cube-wall--top,.cube-wall--bottom{
+    height:18%;
+  }
+  .cube-wall--left,.cube-wall--right{
+    width:12%;
+  }
+  .face-dot{
+    width:7px;
+    height:7px;
+  }
+  .face-indicator{
+    gap:6px;
+    margin-top:8px;
+  }
 }
 </style>
 </head>
@@ -595,11 +693,10 @@ a{text-decoration:none}
     </div>
     <button class="cat-back" id="catBack">✕ חזרה</button>
     <div class="cat-title-label" id="catTitleLabel"></div>
-    <div class="face-grid-scene" id="faceGridScene">
-      <div class="face-grid-flipper" id="faceGridFlipper">
-        <div class="face-grid-front face-grid" id="faceGridFront"></div>
-        <div class="face-grid-back face-grid" id="faceGridBack"></div>
-      </div>
+    <div class="morph-container" id="morphContainer"></div>
+    <div class="face-grid-3d" id="faceGrid3d">
+      <div class="face-grid-face face-grid-face--front" id="gridFaceFront"></div>
+      <div class="face-grid-face face-grid-face--back" id="gridFaceBack"></div>
     </div>
     <div class="face-indicator" id="faceIndicator"></div>
   </div>
@@ -1003,16 +1100,16 @@ var HERO_IMGS=[
   });
 })();
 
-// === Category Page Navigation — 3D Face Zoom + Flip ===
+// === Category Page Navigation — Cube Face Morph ===
 (function(){
   var catPage=document.getElementById('catPage');
   var catTitleLabel=document.getElementById('catTitleLabel');
-  var gridFront=document.getElementById('faceGridFront');
-  var gridBack=document.getElementById('faceGridBack');
-  var flipper=document.getElementById('faceGridFlipper');
+  var morphContainer=document.getElementById('morphContainer');
+  var faceGrid3d=document.getElementById('faceGrid3d');
+  var gridFront=document.getElementById('gridFaceFront');
+  var gridBack=document.getElementById('gridFaceBack');
   var indicator=document.getElementById('faceIndicator');
   var catBack=document.getElementById('catBack');
-  var wrap=document.querySelector('.cube-wrap');
   var cats=document.getElementById('cubeCategories');
   var catItems=document.querySelectorAll('.cat-item');
   var hubCenter=document.querySelector('.hub-center');
@@ -1034,9 +1131,9 @@ var HERO_IMGS=[
   };
 
   var currentCat=null;
-  var flyClones=[];
+  var morphClones=[];
   var isFlipping=false;
-  var flipCount=0; // Track total flips for alternating direction
+  var flyClones=[];
 
   // Build 3x3 grid content into a target element
   function buildGrid(target,data){
@@ -1092,12 +1189,13 @@ var HERO_IMGS=[
     });
   }
 
-  // Spawn particle burst at grid center
+  // Spawn particle burst
   function spawnParticles(){
-    var scene=document.getElementById('faceGridScene');
-    if(!scene)return;
-    var rect=scene.getBoundingClientRect();
-    var cx=rect.width/2, cy=rect.height/2;
+    var grid=faceGrid3d;
+    if(!grid)return;
+    var rect=grid.getBoundingClientRect();
+    var cx=rect.left+rect.width/2;
+    var cy=rect.top+rect.height/2;
     for(var i=0;i<16;i++){
       var p=document.createElement('div');
       p.className='grid-particle';
@@ -1108,131 +1206,179 @@ var HERO_IMGS=[
         'animation-delay:'+(Math.random()*0.15)+'s;'+
         'width:'+(3+Math.random()*4)+'px;height:'+(3+Math.random()*4)+'px;'+
         'background:rgba('+(Math.random()>0.5?'0,200,255':'100,220,255')+','+(0.4+Math.random()*0.4)+');';
-      scene.appendChild(p);
+      document.body.appendChild(p);
       (function(el){setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},900);})(p);
     }
   }
 
-  // Fly cubies to edges as fixed-position clones
-  function flyCubiesToEdges(onlyNonBottom){
+  // Create morph clones from bottom face cubies
+  function createMorphClones(data){
+    morphClones.forEach(function(c){if(c.parentNode)c.parentNode.removeChild(c);});
+    morphClones=[];
+
     var cubies=window._cubies||[];
-    var vw=window.innerWidth, vh=window.innerHeight;
-    var targets=[
-      {x:-80,y:-80},{x:vw/2,y:-100},{x:vw+80,y:-80},
-      {x:vw+100,y:vh/2},{x:vw+80,y:vh+80},{x:vw/2,y:vh+100},
-      {x:-80,y:vh+80},{x:-100,y:vh/2}
-    ];
+    var bottomCubies=cubies.filter(function(c){return c.face==='bottom';});
+    var imgs=window._heroImgs||[];
 
-    flyClones.forEach(function(cl){if(cl.parentNode)cl.parentNode.removeChild(cl);});
-    flyClones=[];
+    // Calculate grid target positions
+    var cellSize=Math.min(window.innerWidth*0.26,135);
+    var gap=5;
+    var totalWidth=3*cellSize+2*gap;
+    var totalHeight=3*cellSize+2*gap;
+    var gridLeft=(window.innerWidth-totalWidth)/2;
+    var gridTop=(window.innerHeight-totalHeight)/2;
 
-    var filtered=onlyNonBottom?cubies.filter(function(c){return c.face!=='bottom';}):cubies;
-    var bottomCubies=onlyNonBottom?cubies.filter(function(c){return c.face==='bottom';}):[];
+    bottomCubies.forEach(function(cubie,idx){
+      var rect=cubie.el.getBoundingClientRect();
+      var startLeft=rect.left;
+      var startTop=rect.top;
+      var startWidth=rect.width;
+      var startHeight=rect.height;
 
-    // Bottom face cubies: zoom forward and fade out (they become the grid)
-    bottomCubies.forEach(function(c,idx){
-      c.el.style.transition='transform .5s cubic-bezier(.22,.68,.36,1.05) '+(idx*20)+'ms, opacity .35s ease '+(idx*20)+'ms';
-      c.el.style.transform=c._savedTransform+' scale(2.5) translateZ(200px)';
-      c.el.style.opacity='0';
-    });
+      // Calculate target position in grid
+      var row=Math.floor(idx/3);
+      var col=idx%3;
+      var targetLeft=gridLeft+col*(cellSize+gap);
+      var targetTop=gridTop+row*(cellSize+gap);
 
-    // Other cubies: fly to edges via clones
-    filtered.forEach(function(c,idx){
-      var rect=c.el.getBoundingClientRect();
-      var cx=rect.left+rect.width/2;
-      var cy=rect.top+rect.height/2;
-      var sz=Math.max(rect.width,rect.height)||56;
-
+      // Create clone
       var clone=document.createElement('div');
-      clone.style.cssText='position:fixed;z-index:6;width:'+sz+'px;height:'+sz+'px;'+
-        'left:'+cx+'px;top:'+cy+'px;transform:translate(-50%,-50%);'+
-        'background:linear-gradient(135deg,rgba(0,100,180,.2),rgba(0,200,255,.1));'+
-        'border:1px solid rgba(0,200,255,.18);border-radius:4px;pointer-events:none;'+
-        'transition:left .55s cubic-bezier(.23,.73,.35,1), top .55s cubic-bezier(.23,.73,.35,1), '+
-        'opacity .4s ease, transform .55s ease;';
-      document.body.appendChild(clone);
-      flyClones.push(clone);
+      clone.className='morph-clone';
+      clone.style.left=startLeft+'px';
+      clone.style.top=startTop+'px';
+      clone.style.width=startWidth+'px';
+      clone.style.height=startHeight+'px';
+      clone.style.transitionDelay=(idx*40)+'ms';
 
-      c.el.style.transition='opacity .12s ease';
-      c.el.style.opacity='0';
+      // Inner cubie visual
+      var cubieDom=document.createElement('div');
+      cubieDom.className='morph-cubie';
+      clone.appendChild(cubieDom);
 
-      var target=targets[idx%targets.length];
-      var jx=(Math.random()-0.5)*120;
-      var jy=(Math.random()-0.5)*120;
-      var rot=(Math.random()-0.5)*120;
-      var delay=idx*14;
+      // Inner card visual
+      var cardDom=document.createElement('div');
+      cardDom.className='morph-card';
 
-      setTimeout(function(){
-        clone.style.left=(target.x+jx)+'px';
-        clone.style.top=(target.y+jy)+'px';
-        clone.style.opacity='0';
-        clone.style.transform='translate(-50%,-50%) rotate('+rot+'deg) scale(0.3)';
-      },delay+15);
+      // Card background image
+      var cardBg=document.createElement('div');
+      cardBg.className='morph-card-bg';
+      if(imgs.length>0){
+        cardBg.style.backgroundImage='url('+imgs[idx%imgs.length]+')';
+      } else {
+        cardBg.style.background=ARTIST_GRADIENTS[idx%ARTIST_GRADIENTS.length];
+      }
+      cardDom.appendChild(cardBg);
+
+      // Card overlay
+      var cardOv=document.createElement('div');
+      cardOv.className='morph-card-overlay';
+      cardDom.appendChild(cardOv);
+
+      // Card name
+      var cardName=document.createElement('div');
+      cardName.className='morph-card-name';
+      cardName.textContent=data.names[idx]||'';
+      cardDom.appendChild(cardName);
+
+      clone.appendChild(cardDom);
+      morphContainer.appendChild(clone);
+      morphClones.push(clone);
+
+      // Hide original cubie
+      cubie.el.style.opacity='0';
     });
-  }
 
-  // Return clones to cube and show cubies in exploded positions
-  function flyClonesToExploded(){
-    var cubies=window._cubies||[];
-
-    // First, immediately restore bottom cubies to their exploded transforms
+    // Hide non-bottom cubies
     cubies.forEach(function(c){
-      if(c.face==='bottom' && c._savedTransform){
-        c.el.style.transition='opacity .4s ease, transform .4s ease';
-        c.el.style.transform=c._savedTransform;
-        c.el.style.opacity='1';
+      if(c.face!=='bottom'){
+        c.el.style.transition='opacity .4s ease';
+        c.el.style.opacity='0';
       }
     });
 
-    // Fly non-bottom clones back to their cubie positions
-    var cloneIdx=0;
-    cubies.forEach(function(c){
-      if(c.face==='bottom') return; // bottom cubies handled above
-      var clone=flyClones[cloneIdx];
-      cloneIdx++;
-      if(!clone) return;
+    // Trigger animation after next frame
+    setTimeout(function(){
+      morphClones.forEach(function(clone,idx){
+        var row=Math.floor(idx/3);
+        var col=idx%3;
+        var cellSize=Math.min(window.innerWidth*0.26,135);
+        var gap=5;
+        var totalWidth=3*cellSize+2*gap;
+        var gridLeft=(window.innerWidth-totalWidth)/2;
+        var gridTop=(window.innerHeight-totalHeight)/2;
 
-      var rect=c.el.getBoundingClientRect();
-      var cx=rect.left+rect.width/2;
-      var cy=rect.top+rect.height/2;
-      var delay=cloneIdx*8;
-      clone.style.transition='left .4s cubic-bezier(.25,.46,.45,.94) '+delay+'ms, '+
-        'top .4s cubic-bezier(.25,.46,.45,.94) '+delay+'ms, '+
-        'opacity .3s ease '+delay+'ms, transform .4s ease '+delay+'ms';
-      clone.style.left=cx+'px';
-      clone.style.top=cy+'px';
-      clone.style.opacity='0.6';
-      clone.style.transform='translate(-50%,-50%) rotate(0deg) scale(1)';
+        clone.style.left=(gridLeft+col*(cellSize+gap))+'px';
+        clone.style.top=(gridTop+row*(cellSize+gap))+'px';
+        clone.style.width=cellSize+'px';
+        clone.style.height=cellSize+'px';
+
+        // Schedule crossfade
+        setTimeout(function(){
+          var cubie=clone.querySelector('.morph-cubie');
+          var card=clone.querySelector('.morph-card');
+          if(cubie) cubie.style.opacity='0';
+          if(card) card.style.opacity='1';
+        },200);
+      });
+    },20);
+  }
+
+  // Reverse morph: animate clones back to cubie positions
+  function reverseMorphClones(){
+    var cubies=window._cubies||[];
+    var bottomCubies=cubies.filter(function(c){return c.face==='bottom';});
+
+    morphClones.forEach(function(clone,idx){
+      var cubie=bottomCubies[idx];
+      if(!cubie)return;
+
+      var rect=cubie.el.getBoundingClientRect();
+      clone.style.transitionDelay=(idx*30)+'ms';
+      clone.style.left=rect.left+'px';
+      clone.style.top=rect.top+'px';
+      clone.style.width=rect.width+'px';
+      clone.style.height=rect.height+'px';
+      clone.style.borderRadius='6px';
+
+      // Crossfade back
+      var cubieDom=clone.querySelector('.morph-cubie');
+      var cardDom=clone.querySelector('.morph-card');
+      if(cubieDom) cubieDom.style.opacity='1';
+      if(cardDom) cardDom.style.opacity='0';
     });
 
     setTimeout(function(){
-      // Show all cubies in their exploded positions
+      // Restore bottom cubies and clean up clones
       cubies.forEach(function(c){
-        if(c._savedTransform){
-          c.el.style.transition='opacity .25s ease, transform .3s ease';
+        if(c.face==='bottom' && c._savedTransform){
+          c.el.style.transition='opacity .4s ease, transform .4s ease';
           c.el.style.transform=c._savedTransform;
+          c.el.style.opacity='1';
         }
-        c.el.style.opacity='1';
       });
+
+      // Show non-bottom cubies
+      cubies.forEach(function(c){
+        if(c.face!=='bottom' && c._savedTransform){
+          c.el.style.transition='opacity .4s ease';
+          c.el.style.opacity='1';
+        }
+      });
+
       setTimeout(function(){
-        flyClones.forEach(function(cl){if(cl.parentNode)cl.parentNode.removeChild(cl);});
-        flyClones=[];
-      },300);
-    },450);
+        morphClones.forEach(function(c){if(c.parentNode)c.parentNode.removeChild(c);});
+        morphClones=[];
+      },400);
+    },300);
   }
 
-  // ===== Open Category: zoom into bottom face =====
+  // === Open Category ===
   function openCategory(catKey){
     var data=CAT_DATA[catKey];
     if(!data)return;
     currentCat=catKey;
-    flipCount=0;
 
-    // Reset flipper state
-    flipper.classList.remove('flipping','flip-vertical');
-    flipper.style.transform='';
-
-    // Build grid on front face
+    // Build grid on front face (for later)
     buildGrid(gridFront,data);
     gridBack.innerHTML='';
     catTitleLabel.textContent=data.title;
@@ -1247,48 +1393,32 @@ var HERO_IMGS=[
     if(hint) hint.style.display='none';
     hubCenter.style.pointerEvents='none';
 
-    // Bottom cubies zoom forward, others fly to edges
-    flyCubiesToEdges(true);
+    // Create and animate morph clones
+    createMorphClones(data);
 
-    // Show grid quickly after cubies start moving
+    // Activate cat page with immersive effect
     setTimeout(function(){
-      spawnParticles();
       catPage.classList.add('active');
+      catPage.classList.add('cube-tour');
+      spawnParticles();
     },120);
   }
 
-  // ===== Switch Category: 3D flip to new face =====
+  // === Switch Category ===
   function switchCategory(newCatKey){
     if(isFlipping || newCatKey===currentCat)return;
     var data=CAT_DATA[newCatKey];
     if(!data)return;
     isFlipping=true;
-    flipCount++;
 
-    var currentIdx=CAT_KEYS.indexOf(currentCat);
-    var newIdx=CAT_KEYS.indexOf(newCatKey);
-    var goRight=(newIdx>currentIdx);
+    // Hide morph clones
+    morphClones.forEach(function(c){c.style.opacity='0';});
 
-    // Always: build new content on back face, flip 180, then reset
+    // Build new content on back face
     buildGrid(gridBack,data);
 
-    // Ensure back face is positioned correctly
-    gridBack.style.transform='rotateY(180deg)';
-    gridFront.style.transform='';
-
-    // Determine flip axis — alternate for variety
-    var useVertical=(flipCount%3===0);
-    var flipDeg=goRight?180:-180;
-
-    // Trigger the flip
-    flipper.style.transition='transform .7s cubic-bezier(.4,.0,.2,1)';
-    if(useVertical){
-      gridBack.style.transform='rotateX(180deg)';
-      flipper.style.transform='rotateX('+flipDeg+'deg)';
-    } else {
-      gridBack.style.transform='rotateY(180deg)';
-      flipper.style.transform='rotateY('+flipDeg+'deg)';
-    }
+    // Add flip class
+    faceGrid3d.classList.add('flipping');
 
     // Crossfade title
     catTitleLabel.style.transition='opacity .15s ease';
@@ -1303,63 +1433,38 @@ var HERO_IMGS=[
     buildIndicator(newCatKey);
     setTimeout(function(){spawnParticles();},150);
 
-    // After flip completes: move back content to front, reset flipper
+    // After flip completes
     setTimeout(function(){
       isFlipping=false;
-      // Swap content: back→front
+      // Swap: back→front
       gridFront.innerHTML=gridBack.innerHTML;
       gridBack.innerHTML='';
-      // Reset transforms instantly
-      flipper.style.transition='none';
-      flipper.style.transform='';
-      gridFront.style.transform='';
-      gridBack.style.transform='rotateY(180deg)';
-      flipper.offsetHeight; // force reflow
-      // Ensure cells are visible
-      var cells=gridFront.querySelectorAll('.face-cell');
-      cells.forEach(function(c){c.style.opacity='1';c.style.transform='scale(1) translateZ(0)';});
+      // Reset flip
+      faceGrid3d.classList.remove('flipping');
     },750);
   }
 
-  // ===== Close Category: reverse zoom, return to exploded cube =====
+  // === Close Category ===
   function closeCategory(){
     if(!currentCat)return;
     currentCat=null;
-    isFlipping=false;
-    flipCount=0;
 
-    // Fade out the category page
+    // Fade out category page
     catPage.classList.remove('active');
+    catPage.classList.remove('cube-tour');
 
-    // Immediately start restoring ALL cubies to their exploded positions
-    var cubies=window._cubies||[];
-    cubies.forEach(function(c){
-      if(c._savedTransform){
-        c.el.style.transition='opacity .35s ease, transform .4s ease';
-        c.el.style.transform=c._savedTransform;
-        c.el.style.opacity='1';
-      }
-    });
-
-    // Clean up clones
-    flyClones.forEach(function(cl){
-      if(cl.parentNode) cl.parentNode.removeChild(cl);
-    });
-    flyClones=[];
+    // Reverse morph animation
+    reverseMorphClones();
 
     hubCenter.style.pointerEvents='';
 
-    // Show categories after a short delay
+    // Restore UI
     setTimeout(function(){
       cats.classList.add('visible');
       var hint=document.getElementById('clickHint');
       if(hint) hint.style.display='none';
-      // Reset flipper
-      flipper.style.transition='none';
-      flipper.style.transform='';
       gridFront.innerHTML='';
       gridBack.innerHTML='';
-      gridBack.style.transform='rotateY(180deg)';
     },400);
   }
 
@@ -1370,7 +1475,6 @@ var HERO_IMGS=[
       e.stopPropagation();
       var catKey=item.getAttribute('data-cat');
       if(currentCat && currentCat!==catKey){
-        // Already in a category — flip to new one
         switchCategory(catKey);
       } else if(!currentCat){
         openCategory(catKey);
@@ -1385,7 +1489,7 @@ var HERO_IMGS=[
     closeCategory();
   });
 
-  // Swipe gesture support for mobile — swipe left/right to switch categories
+  // Swipe gesture support
   (function(){
     var startX=0,startY=0,startTime=0;
     catPage.addEventListener('touchstart',function(e){
@@ -1399,9 +1503,8 @@ var HERO_IMGS=[
       var dy=e.changedTouches[0].clientY-startY;
       var dt=Date.now()-startTime;
       if(dt>500||Math.abs(dx)<50)return;
-      if(Math.abs(dy)>Math.abs(dx))return; // vertical swipe
+      if(Math.abs(dy)>Math.abs(dx))return;
       var idx=CAT_KEYS.indexOf(currentCat);
-      // RTL: swipe left = next, swipe right = prev
       var nextIdx=(dx<0)?(idx+1)%CAT_KEYS.length:(idx-1+CAT_KEYS.length)%CAT_KEYS.length;
       switchCategory(CAT_KEYS[nextIdx]);
     },{passive:true});
