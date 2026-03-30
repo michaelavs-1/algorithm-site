@@ -338,43 +338,125 @@ a{text-decoration:none}
   border-color:rgba(0,220,255,.6);
 }
 
-/* ========== Cube Face Morph System ========== */
+/* ========== POV Camera Dive System ========== */
 
-/* Morph clones: fixed-position elements that animate from cube to grid */
-.morph-clone{
-  position:fixed;z-index:10;
-  transform-origin:center center;
-  transition:left .6s cubic-bezier(.22,.68,.36,1), top .6s cubic-bezier(.22,.68,.36,1),
-             width .6s cubic-bezier(.22,.68,.36,1), height .6s cubic-bezier(.22,.68,.36,1),
-             border-radius .6s ease, opacity .6s ease;
-  border-radius:6px;
-  overflow:hidden;
+/* Container for camera dive effect */
+.pov-camera-scene{
+  position:fixed;z-index:10;inset:0;
+  perspective:1200px;
+  display:none;
 }
 
-/* Inner cubie visual — fades out as card fades in */
-.morph-cubie{
+.pov-camera-scene.active{
+  display:block;
+}
+
+/* The cube being entered (positioned in 3D space) */
+.pov-cube-container{
+  position:absolute;
+  left:50%;top:50%;
+  transform-style:preserve-3d;
+  transform:translateX(-50%) translateY(-50%) translateZ(0);
+  transition:transform 1.2s cubic-bezier(.25,.46,.45,.94);
+  width:180px;height:180px;
+}
+
+.pov-cube-container.diving{
+  transform:translateX(-50%) translateY(-50%) translateZ(800px) rotateX(-70deg) rotateY(0deg);
+}
+
+/* Inner face container for rotating to bottom face */
+.pov-cube-inner{
+  position:absolute;
+  inset:0;
+  transform-style:preserve-3d;
+  transform:rotateX(0deg);
+  transition:transform 1s cubic-bezier(.25,.46,.45,.94) .1s;
+  width:100%;height:100%;
+}
+
+.pov-cube-container.diving .pov-cube-inner{
+  transform:rotateX(90deg);
+}
+
+/* Bottom face cubies clones — 3x3 grid inside the dive */
+.pov-cubie-clone{
+  position:absolute;
+  width:56px;height:56px;
+  border-radius:4px;
+  border:1px solid rgba(0,200,255,.4);
+  background:linear-gradient(135deg,#00e5ff 0%,#0088bb 100%);
+  transform-style:preserve-3d;
+  transition:transform .6s cubic-bezier(.22,.68,.36,1), opacity .5s ease;
+  opacity:1;
+}
+
+/* Positioned in 3D grid layout (matching cube grid) */
+.pov-cubie-clone[data-gx="-1"][data-gy="-1"]{
+  left:0;top:0;
+}
+.pov-cubie-clone[data-gx="0"][data-gy="-1"]{
+  left:calc(50% - 28px);top:0;
+}
+.pov-cubie-clone[data-gx="1"][data-gy="-1"]{
+  right:0;top:0;
+}
+.pov-cubie-clone[data-gx="-1"][data-gy="0"]{
+  left:0;top:calc(50% - 28px);
+}
+.pov-cubie-clone[data-gx="0"][data-gy="0"]{
+  left:calc(50% - 28px);top:calc(50% - 28px);
+}
+.pov-cubie-clone[data-gx="1"][data-gy="0"]{
+  right:0;top:calc(50% - 28px);
+}
+.pov-cubie-clone[data-gx="-1"][data-gy="1"]{
+  left:0;bottom:0;
+}
+.pov-cubie-clone[data-gx="0"][data-gy="1"]{
+  left:calc(50% - 28px);bottom:0;
+}
+.pov-cubie-clone[data-gx="1"][data-gy="1"]{
+  right:0;bottom:0;
+}
+
+/* Cards spread out after dive */
+.pov-cube-container.landed .pov-cubie-clone{
+  width:120px;height:120px;
+  transform:translateZ(120px) scale(1);
+}
+
+/* Cubie visual inner */
+.pov-cubie-visual{
   position:absolute;inset:0;
-  background:linear-gradient(135deg,#00e5ff,#0088bb);
-  border:1px solid rgba(0,200,255,.3);
+  background:linear-gradient(135deg,rgba(0,200,255,.8) 0%,rgba(0,100,150,.6) 100%);
   border-radius:4px;
   opacity:1;
-  transition:opacity .4s ease;
-  transition-delay:.15s;
+  transition:opacity .4s ease .2s;
 }
 
-/* Inner card — fades in as cubie fades out */
-.morph-card{
+.pov-cube-container.landed .pov-cubie-visual{
+  opacity:0;
+}
+
+/* Card inner (morphs from cubie) */
+.pov-cubie-card{
   position:absolute;inset:0;
   border-radius:4px;
   overflow:hidden;
   opacity:0;
-  transition:opacity .4s ease;
-  transition-delay:.15s;
+  transition:opacity .4s ease .2s;
   display:flex;flex-direction:column;
   align-items:center;justify-content:flex-end;
+  background:rgba(0,20,40,.8);
+  border:1px solid rgba(0,200,255,.25);
 }
 
-.morph-card-bg{
+.pov-cube-container.landed .pov-cubie-card{
+  opacity:1;
+}
+
+.pov-card-bg{
   position:absolute;inset:0;
   background-size:cover;background-position:center;
   opacity:.72;
@@ -382,41 +464,32 @@ a{text-decoration:none}
   transform:scale(1.05);
 }
 
-.morph-card:hover .morph-card-bg{
+.pov-cubie-card:hover .pov-card-bg{
   opacity:.92;
   transform:scale(1);
 }
 
-.morph-card-overlay{
+.pov-card-overlay{
   position:absolute;inset:0;
   background:linear-gradient(180deg,rgba(0,10,20,.05) 0%,rgba(0,10,20,.7) 85%);
   z-index:1;
 }
 
-.morph-card-name{
+.pov-card-name{
   position:relative;z-index:2;
   font-family:'Frank Ruhl Libre','Heebo',serif;
   font-weight:700;
-  font-size:1.15rem;
+  font-size:1rem;
   color:#e4eaf0;
   text-align:center;
-  padding:10px 6px;
+  padding:8px 4px;
   width:100%;
   text-shadow:0 2px 8px rgba(0,0,0,.6);
+  transition:color .3s ease;
 }
 
-/* Target grid (invisible reference) */
-.morph-grid-target{
-  position:absolute;
-  width:100%;height:100%;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:5px;
-  pointer-events:none;
-}
-
-.morph-grid-target-cell{
-  position:relative;
+.pov-cubie-card:hover .pov-card-name{
+  color:#88ffff;
 }
 
 /* 3D Grid container — used for switching categories */
@@ -1100,11 +1173,10 @@ var HERO_IMGS=[
   });
 })();
 
-// === Category Page Navigation — Cube Face Morph ===
+// === POV Camera Dive Navigation ===
 (function(){
   var catPage=document.getElementById('catPage');
   var catTitleLabel=document.getElementById('catTitleLabel');
-  var morphContainer=document.getElementById('morphContainer');
   var faceGrid3d=document.getElementById('faceGrid3d');
   var gridFront=document.getElementById('gridFaceFront');
   var gridBack=document.getElementById('gridFaceBack');
@@ -1131,11 +1203,114 @@ var HERO_IMGS=[
   };
 
   var currentCat=null;
-  var morphClones=[];
-  var isFlipping=false;
-  var flyClones=[];
+  var povScene=null;
+  var povCubeContainer=null;
+  var povCubies=[];
+  var isAnimating=false;
 
-  // Build 3x3 grid content into a target element
+  // Create POV camera dive scene
+  function createPovScene(){
+    if(povScene) return povScene;
+
+    povScene=document.createElement('div');
+    povScene.className='pov-camera-scene';
+    povScene.id='povScene';
+
+    povCubeContainer=document.createElement('div');
+    povCubeContainer.className='pov-cube-container';
+
+    var povCubeInner=document.createElement('div');
+    povCubeInner.className='pov-cube-inner';
+    povCubeContainer.appendChild(povCubeInner);
+    povScene.appendChild(povCubeContainer);
+
+    return povScene;
+  }
+
+  // Create cubie clones for POV dive
+  function createPovCubies(data){
+    if(!povScene) return;
+
+    povCubies.forEach(function(c){if(c.parentNode)c.parentNode.removeChild(c);});
+    povCubies=[];
+
+    var cubies=window._cubies||[];
+    var bottomCubies=cubies.filter(function(c){return c.face==='bottom';});
+    var imgs=window._heroImgs||[];
+    var povCubeInner=povCubeContainer.querySelector('.pov-cube-inner');
+
+    bottomCubies.forEach(function(cubie,idx){
+      var gx=cubie.gx;
+      var gy=cubie.gy;
+
+      var clone=document.createElement('div');
+      clone.className='pov-cubie-clone';
+      clone.setAttribute('data-gx',gx);
+      clone.setAttribute('data-gy',gy);
+      clone.setAttribute('data-idx',idx);
+
+      // Visual cubie
+      var visual=document.createElement('div');
+      visual.className='pov-cubie-visual';
+      clone.appendChild(visual);
+
+      // Card
+      var card=document.createElement('div');
+      card.className='pov-cubie-card';
+
+      var bg=document.createElement('div');
+      bg.className='pov-card-bg';
+      if(imgs.length>0){
+        bg.style.backgroundImage='url('+imgs[idx%imgs.length]+')';
+      } else {
+        bg.style.background=ARTIST_GRADIENTS[idx%ARTIST_GRADIENTS.length];
+      }
+      card.appendChild(bg);
+
+      var ov=document.createElement('div');
+      ov.className='pov-card-overlay';
+      card.appendChild(ov);
+
+      var nm=document.createElement('div');
+      nm.className='pov-card-name';
+      nm.textContent=data.names[idx]||'';
+      card.appendChild(nm);
+
+      clone.appendChild(card);
+      povCubeInner.appendChild(clone);
+      povCubies.push(clone);
+
+      // Hide original cubie
+      cubie.el.style.opacity='0';
+    });
+
+    // Hide non-bottom cubies
+    cubies.forEach(function(c){
+      if(c.face!=='bottom'){
+        c.el.style.transition='opacity .4s ease';
+        c.el.style.opacity='0';
+      }
+    });
+  }
+
+  // Build face indicator dots
+  function buildIndicator(activeCat){
+    indicator.innerHTML='';
+    CAT_KEYS.forEach(function(key){
+      var dot=document.createElement('div');
+      dot.className='face-dot'+(key===activeCat?' active':'');
+      dot.setAttribute('data-cat',key);
+      dot.addEventListener('click',function(e){
+        e.stopPropagation();
+        if(key!==currentCat && !isAnimating){
+          switchCategory(key);
+        }
+      });
+      indicator.appendChild(dot);
+    });
+  }
+
+  // Build grid for 2D view (fallback for category switching)
   function buildGrid(target,data){
     target.innerHTML='';
     var imgs=window._heroImgs||[];
@@ -1172,251 +1347,64 @@ var HERO_IMGS=[
     }
   }
 
-  // Build face indicator dots
-  function buildIndicator(activeCat){
-    indicator.innerHTML='';
-    CAT_KEYS.forEach(function(key){
-      var dot=document.createElement('div');
-      dot.className='face-dot'+(key===activeCat?' active':'');
-      dot.setAttribute('data-cat',key);
-      dot.addEventListener('click',function(e){
-        e.stopPropagation();
-        if(key!==currentCat && !isFlipping){
-          switchCategory(key);
-        }
-      });
-      indicator.appendChild(dot);
-    });
-  }
-
-  // Spawn particle burst
-  function spawnParticles(){
-    var grid=faceGrid3d;
-    if(!grid)return;
-    var rect=grid.getBoundingClientRect();
-    var cx=rect.left+rect.width/2;
-    var cy=rect.top+rect.height/2;
-    for(var i=0;i<16;i++){
-      var p=document.createElement('div');
-      p.className='grid-particle';
-      var angle=Math.random()*Math.PI*2;
-      var dist=80+Math.random()*120;
-      p.style.cssText='left:'+cx+'px;top:'+cy+'px;'+
-        '--px:'+(Math.cos(angle)*dist)+'px;--py:'+(Math.sin(angle)*dist)+'px;'+
-        'animation-delay:'+(Math.random()*0.15)+'s;'+
-        'width:'+(3+Math.random()*4)+'px;height:'+(3+Math.random()*4)+'px;'+
-        'background:rgba('+(Math.random()>0.5?'0,200,255':'100,220,255')+','+(0.4+Math.random()*0.4)+');';
-      document.body.appendChild(p);
-      (function(el){setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},900);})(p);
-    }
-  }
-
-  // Create morph clones from bottom face cubies
-  function createMorphClones(data){
-    morphClones.forEach(function(c){if(c.parentNode)c.parentNode.removeChild(c);});
-    morphClones=[];
-
-    var cubies=window._cubies||[];
-    var bottomCubies=cubies.filter(function(c){return c.face==='bottom';});
-    var imgs=window._heroImgs||[];
-
-    // Calculate grid target positions
-    var cellSize=Math.min(window.innerWidth*0.26,135);
-    var gap=5;
-    var totalWidth=3*cellSize+2*gap;
-    var totalHeight=3*cellSize+2*gap;
-    var gridLeft=(window.innerWidth-totalWidth)/2;
-    var gridTop=(window.innerHeight-totalHeight)/2;
-
-    bottomCubies.forEach(function(cubie,idx){
-      var rect=cubie.el.getBoundingClientRect();
-      var startLeft=rect.left;
-      var startTop=rect.top;
-      var startWidth=rect.width;
-      var startHeight=rect.height;
-
-      // Calculate target position in grid
-      var row=Math.floor(idx/3);
-      var col=idx%3;
-      var targetLeft=gridLeft+col*(cellSize+gap);
-      var targetTop=gridTop+row*(cellSize+gap);
-
-      // Create clone
-      var clone=document.createElement('div');
-      clone.className='morph-clone';
-      clone.style.left=startLeft+'px';
-      clone.style.top=startTop+'px';
-      clone.style.width=startWidth+'px';
-      clone.style.height=startHeight+'px';
-      clone.style.transitionDelay=(idx*40)+'ms';
-
-      // Inner cubie visual
-      var cubieDom=document.createElement('div');
-      cubieDom.className='morph-cubie';
-      clone.appendChild(cubieDom);
-
-      // Inner card visual
-      var cardDom=document.createElement('div');
-      cardDom.className='morph-card';
-
-      // Card background image
-      var cardBg=document.createElement('div');
-      cardBg.className='morph-card-bg';
-      if(imgs.length>0){
-        cardBg.style.backgroundImage='url('+imgs[idx%imgs.length]+')';
-      } else {
-        cardBg.style.background=ARTIST_GRADIENTS[idx%ARTIST_GRADIENTS.length];
-      }
-      cardDom.appendChild(cardBg);
-
-      // Card overlay
-      var cardOv=document.createElement('div');
-      cardOv.className='morph-card-overlay';
-      cardDom.appendChild(cardOv);
-
-      // Card name
-      var cardName=document.createElement('div');
-      cardName.className='morph-card-name';
-      cardName.textContent=data.names[idx]||'';
-      cardDom.appendChild(cardName);
-
-      clone.appendChild(cardDom);
-      morphContainer.appendChild(clone);
-      morphClones.push(clone);
-
-      // Hide original cubie
-      cubie.el.style.opacity='0';
-    });
-
-    // Hide non-bottom cubies
-    cubies.forEach(function(c){
-      if(c.face!=='bottom'){
-        c.el.style.transition='opacity .4s ease';
-        c.el.style.opacity='0';
-      }
-    });
-
-    // Trigger animation after next frame
-    setTimeout(function(){
-      morphClones.forEach(function(clone,idx){
-        var row=Math.floor(idx/3);
-        var col=idx%3;
-        var cellSize=Math.min(window.innerWidth*0.26,135);
-        var gap=5;
-        var totalWidth=3*cellSize+2*gap;
-        var gridLeft=(window.innerWidth-totalWidth)/2;
-        var gridTop=(window.innerHeight-totalHeight)/2;
-
-        clone.style.left=(gridLeft+col*(cellSize+gap))+'px';
-        clone.style.top=(gridTop+row*(cellSize+gap))+'px';
-        clone.style.width=cellSize+'px';
-        clone.style.height=cellSize+'px';
-
-        // Schedule crossfade
-        setTimeout(function(){
-          var cubie=clone.querySelector('.morph-cubie');
-          var card=clone.querySelector('.morph-card');
-          if(cubie) cubie.style.opacity='0';
-          if(card) card.style.opacity='1';
-        },200);
-      });
-    },20);
-  }
-
-  // Reverse morph: animate clones back to cubie positions
-  function reverseMorphClones(){
-    var cubies=window._cubies||[];
-    var bottomCubies=cubies.filter(function(c){return c.face==='bottom';});
-
-    morphClones.forEach(function(clone,idx){
-      var cubie=bottomCubies[idx];
-      if(!cubie)return;
-
-      var rect=cubie.el.getBoundingClientRect();
-      clone.style.transitionDelay=(idx*30)+'ms';
-      clone.style.left=rect.left+'px';
-      clone.style.top=rect.top+'px';
-      clone.style.width=rect.width+'px';
-      clone.style.height=rect.height+'px';
-      clone.style.borderRadius='6px';
-
-      // Crossfade back
-      var cubieDom=clone.querySelector('.morph-cubie');
-      var cardDom=clone.querySelector('.morph-card');
-      if(cubieDom) cubieDom.style.opacity='1';
-      if(cardDom) cardDom.style.opacity='0';
-    });
-
-    setTimeout(function(){
-      // Restore ALL cubies to their box-fold positions
-      cubies.forEach(function(c){
-        c.el.style.transition='opacity .4s ease, transform .4s ease';
-        if(c._boxFoldTransform){
-          c.el.style.transform=c._boxFoldTransform;
-        }
-        c.el.style.opacity='1';
-      });
-
-      setTimeout(function(){
-        morphClones.forEach(function(c){if(c.parentNode)c.parentNode.removeChild(c);});
-        morphClones=[];
-      },400);
-    },300);
-  }
-
-  // === Open Category ===
+  // === Open Category (POV Dive) ===
   function openCategory(catKey){
+    if(isAnimating) return;
+    isAnimating=true;
+
     var data=CAT_DATA[catKey];
     if(!data)return;
     currentCat=catKey;
 
-    // Build grid on front face (for later)
-    buildGrid(gridFront,data);
-    gridBack.innerHTML='';
-    catTitleLabel.textContent=data.title;
-    buildIndicator(catKey);
+    // Save box-fold state
+    var cubies=window._cubies||[];
+    cubies.forEach(function(c){
+      c._boxFoldTransform=c.el.style.transform;
+    });
 
     // Hide category arc
     cats.classList.remove('visible');
-
     var glow=document.querySelector('.cube-glow');
     var hint=document.getElementById('clickHint');
     if(glow) glow.style.opacity='0';
     if(hint) hint.style.display='none';
     hubCenter.style.pointerEvents='none';
 
-    // Save box-fold transforms for restoration on close
-    var cubies=window._cubies||[];
-    cubies.forEach(function(c){
-      c._boxFoldTransform=c.el.style.transform;
-    });
+    // Create POV scene
+    if(!povScene){
+      povScene=createPovScene();
+      document.body.appendChild(povScene);
+    }
 
-    // Create and animate morph clones
-    createMorphClones(data);
+    // Build POV cubies
+    createPovCubies(data);
 
-    // Activate cat page with immersive effect
+    // Setup title and indicator
+    catTitleLabel.textContent=data.title;
+    buildIndicator(catKey);
+
+    // Activate views
     setTimeout(function(){
+      povScene.classList.add('active');
       catPage.classList.add('active');
       catPage.classList.add('cube-tour');
-      spawnParticles();
-    },120);
+
+      // Start dive animation after layout settles
+      setTimeout(function(){
+        povCubeContainer.classList.add('diving');
+        povCubeContainer.classList.add('landed');
+        isAnimating=false;
+      },50);
+    },20);
   }
 
-  // === Switch Category ===
+  // === Switch Category (Flip animation) ===
   function switchCategory(newCatKey){
-    if(isFlipping || newCatKey===currentCat)return;
+    if(isAnimating || newCatKey===currentCat)return;
+
     var data=CAT_DATA[newCatKey];
     if(!data)return;
-    isFlipping=true;
-
-    // Hide morph clones
-    morphClones.forEach(function(c){c.style.opacity='0';});
-
-    // Build new content on back face
-    buildGrid(gridBack,data);
-
-    // Add flip class
-    faceGrid3d.classList.add('flipping');
+    isAnimating=true;
 
     // Crossfade title
     catTitleLabel.style.transition='opacity .15s ease';
@@ -1425,50 +1413,58 @@ var HERO_IMGS=[
       catTitleLabel.textContent=data.title;
       catTitleLabel.style.transition='opacity .2s ease';
       catTitleLabel.style.opacity='1';
-    },300);
+    },200);
+
+    // Update cubies
+    createPovCubies(data);
 
     currentCat=newCatKey;
     buildIndicator(newCatKey);
-    setTimeout(function(){spawnParticles();},150);
 
-    // After flip completes
     setTimeout(function(){
-      isFlipping=false;
-      // Swap: back→front
-      gridFront.innerHTML=gridBack.innerHTML;
-      gridBack.innerHTML='';
-      // Reset flip
-      faceGrid3d.classList.remove('flipping');
-    },750);
+      isAnimating=false;
+    },600);
   }
 
-  // === Close Category ===
+  // === Close Category (Reverse dive) ===
   function closeCategory(){
-    if(!currentCat)return;
+    if(!currentCat || isAnimating)return;
+    isAnimating=true;
     currentCat=null;
 
-    // Fade out category page
-    catPage.classList.remove('active');
-    catPage.classList.remove('cube-tour');
-
-    // Reverse morph animation
-    reverseMorphClones();
-
-    hubCenter.style.pointerEvents='';
-
-    // Restore exploded cube state and UI
-    var wrap=document.querySelector('.cube-wrap');
-    if(wrap) wrap.classList.add('exploded');
+    // Reverse dive
+    povCubeContainer.classList.remove('landed');
 
     setTimeout(function(){
-      cats.classList.add('visible');
-      var glow=document.querySelector('.cube-glow');
-      if(glow) glow.style.opacity='';
-      var hint=document.getElementById('clickHint');
-      if(hint) hint.style.display='none';
-      gridFront.innerHTML='';
-      gridBack.innerHTML='';
-    },400);
+      povCubeContainer.classList.remove('diving');
+
+      setTimeout(function(){
+        catPage.classList.remove('active');
+        catPage.classList.remove('cube-tour');
+        povScene.classList.remove('active');
+
+        // Restore cubies
+        var cubies=window._cubies||[];
+        cubies.forEach(function(c){
+          c.el.style.transition='opacity .4s ease, transform .4s ease';
+          if(c._boxFoldTransform){
+            c.el.style.transform=c._boxFoldTransform;
+          }
+          c.el.style.opacity='1';
+        });
+
+        setTimeout(function(){
+          cats.classList.add('visible');
+          var glow=document.querySelector('.cube-glow');
+          if(glow) glow.style.opacity='';
+          var hint=document.getElementById('clickHint');
+          if(hint) hint.style.display='none';
+          gridFront.innerHTML='';
+          gridBack.innerHTML='';
+          isAnimating=false;
+        },400);
+      },300);
+    },100);
   }
 
   // Category click handlers
@@ -1501,7 +1497,7 @@ var HERO_IMGS=[
       startTime=Date.now();
     },{passive:true});
     catPage.addEventListener('touchend',function(e){
-      if(!currentCat||isFlipping)return;
+      if(!currentCat||isAnimating)return;
       var dx=e.changedTouches[0].clientX-startX;
       var dy=e.changedTouches[0].clientY-startY;
       var dt=Date.now()-startTime;
