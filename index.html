@@ -1174,24 +1174,39 @@ var HERO_IMGS=[
   // Return clones to cube and show cubies in exploded positions
   function flyClonesToExploded(){
     var cubies=window._cubies||[];
-    cubies.forEach(function(c,idx){
-      var rect=c.el.getBoundingClientRect();
-      var cx=rect.left+rect.width/2;
-      var cy=rect.top+rect.height/2;
-      var clone=flyClones[idx];
-      if(clone){
-        var delay=idx*8;
-        clone.style.transition='left .4s cubic-bezier(.25,.46,.45,.94) '+delay+'ms, '+
-          'top .4s cubic-bezier(.25,.46,.45,.94) '+delay+'ms, '+
-          'opacity .3s ease '+delay+'ms, transform .4s ease '+delay+'ms';
-        clone.style.left=cx+'px';
-        clone.style.top=cy+'px';
-        clone.style.opacity='0.6';
-        clone.style.transform='translate(-50%,-50%) rotate(0deg) scale(1)';
+
+    // First, immediately restore bottom cubies to their exploded transforms
+    cubies.forEach(function(c){
+      if(c.face==='bottom' && c._savedTransform){
+        c.el.style.transition='opacity .4s ease, transform .4s ease';
+        c.el.style.transform=c._savedTransform;
+        c.el.style.opacity='1';
       }
     });
 
+    // Fly non-bottom clones back to their cubie positions
+    var cloneIdx=0;
+    cubies.forEach(function(c){
+      if(c.face==='bottom') return; // bottom cubies handled above
+      var clone=flyClones[cloneIdx];
+      cloneIdx++;
+      if(!clone) return;
+
+      var rect=c.el.getBoundingClientRect();
+      var cx=rect.left+rect.width/2;
+      var cy=rect.top+rect.height/2;
+      var delay=cloneIdx*8;
+      clone.style.transition='left .4s cubic-bezier(.25,.46,.45,.94) '+delay+'ms, '+
+        'top .4s cubic-bezier(.25,.46,.45,.94) '+delay+'ms, '+
+        'opacity .3s ease '+delay+'ms, transform .4s ease '+delay+'ms';
+      clone.style.left=cx+'px';
+      clone.style.top=cy+'px';
+      clone.style.opacity='0.6';
+      clone.style.transform='translate(-50%,-50%) rotate(0deg) scale(1)';
+    });
+
     setTimeout(function(){
+      // Show all cubies in their exploded positions
       cubies.forEach(function(c){
         if(c._savedTransform){
           c.el.style.transition='opacity .25s ease, transform .3s ease';
