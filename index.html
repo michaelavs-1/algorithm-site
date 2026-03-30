@@ -1348,11 +1348,11 @@ var HERO_IMGS=[
     });
 
     setTimeout(function(){
-      // Restore ALL cubies visibility
+      // Restore ALL cubies to their box-fold positions
       cubies.forEach(function(c){
         c.el.style.transition='opacity .4s ease, transform .4s ease';
-        if(c.face==='bottom' && c._savedTransform){
-          c.el.style.transform=c._savedTransform;
+        if(c._boxFoldTransform){
+          c.el.style.transform=c._boxFoldTransform;
         }
         c.el.style.opacity='1';
       });
@@ -1384,6 +1384,11 @@ var HERO_IMGS=[
     if(glow) glow.style.opacity='0';
     if(hint) hint.style.display='none';
     hubCenter.style.pointerEvents='none';
+
+    // Save box-fold transforms for restoration on close
+    cubies.forEach(function(c){
+      c._boxFoldTransform=c.el.style.transform;
+    });
 
     // Create and animate morph clones
     createMorphClones(data);
@@ -1450,7 +1455,10 @@ var HERO_IMGS=[
 
     hubCenter.style.pointerEvents='';
 
-    // Restore UI
+    // Restore exploded cube state and UI
+    var wrap=document.querySelector('.cube-wrap');
+    if(wrap) wrap.classList.add('exploded');
+
     setTimeout(function(){
       cats.classList.add('visible');
       var glow=document.querySelector('.cube-glow');
