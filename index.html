@@ -76,39 +76,49 @@ a{text-decoration:none}
 /* Inner categories (revealed on click) */
 .cube-categories{
   position:absolute;z-index:5;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  display:grid;grid-template-columns:1fr 1fr;gap:18px;
-  pointer-events:none;opacity:0;
-  transition:opacity .6s ease .2s;
+  top:0;left:0;width:100%;height:100%;
+  pointer-events:none;
 }
 .cube-categories.visible{
-  opacity:1;pointer-events:auto;
+  pointer-events:auto;
 }
 .cat-item{
+  position:absolute;
   font-family:'Amatic SC','Rubik',cursive;
   font-weight:900;
-  font-size:2.6rem;
+  font-size:3rem;
   white-space:nowrap;
   text-align:center;
-  padding:14px 22px;
-  border-radius:12px;
-  background:rgba(0,20,40,.7);
-  border:1px solid rgba(0,200,255,.25);
+  padding:14px 28px;
+  border-radius:14px;
+  background:rgba(0,15,30,.75);
+  border:1px solid rgba(0,200,255,.3);
   color:#00d4ff;
   cursor:pointer;
-  transition:all .35s ease;
   text-decoration:none;
   display:block;
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  opacity:0;
+  transform:scale(0) rotate(0deg);
+  transition:opacity .5s ease, transform .6s cubic-bezier(.34,1.56,.64,1), background .3s, border-color .3s, color .3s, box-shadow .3s;
+  box-shadow:0 0 15px rgba(0,180,230,.1);
+  letter-spacing:1px;
 }
+.cube-categories.visible .cat-item{
+  opacity:1;
+  transform:scale(1) var(--rot);
+}
+.cat-item:nth-child(1){top:22%;left:58%;--rot:rotate(-6deg);transition-delay:.1s,.1s,0s,0s,0s,0s;}
+.cat-item:nth-child(2){top:32%;left:22%;--rot:rotate(4deg);transition-delay:.2s,.2s,0s,0s,0s,0s;}
+.cat-item:nth-child(3){top:55%;left:52%;--rot:rotate(5deg);transition-delay:.3s,.3s,0s,0s,0s,0s;}
+.cat-item:nth-child(4){top:48%;left:15%;--rot:rotate(-3deg);transition-delay:.4s,.4s,0s,0s,0s,0s;}
 .cat-item:hover{
-  background:rgba(0,60,100,.85);
-  border-color:rgba(0,200,255,.5);
-  color:#66f5ff;
-  transform:scale(1.08);
-  box-shadow:0 0 20px rgba(0,180,230,.25);
+  background:rgba(0,60,100,.9);
+  border-color:rgba(0,220,255,.6);
+  color:#88ffff;
+  transform:scale(1.12) var(--rot);
+  box-shadow:0 0 30px rgba(0,180,230,.35);
 }
 
 /* Cube explode state */
@@ -167,10 +177,13 @@ a{text-decoration:none}
   }
   .cube-glow{width:120px;height:12px}
   .cat-item{
-    font-size:1.6rem;
-    padding:10px 16px;
+    font-size:1.8rem;
+    padding:10px 18px;
   }
-  .cube-categories{gap:12px;}
+  .cat-item:nth-child(1){top:18%;left:50%;}
+  .cat-item:nth-child(2){top:30%;left:10%;}
+  .cat-item:nth-child(3){top:58%;left:45%;}
+  .cat-item:nth-child(4){top:50%;left:5%;}
   .click-hint{font-size:1rem;bottom:-28px;}
   .scatter-dot,.scatter-line{display:none}
 }
@@ -396,28 +409,31 @@ var HERO_IMGS=[
     isOpen=!isOpen;
 
     if(isOpen){
-      // Explode: push cubies outward from center
+      // Explode: push cubies outward with randomness — visible faces
       wrap.classList.add('exploded');
-      cubieEls.forEach(function(el){
-        // Parse the current matrix3d transform to get position
+      cubieEls.forEach(function(el,idx){
         var st=el.style.transform;
         var m=st.match(/matrix3d\(([^)]+)\)/);
         if(m){
           var vals=m[1].split(',').map(Number);
           var tx=vals[12], ty=vals[13], tz=vals[14];
-          // Calculate explode direction (normalize and multiply)
           var dist=Math.sqrt(tx*tx+ty*ty+tz*tz)||1;
-          var factor=2.8;
-          var nx=tx/dist*factor*58;
-          var ny=ty/dist*factor*58;
-          var nz=tz/dist*factor*58;
-          // Keep rotation part, offset translation
-          vals[12]=tx+nx;
-          vals[13]=ty+ny;
-          vals[14]=tz+nz;
-          el.style.transition='transform .7s cubic-bezier(.25,.46,.45,.94), opacity .5s ease';
+          // Big explosion with randomness
+          var factor=4.5+Math.random()*2;
+          var jitterX=(Math.random()-.5)*80;
+          var jitterY=(Math.random()-.5)*80;
+          var jitterZ=(Math.random()-.5)*80;
+          vals[12]=tx/dist*factor*58+jitterX;
+          vals[13]=ty/dist*factor*58+jitterY;
+          vals[14]=tz/dist*factor*58+jitterZ;
+          // Add slight random rotation to each cubie
+          var rx=(Math.random()-.5)*0.3;
+          var ry=(Math.random()-.5)*0.3;
+          vals[0]+=rx; vals[1]+=ry; vals[4]-=rx; vals[5]+=ry;
+          var delay=idx*15;
+          el.style.transition='transform .8s cubic-bezier(.22,.68,.36,1.1) '+delay+'ms, opacity .6s ease '+delay+'ms';
           el.style.transform='matrix3d('+vals.join(',')+')';
-          el.style.opacity='0.25';
+          el.style.opacity='0.55';
         }
       });
       cats.classList.add('visible');
