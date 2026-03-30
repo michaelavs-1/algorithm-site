@@ -73,61 +73,21 @@ a{text-decoration:none}
 }
 .hub-hero-link:hover{transform:scale(1.03)}
 
-/* Inner categories (revealed on click) */
-.cube-categories{
-  position:absolute;z-index:5;
-  top:0;left:0;width:100%;height:100%;
-  pointer-events:none;
-}
-.cube-categories.visible{
-  pointer-events:none;
-}
-.cube-categories.visible .cat-item{
-  pointer-events:auto;
-}
-.cat-item{
-  position:absolute;
-  font-family:'Amatic SC','Rubik',cursive;
-  font-weight:900;
-  font-size:3rem;
-  white-space:nowrap;
-  text-align:center;
-  padding:14px 28px;
-  border-radius:14px;
-  background:rgba(0,15,30,.75);
-  border:1px solid rgba(0,200,255,.3);
-  color:#00d4ff;
-  cursor:pointer;
-  text-decoration:none;
-  display:block;
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  opacity:0;
-  transform:scale(0) rotate(0deg);
-  transition:opacity .5s ease, transform .6s cubic-bezier(.34,1.56,.64,1), background .3s, border-color .3s, color .3s, box-shadow .3s;
-  box-shadow:0 0 15px rgba(0,180,230,.1);
-  letter-spacing:1px;
-}
-.cube-categories.visible .cat-item{
-  opacity:1;
-  transform:scale(1) var(--rot);
-}
-.cat-item:nth-child(1){top:28%;left:55%;--rot:rotate(-5deg);transition-delay:.5s,.5s,0s,0s,0s,0s;}
-.cat-item:nth-child(2){top:36%;left:18%;--rot:rotate(3deg);transition-delay:.6s,.6s,0s,0s,0s,0s;}
-.cat-item:nth-child(3){top:56%;left:50%;--rot:rotate(4deg);transition-delay:.7s,.7s,0s,0s,0s,0s;}
-.cat-item:nth-child(4){top:50%;left:12%;--rot:rotate(-4deg);transition-delay:.8s,.8s,0s,0s,0s,0s;}
-.cat-item:hover{
-  background:rgba(0,60,100,.9);
-  border-color:rgba(0,220,255,.6);
-  color:#88ffff;
-  transform:scale(1.12) var(--rot);
-  box-shadow:0 0 30px rgba(0,180,230,.35);
-}
 
 /* Cube box-open state */
-.cube-wrap{cursor:pointer;}
+.cube-wrap{cursor:pointer;position:relative;}
+.cube-tap-zone{
+  position:absolute;inset:0;z-index:10;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.cube-wrap.exploded .cube-tap-zone{pointer-events:none;}
 .cube-wrap.exploded .cube-root{
   animation-play-state:paused;
+}
+.cube-wrap.exploded .inner-img{
+  opacity:1!important;
 }
 .cube-root .cubie{transition:transform .9s cubic-bezier(.25,.46,.45,.94);}
 .cube-wrap.exploded .cube-root .cubie{
@@ -179,17 +139,61 @@ a{text-decoration:none}
     perspective:800px;
   }
   .cube-glow{width:120px;height:12px}
-  .cat-item{
-    font-size:1.8rem;
-    padding:10px 18px;
   }
-  .cat-item:nth-child(1){top:18%;left:50%;}
-  .cat-item:nth-child(2){top:30%;left:10%;}
-  .cat-item:nth-child(3){top:58%;left:45%;}
-  .cat-item:nth-child(4){top:50%;left:5%;}
   .click-hint{font-size:1rem;bottom:-28px;}
   .scatter-dot,.scatter-line{display:none}
 }
+
+/* === Side Nav — hidden until cube opens, vertical list on the right === */
+.cube-nav{
+  position:fixed;
+  right:48px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:30;
+  visibility:hidden;
+  opacity:0;
+  transition:opacity .3s, visibility .3s;
+}
+.cube-nav.visible{
+  visibility:visible;
+  opacity:1;
+}
+.cube-nav-item{
+  display:block;
+  font-family:'Amatic SC','Rubik',cursive;
+  font-weight:900;
+  font-size:1.8rem;
+  color:#00d4ff;
+  padding:6px 0;
+  cursor:pointer;
+  letter-spacing:1px;
+  white-space:nowrap;
+  opacity:0;
+  transform:translateX(-40px);
+  transition:color .2s, text-shadow .2s;
+}
+.cube-nav.visible .cube-nav-item{
+  animation:navIn .4s cubic-bezier(.22,.68,.36,1) forwards;
+}
+.cube-nav.visible .cube-nav-item:nth-child(1){animation-delay:.05s}
+.cube-nav.visible .cube-nav-item:nth-child(2){animation-delay:.12s}
+.cube-nav.visible .cube-nav-item:nth-child(3){animation-delay:.19s}
+.cube-nav.visible .cube-nav-item:nth-child(4){animation-delay:.26s}
+.cube-nav.visible .cube-nav-item:nth-child(5){animation-delay:.33s}
+.cube-nav-item:hover{
+  color:#88ffff;
+  text-shadow:0 0 15px rgba(0,200,255,.4);
+}
+@keyframes navIn{
+  from{opacity:0;transform:translateX(-40px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@media(max-width:768px){
+  .cube-nav{right:20px;}
+  .cube-nav-item{font-size:1.4rem;}
+}
+
 </style>
 </head>
 <body>
@@ -207,18 +211,25 @@ a{text-decoration:none}
 
   <div class="hub-center">
     <div class="hub-hero-link">
-      <div class="cube-wrap"><div class="cube-root" id="cubeRoot"></div></div>
+      <div class="cube-wrap">
+        <div class="cube-root" id="cubeRoot"></div>
+        <div class="cube-tap-zone" id="cubeTap"></div>
+      </div>
       <div class="cube-glow"></div>
       <div class="click-hint" id="clickHint">לחץ לפתיחה</div>
     </div>
   </div>
 
-  <div class="cube-categories" id="cubeCategories">
-    <a class="cat-item" href="#">אומנים</a>
-    <a class="cat-item" href="#">הפקות</a>
-    <a class="cat-item" href="#">שיווק</a>
-    <a class="cat-item" href="#">בוקינג</a>
-  </div>
+
+
+</div>
+
+<div class="cube-nav" id="cubeNav">
+  <div class="cube-nav-item">אומנים</div>
+  <div class="cube-nav-item">הפקות</div>
+  <div class="cube-nav-item">שיווק</div>
+  <div class="cube-nav-item">בוקינג</div>
+  <div class="cube-nav-item">צור קשר</div>
 </div>
 
 <script>
@@ -293,41 +304,46 @@ var HERO_IMGS=[
       ['rotateX(90deg) translateZ('+half+'px)', y===-1?'ny':null]
     ];
 
+    // Determine which inner face index points "inward" toward cube center
+    // fi: 0=+z, 1=-z, 2=+x, 3=-x, 4=+y, 5=-y(top)
+    // Inner face = opposite of the outer face direction
+    var innerFaceIdx=-1;
+    if(Math.abs(x)===1 && y!==0 && z!==0) innerFaceIdx=(x===1)?3:2; // left/right wall inner
+    else if(Math.abs(z)===1 && y!==0 && x!==0) innerFaceIdx=(z===1)?1:0; // front/back wall inner
+    else if(y===-1 && Math.abs(x)<=1 && Math.abs(z)<=1) innerFaceIdx=4; // top lid inner (faces down)
+    else if(y===1 && Math.abs(x)<=1 && Math.abs(z)<=1) innerFaceIdx=5; // bottom inner (faces up)
+
     faces.forEach(function(fd, fi){
       var f=document.createElement('div');
-      var isTop=(fi===5 && isTopFace);
       var key=fd[1];
-      var bg;
 
-      // Only 4 tiles on the TOP face get images (corners only)
-      var isTopFaceCorner=(fi===5 && y===-1 && Math.abs(x)===1 && Math.abs(z)===1);
-      
-      if(key && isTopFaceCorner){
-        // Image tile with strong cyan tint overlay to blend with cube
-        var imgIdx=Math.floor(Math.random()*HERO_IMGS.length);
-        f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background-size:cover;background-position:center;background-image:url('+HERO_IMGS[imgIdx]+');border:1px solid rgba(0,200,255,.18);transition:background-image 1.8s ease;';
-        f.dataset.imgIdx=imgIdx;
-        // Cyan-tinted overlay for color harmony
-        var ov=document.createElement('div');
-        ov.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,80,120,.35),rgba(0,40,80,.25));pointer-events:none;';
-        f.appendChild(ov);
-        var sh=document.createElement('div');
-        sh.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 60%);pointer-events:none;';
-        f.appendChild(sh);
-        topFaces.push(f);
-      } else if(key){
-        // Gradient face — keeps the cyan Rubik aesthetic
+      // Check if this inner face should get an image
+      var isInnerImage=(!key && fi===innerFaceIdx);
+
+      if(key){
+        // Outer face — gradient only (no images on outside)
         var g=FG[key];
         var bg='linear-gradient(135deg,'+g[0]+' 0%,'+g[1]+' 50%,'+g[2]+' 100%)';
         f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background:'+bg+';border:1px solid rgba(0,200,255,.12);box-shadow:inset 0 0 8px rgba(0,0,0,.25);';
+      } else if(isInnerImage){
+        // Inner face with image — hidden by default, revealed when box opens
+        var imgIdx=Math.floor(Math.random()*HERO_IMGS.length);
+        f.className='inner-img';
+        f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background-size:cover;background-position:center;background-image:url('+HERO_IMGS[imgIdx]+');border:1px solid rgba(0,200,255,.08);transition:opacity .6s ease .3s;opacity:0;';
+        f.dataset.imgIdx=imgIdx;
+        var ov=document.createElement('div');
+        ov.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,40,80,.3),rgba(0,20,50,.2));pointer-events:none;';
+        f.appendChild(ov);
+        topFaces.push(f);
       } else {
-        // Inner face (not visible)
+        // Other inner face
         f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background:'+INNER+';border:1px solid rgba(0,200,255,.04);';
       }
       el.appendChild(f);
     });
 
     var c={el:el,gx:x,gy:y,gz:z,r:[[1,0,0],[0,1,0],[0,0,1]],origY:y};
+    c.face=(y===1)?'bottom':(y===-1)?'top':(z===1)?'front':(z===-1)?'back':(x===-1)?'left':(x===1)?'right':'center';
     cubies.push(c);
     root.appendChild(el);
     upd(c);
@@ -355,6 +371,7 @@ var HERO_IMGS=[
   window._cubies=cubies;
   window._cubeStep=step;
   window._cubeUpd=upd;
+  window._heroImgs=HERO_IMGS;
 
   // Very subtle periodic swaps
   setInterval(function(){swapRandomTiles(1);},6000);
@@ -396,13 +413,13 @@ var HERO_IMGS=[
     }
     requestAnimationFrame(tick);
   }
+  // Rubik face turns — realistic cube rotations
   setTimeout(function(){doTurn();setInterval(doTurn,1600);},1200);
 })();
 
 // === Cube Click to Open/Close (Box Unfolding) ===
 (function(){
   var wrap=document.querySelector('.cube-wrap');
-  var cats=document.getElementById('cubeCategories');
   var hint=document.getElementById('clickHint');
   var isOpen=false;
   var step=window._cubeStep||58;
@@ -422,78 +439,86 @@ var HERO_IMGS=[
   // For each face, define the unfolding transform:
   // We translate the face outward and rotate it around its hinge edge
   // The hinge is the edge where the face connects to the bottom/base
+  // Randomness helpers for varied openings
+  function rr(min,max){return min+Math.random()*(max-min);}
+
   function getBoxTransform(face, c){
     var S=step; // 58px per unit
-    var angle=85; // degrees to fold open
+    var angle=rr(70,100); // random fold angle each time
     var rad=angle*Math.PI/180;
     var cos=Math.cos(rad), sin=Math.sin(rad);
+    var spread=rr(0.8,1.4); // how far pieces fly
+    var drift=rr(-S*0.3,S*0.3); // random lateral drift per cubie
 
-    // Each face gets: translate to hinge point, rotate around hinge, translate back
-    // We return extra translation (dx,dy,dz) and rotation for the cubie
     switch(face){
       case 'top':
-        // Top lid folds backward (rotates around X axis at back edge, z=-1)
-        // Hinge at gy=-1 plane, back edge
         return {
-          dx: 0,
-          dy: -(1-cos)*S*2 - sin*S*0.5,
-          dz: -sin*S*2.2,
-          rx: -angle, ry: 0, rz: 0
+          dx: drift*0.5,
+          dy: -(1-cos)*S*2*spread - sin*S*0.5,
+          dz: -sin*S*2.2*spread + drift*0.3,
+          rx: -angle, ry: drift*0.15, rz: drift*0.1
         };
       case 'front':
-        // Front wall folds forward/down (rotates around X axis at bottom edge)
         return {
-          dx: 0,
-          dy: sin*S*1.8,
-          dz: (1-cos)*S*1.5 + sin*S*1.2,
-          rx: angle*0.9, ry: 0, rz: 0
+          dx: drift*0.4,
+          dy: sin*S*1.8*spread,
+          dz: (1-cos)*S*1.5*spread + sin*S*1.2,
+          rx: angle*rr(0.8,1.0), ry: drift*0.1, rz: drift*0.08
         };
       case 'back':
-        // Back wall folds backward/up
         return {
-          dx: 0,
-          dy: -sin*S*0.8,
-          dz: -(1-cos)*S*1.5 - sin*S*1.2,
-          rx: -angle*0.9, ry: 0, rz: 0
+          dx: drift*0.4,
+          dy: -sin*S*0.8*spread,
+          dz: -(1-cos)*S*1.5*spread - sin*S*1.2,
+          rx: -angle*rr(0.8,1.0), ry: drift*0.1, rz: drift*0.08
         };
       case 'left':
-        // Left wall folds outward left
         return {
-          dx: -(1-cos)*S*1.5 - sin*S*1.2,
-          dy: sin*S*0.5,
-          dz: 0,
-          rx: 0, ry: 0, rz: -angle*0.85
+          dx: -(1-cos)*S*1.5*spread - sin*S*1.2,
+          dy: sin*S*0.5 + drift*0.3,
+          dz: drift*0.4,
+          rx: drift*0.08, ry: drift*0.1, rz: -angle*rr(0.75,0.95)
         };
       case 'right':
-        // Right wall folds outward right
         return {
-          dx: (1-cos)*S*1.5 + sin*S*1.2,
-          dy: sin*S*0.5,
-          dz: 0,
-          rx: 0, ry: 0, rz: angle*0.85
+          dx: (1-cos)*S*1.5*spread + sin*S*1.2,
+          dy: sin*S*0.5 + drift*0.3,
+          dz: drift*0.4,
+          rx: drift*0.08, ry: drift*0.1, rz: angle*rr(0.75,0.95)
         };
       case 'bottom':
-        // Bottom stays — slight settle downward
-        return { dx:0, dy:S*0.3, dz:0, rx:0, ry:0, rz:0 };
+        return { dx:drift*0.2, dy:S*rr(0.2,0.5), dz:drift*0.2, rx:drift*0.05, ry:0, rz:drift*0.05 };
       default:
         return { dx:0, dy:0, dz:0, rx:0, ry:0, rz:0 };
     }
   }
 
-  wrap.addEventListener('click',function(e){
-    e.preventDefault();
-    e.stopPropagation();
+  var tapZone=document.getElementById('cubeTap');
+  function toggleCube(e){
+    if(e){e.preventDefault();e.stopPropagation();}
     isOpen=!isOpen;
 
     var cubies=window._cubies||[];
 
     if(isOpen){
+      // Capture current rotation angle from running animation
+      var root=document.getElementById('cubeRoot');
+      var computedT=getComputedStyle(root).transform;
+      // Pause animation and freeze at current angle
+      root.style.animation='none';
+      root.offsetHeight; // force reflow
+      root.style.transform=computedT;
+      // Remember the computed transform so we can resume later
+      root._frozenTransform=computedT;
+
       wrap.classList.add('exploded');
 
-      // First, freeze current transforms
+      // Re-compute cubie positions at the fixed angle, then freeze
       cubies.forEach(function(c){
-        var st=c.el.style.transform;
-        c._savedTransform=st;
+        if(window._cubeUpd) window._cubeUpd(c);
+      });
+      cubies.forEach(function(c){
+        c._savedTransform=c.el.style.transform;
       });
 
       // Group by face and apply box-opening transforms
@@ -548,25 +573,207 @@ var HERO_IMGS=[
         c.el.style.opacity='1'; // Keep faces fully visible!
       });
 
-      cats.classList.add('visible');
       if(hint) hint.style.display='none';
+      // Show side nav
+      var nav=document.getElementById('cubeNav');
+      if(nav) setTimeout(function(){nav.classList.add('visible');},400);
+
     } else {
-      // Close: fold back together
-      wrap.classList.remove('exploded');
-      cubies.forEach(function(c){
-        c.el.style.transition='transform .8s cubic-bezier(.25,.46,.45,.94), opacity .5s ease';
+      // Hide side nav and reset animations for next open
+      var nav=document.getElementById('cubeNav');
+      if(nav){
+        nav.classList.remove('visible');
+        // Reset item animations so they replay next time
+        var items=nav.querySelectorAll('.cube-nav-item');
+        items.forEach(function(it){
+          it.style.animation='none';
+          it.offsetHeight;
+          it.style.animation='';
+        });
+      }
+
+      // Close: reverse the fold — animate back to saved positions first
+
+      // Step 1: Animate each cubie back to its original (pre-open) transform
+      var faceOrder2={top:5, front:4, back:3, right:2, left:1, bottom:0, center:0};
+      var maxDelay=0;
+      cubies.forEach(function(c,idx){
+        var face=getFace(c);
+        var saved=c._savedTransform;
+        if(!saved){
+          // Fallback: compute from upd
+          if(window._cubeUpd) window._cubeUpd(c);
+          saved=c.el.style.transform;
+        }
+        var delay=faceOrder2[face]*60 + (idx%9)*12;
+        var totalTime=delay+800;
+        if(totalTime>maxDelay) maxDelay=totalTime;
+        c.el.style.transition='transform .8s cubic-bezier(.25,.46,.45,.94) '+delay+'ms';
+        c.el.style.transform=saved;
         c.el.style.opacity='1';
       });
-      cats.classList.remove('visible');
-      if(window._restoreCubies) window._restoreCubies();
+
+      // Step 2: After all animations complete, remove exploded and resume spin from same angle
+      setTimeout(function(){
+        wrap.classList.remove('exploded');
+        if(window._restoreCubies) window._restoreCubies();
+        // Resume spinning animation from the frozen angle
+        var root=document.getElementById('cubeRoot');
+        // Extract current Y rotation from frozen matrix to compute animation offset
+        var frozen=root._frozenTransform||'';
+        var yDeg=0;
+        if(frozen && frozen.startsWith('matrix3d')){
+          var mv=frozen.match(/matrix3d\(([^)]+)\)/);
+          if(mv){
+            var v=mv[1].split(',').map(Number);
+            // Extract Y rotation from rotation matrix
+            yDeg=Math.atan2(v[8], v[0])*180/Math.PI;
+            if(yDeg<0) yDeg+=360;
+          }
+        }
+        // Calculate negative delay to resume from the right point in the 20s cycle
+        var offset=-(yDeg/360)*20;
+        root.style.transform='';
+        root.style.animation='cubeSpin 20s linear infinite';
+        root.style.animationDelay=offset+'s';
+      }, maxDelay+50);
     }
+  }
+
+  // Tap zone handles both click and touch
+  tapZone.addEventListener('click',toggleCube);
+  // Also listen on wrap for when tap zone is hidden (exploded state)
+  wrap.addEventListener('click',function(e){
+    if(isOpen){toggleCube(e);}
   });
 
-  // Click outside cube to close
+  // Click outside cube to close (ignore clicks on nav)
+  var navEl=document.getElementById('cubeNav');
   document.addEventListener('click',function(e){
-    if(isOpen && !wrap.contains(e.target) && !cats.contains(e.target)){
-      wrap.click();
+    if(isOpen && !wrap.contains(e.target) && !(navEl&&navEl.contains(e.target))){
+      toggleCube();
     }
+  });
+  document.addEventListener('touchend',function(e){
+    if(isOpen && !wrap.contains(e.target) && !(navEl&&navEl.contains(e.target))){
+      toggleCube();
+    }
+  });
+})();
+
+// === POV Camera Dive Navigation ===
+(function(){
+})();
+
+// === Inner Category Cube — Mouse/Touch Drag ===
+(function(){
+  var scene=document.getElementById('catCubeScene');
+  if(!scene) return;
+
+  var rotX=-20, rotY=0;
+  var isDragging=false, lastX=0, lastY=0;
+  var momentum={x:0,y:0};
+
+  function applyDrag(){
+    scene.classList.add('dragging');
+    scene.style.transform='rotateX('+rotX+'deg) rotateY('+rotY+'deg)';
+  }
+  function releaseDrag(){
+    // Don't remove dragging — keep manual position, add inertia
+  }
+
+  scene.addEventListener('mousedown',function(e){
+    isDragging=true; lastX=e.clientX; lastY=e.clientY;
+    momentum.x=0; momentum.y=0;
+    scene.classList.add('dragging');
+    // Capture current computed rotation
+    var ct=getComputedStyle(scene).transform;
+    if(ct && ct!=='none'){
+      var m=ct.match(/matrix3d\(([^)]+)\)/)||ct.match(/matrix\(([^)]+)\)/);
+      if(m){
+        var v=m[1].split(',').map(Number);
+        if(v.length===16){
+          rotY=Math.atan2(v[8],v[0])*180/Math.PI;
+          rotX=Math.atan2(-v[6],v[5])*180/Math.PI;
+        }
+      }
+    }
+    e.preventDefault(); e.stopPropagation();
+  });
+  document.addEventListener('mousemove',function(e){
+    if(!isDragging) return;
+    var dx=e.clientX-lastX, dy=e.clientY-lastY;
+    rotY+=dx*0.5; rotX-=dy*0.5;
+    rotX=Math.max(-80,Math.min(80,rotX));
+    momentum.x=dx*0.5; momentum.y=-dy*0.5;
+    lastX=e.clientX; lastY=e.clientY;
+    applyDrag();
+  });
+  document.addEventListener('mouseup',function(){
+    if(!isDragging) return;
+    isDragging=false;
+    function drift(){
+      if(isDragging) return;
+      if(Math.abs(momentum.x)<0.3 && Math.abs(momentum.y)<0.3){
+        // Resume auto-spin from current angle
+        scene.classList.remove('dragging');
+        scene.style.transform='';
+        return;
+      }
+      rotY+=momentum.x; rotX+=momentum.y;
+      rotX=Math.max(-80,Math.min(80,rotX));
+      momentum.x*=0.94; momentum.y*=0.94;
+      scene.style.transform='rotateX('+rotX+'deg) rotateY('+rotY+'deg)';
+      requestAnimationFrame(drift);
+    }
+    drift();
+  });
+
+  // Touch
+  scene.addEventListener('touchstart',function(e){
+    isDragging=true;
+    lastX=e.touches[0].clientX; lastY=e.touches[0].clientY;
+    momentum.x=0; momentum.y=0;
+    scene.classList.add('dragging');
+    var ct=getComputedStyle(scene).transform;
+    if(ct && ct!=='none'){
+      var m=ct.match(/matrix3d\(([^)]+)\)/)||ct.match(/matrix\(([^)]+)\)/);
+      if(m){
+        var v=m[1].split(',').map(Number);
+        if(v.length===16){
+          rotY=Math.atan2(v[8],v[0])*180/Math.PI;
+          rotX=Math.atan2(-v[6],v[5])*180/Math.PI;
+        }
+      }
+    }
+    e.stopPropagation();
+  },{passive:false});
+  document.addEventListener('touchmove',function(e){
+    if(!isDragging) return;
+    var dx=e.touches[0].clientX-lastX, dy=e.touches[0].clientY-lastY;
+    rotY+=dx*0.5; rotX-=dy*0.5;
+    rotX=Math.max(-80,Math.min(80,rotX));
+    momentum.x=dx*0.5; momentum.y=-dy*0.5;
+    lastX=e.touches[0].clientX; lastY=e.touches[0].clientY;
+    applyDrag();
+  },{passive:true});
+  document.addEventListener('touchend',function(){
+    if(!isDragging) return;
+    isDragging=false;
+    function drift(){
+      if(isDragging) return;
+      if(Math.abs(momentum.x)<0.3 && Math.abs(momentum.y)<0.3){
+        scene.classList.remove('dragging');
+        scene.style.transform='';
+        return;
+      }
+      rotY+=momentum.x; rotX+=momentum.y;
+      rotX=Math.max(-80,Math.min(80,rotX));
+      momentum.x*=0.94; momentum.y*=0.94;
+      scene.style.transform='rotateX('+rotX+'deg) rotateY('+rotY+'deg)';
+      requestAnimationFrame(drift);
+    }
+    drift();
   });
 })();
 
