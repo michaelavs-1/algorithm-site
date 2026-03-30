@@ -73,38 +73,66 @@ a{text-decoration:none}
 }
 .hub-hero-link:hover{transform:scale(1.03)}
 
-/* Orbiting links */
-.float-link{
-  position:absolute;z-index:10;
-  top:0;left:0;
-  text-decoration:none;
-  display:flex;align-items:center;justify-content:center;
-  cursor:default;
-  opacity:0;
-  transition:filter .3s;
-  will-change:transform;
+/* Inner categories (revealed on click) */
+.cube-categories{
+  position:absolute;z-index:5;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  display:grid;grid-template-columns:1fr 1fr;gap:18px;
+  pointer-events:none;opacity:0;
+  transition:opacity .6s ease .2s;
 }
-.float-link.visible{opacity:1}
-.float-link:hover .float-label{
-  background:linear-gradient(180deg,#88ffff,#33eeff,#00ccee);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
+.cube-categories.visible{
+  opacity:1;pointer-events:auto;
 }
-
-.float-label{
+.cat-item{
   font-family:'Amatic SC','Rubik',cursive;
   font-weight:900;
-  font-size:3.4rem;
+  font-size:2.6rem;
   white-space:nowrap;
-  letter-spacing:1.5px;
-  color:#00b8e6;
-  -webkit-text-stroke:1.5px #000;
-  paint-order:stroke fill;
-  background:linear-gradient(180deg,#66f5ff 0%,#00d4ff 25%,#0099dd 50%,#0066aa 75%,#003d66 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 3px rgba(0,0,0,.8));
-  transition:all .3s;
+  text-align:center;
+  padding:14px 22px;
+  border-radius:12px;
+  background:rgba(0,20,40,.7);
+  border:1px solid rgba(0,200,255,.25);
+  color:#00d4ff;
+  cursor:pointer;
+  transition:all .35s ease;
+  text-decoration:none;
+  display:block;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
 }
+.cat-item:hover{
+  background:rgba(0,60,100,.85);
+  border-color:rgba(0,200,255,.5);
+  color:#66f5ff;
+  transform:scale(1.08);
+  box-shadow:0 0 20px rgba(0,180,230,.25);
+}
+
+/* Cube explode state */
+.cube-wrap{cursor:pointer;}
+.cube-wrap.exploded .cube-root{
+  animation-play-state:paused;
+}
+.cube-root .cubie{transition:transform .7s cubic-bezier(.25,.46,.45,.94);}
+.cube-wrap.exploded .cube-root .cubie{
+  transition:transform .7s cubic-bezier(.25,.46,.45,.94);
+}
+
+/* Click hint */
+.click-hint{
+  position:absolute;
+  bottom:-36px;left:50%;transform:translateX(-50%);
+  font-family:'Amatic SC','Rubik',cursive;
+  font-size:1.3rem;
+  color:rgba(0,200,255,.4);
+  white-space:nowrap;
+  animation:hintPulse 2.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes hintPulse{0%,100%{opacity:.3}50%{opacity:.7}}
 
 /* Decorative */
 .scatter-dot{position:absolute;z-index:1;border-radius:50%;opacity:0}
@@ -138,16 +166,12 @@ a{text-decoration:none}
     perspective:800px;
   }
   .cube-glow{width:120px;height:12px}
-  .float-label{
-    font-size:1.4rem;
-    background:none !important;
-    -webkit-background-clip:unset !important;
-    -webkit-text-fill-color:#00d4ff !important;
-    -webkit-text-stroke:0 !important;
-    color:#00d4ff !important;
-    filter:drop-shadow(0 0 6px rgba(0,180,230,.4)) !important;
-    paint-order:normal;
+  .cat-item{
+    font-size:1.6rem;
+    padding:10px 16px;
   }
+  .cube-categories{gap:12px;}
+  .click-hint{font-size:1rem;bottom:-28px;}
   .scatter-dot,.scatter-line{display:none}
 }
 </style>
@@ -166,16 +190,19 @@ a{text-decoration:none}
   <div class="scatter-line scatter-line--3"></div>
 
   <div class="hub-center">
-    <a href="index.html" class="hub-hero-link">
+    <div class="hub-hero-link">
       <div class="cube-wrap"><div class="cube-root" id="cubeRoot"></div></div>
       <div class="cube-glow"></div>
-    </a>
+      <div class="click-hint" id="clickHint">לחץ לפתיחה</div>
+    </div>
   </div>
 
-  <a class="float-link" id="orb0"><div class="float-label">אומנים</div></a>
-  <a class="float-link" id="orb1"><div class="float-label">הפקות</div></a>
-  <a class="float-link" id="orb2"><div class="float-label">שיווק</div></a>
-  <a class="float-link" id="orb3"><div class="float-label">בוקינג</div></a>
+  <div class="cube-categories" id="cubeCategories">
+    <a class="cat-item" href="#">אומנים</a>
+    <a class="cat-item" href="#">הפקות</a>
+    <a class="cat-item" href="#">שיווק</a>
+    <a class="cat-item" href="#">בוקינג</a>
+  </div>
 </div>
 
 <script>
@@ -305,6 +332,11 @@ var HERO_IMGS=[
       })(i*150);
     }
   }
+  // Store original transforms for restore after explode
+  window._restoreCubies=function(){
+    cubies.forEach(function(c){ upd(c); c.el.style.opacity='1'; });
+  };
+
   // Very subtle periodic swaps
   setInterval(function(){swapRandomTiles(1);},6000);
 
@@ -314,6 +346,7 @@ var HERO_IMGS=[
   var busy=false;
   function doTurn(){
     if(busy)return;
+    if(document.querySelector('.cube-wrap.exploded'))return;
     busy=true;
     var ax=Math.floor(Math.random()*3);
     var layer=[-1,0,1][Math.floor(Math.random()*3)];
@@ -347,42 +380,68 @@ var HERO_IMGS=[
   setTimeout(function(){doTurn();setInterval(doTurn,1600);},1200);
 })();
 
-// === Orbiting labels ===
+// === Cube Click to Open/Close ===
 (function(){
-  var links=[document.getElementById('orb0'),document.getElementById('orb1'),document.getElementById('orb2'),document.getElementById('orb3')];
-  var offsets=[0, Math.PI/2, Math.PI, 3*Math.PI/2];
-  var speed=0.00012;
-  var angle=0;
-  var hub=document.querySelector('.hub');
+  var wrap=document.querySelector('.cube-wrap');
+  var cats=document.getElementById('cubeCategories');
+  var hint=document.getElementById('clickHint');
+  var isOpen=false;
 
-  function getRadius(){
-    var w=hub.offsetWidth/2, h=hub.offsetHeight/2;
-    var r=Math.min(w,h)*0.78;
-    var isMobile=window.innerWidth<=768;
-    return isMobile ? Math.max(140, Math.min(200, r)) : Math.max(260, Math.min(420, r));
-  }
+  // Get all cubie elements and store their original positions
+  var cubieEls=document.querySelectorAll('.cube-root > div');
 
-  setTimeout(function(){
-    links.forEach(function(l){l.classList.add('visible');});
-  },800);
+  wrap.addEventListener('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    isOpen=!isOpen;
 
-  var last=performance.now();
-  function tick(now){
-    var dt=now-last; last=now;
-    angle+=speed*dt;
-    var cx=hub.offsetWidth/2;
-    var cy=hub.offsetHeight/2;
-    var R=getRadius();
-
-    for(var i=0;i<4;i++){
-      var a=angle+offsets[i];
-      var x=Math.cos(a)*R;
-      var y=Math.sin(a)*R*0.5;
-      links[i].style.transform='translate('+(cx+x)+'px,'+(cy+y)+'px) translate(-50%,-50%)';
+    if(isOpen){
+      // Explode: push cubies outward from center
+      wrap.classList.add('exploded');
+      cubieEls.forEach(function(el){
+        // Parse the current matrix3d transform to get position
+        var st=el.style.transform;
+        var m=st.match(/matrix3d\(([^)]+)\)/);
+        if(m){
+          var vals=m[1].split(',').map(Number);
+          var tx=vals[12], ty=vals[13], tz=vals[14];
+          // Calculate explode direction (normalize and multiply)
+          var dist=Math.sqrt(tx*tx+ty*ty+tz*tz)||1;
+          var factor=2.8;
+          var nx=tx/dist*factor*58;
+          var ny=ty/dist*factor*58;
+          var nz=tz/dist*factor*58;
+          // Keep rotation part, offset translation
+          vals[12]=tx+nx;
+          vals[13]=ty+ny;
+          vals[14]=tz+nz;
+          el.style.transition='transform .7s cubic-bezier(.25,.46,.45,.94), opacity .5s ease';
+          el.style.transform='matrix3d('+vals.join(',')+')';
+          el.style.opacity='0.25';
+        }
+      });
+      cats.classList.add('visible');
+      if(hint) hint.style.display='none';
+    } else {
+      // Close: restore cubies
+      wrap.classList.remove('exploded');
+      // Force re-render of cube by triggering upd on all cubies
+      cubieEls.forEach(function(el){
+        el.style.transition='transform .7s cubic-bezier(.25,.46,.45,.94), opacity .5s ease';
+        el.style.opacity='1';
+      });
+      cats.classList.remove('visible');
+      // Need to restore original transforms - trigger rebuild
+      if(window._restoreCubies) window._restoreCubies();
     }
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
+  });
+
+  // Click outside cube to close
+  document.addEventListener('click',function(e){
+    if(isOpen && !wrap.contains(e.target) && !cats.contains(e.target)){
+      wrap.click();
+    }
+  });
 })();
 
 // === Animated Grid Background ===
