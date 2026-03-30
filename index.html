@@ -348,8 +348,8 @@ a{text-decoration:none}
 /* Full-screen scene — the camera viewport */
 .pov-camera-scene{
   position:fixed;z-index:10;inset:0;
-  perspective:800px;
-  perspective-origin:50% 50%;
+  perspective:600px;
+  perspective-origin:50% 35%;
   display:none;
   overflow:hidden;
   background:radial-gradient(ellipse at 50% 60%,rgba(0,30,60,.95) 0%,rgba(2,8,18,1) 70%);
@@ -371,17 +371,17 @@ a{text-decoration:none}
   width:0;height:0;
   transform-style:preserve-3d;
   /* Start: camera above looking down */
-  transform:translate(-50%,-50%) translateY(-300px) translateZ(-500px) rotateX(60deg);
+  transform:translate(-50%,-50%) translateY(-350px) translateZ(-600px) rotateX(70deg);
   transition:transform 2s cubic-bezier(.25,.46,.45,.94);
 }
 /* Phase: camera dives into the room */
 .pov-camera-rig.entered{
-  transform:translate(-50%,-50%) translateY(40px) translateZ(0px) rotateX(12deg);
+  transform:translate(-50%,-50%) translateY(-80px) translateZ(50px) rotateX(30deg);
   transition:transform 2.2s cubic-bezier(.22,.68,.36,1);
 }
-/* Phase: camera settles at eye level */
+/* Phase: camera settles — looking down at the floor cards */
 .pov-camera-rig.settled{
-  transform:translate(-50%,-50%) translateY(30px) translateZ(50px) rotateX(6deg);
+  transform:translate(-50%,-50%) translateY(-60px) translateZ(100px) rotateX(25deg);
   transition:transform 1.5s cubic-bezier(.25,.46,.45,.94);
 }
 
@@ -560,8 +560,8 @@ a{text-decoration:none}
 
 /* Subtle breathing animation on the room for ambiance */
 @keyframes roomBreathe{
-  0%,100%{ transform:translate(-50%,-50%) translateY(30px) translateZ(50px) rotateX(6deg) rotateY(0deg); }
-  50%{ transform:translate(-50%,-50%) translateY(28px) translateZ(50px) rotateX(6.5deg) rotateY(.3deg); }
+  0%,100%{ transform:translate(-50%,-50%) translateY(-60px) translateZ(100px) rotateX(25deg) rotateY(0deg); }
+  50%{ transform:translate(-50%,-50%) translateY(-63px) translateZ(100px) rotateX(25.5deg) rotateY(.4deg); }
 }
 .pov-camera-rig.breathing{
   animation:roomBreathe 6s ease-in-out infinite;
