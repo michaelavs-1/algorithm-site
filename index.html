@@ -144,7 +144,7 @@ a{text-decoration:none}
   .scatter-dot,.scatter-line{display:none}
 }
 
-/* === Nav Tabs - glowing animated buttons === */
+/* === Nav Tabs - emerge from cube === */
 .cube-nav{
   display:flex;
   flex-direction:column;
@@ -158,19 +158,17 @@ a{text-decoration:none}
 .nav-box{
   cursor:pointer;
   opacity:0;
-  transform:translateX(60px);
-  animation:navFloat 4s ease-in-out infinite;
+  transform:translate(-40vw, 20vh) scale(.18) rotateY(90deg);
+  filter:blur(6px) brightness(2);
 }
-.nav-box:nth-child(2){animation-delay:.8s}
-.nav-box:nth-child(3){animation-delay:1.6s}
-.nav-box:nth-child(4){animation-delay:2.4s}
 .cube-nav.visible .nav-box{
-  animation:navBoxIn .6s cubic-bezier(.22,.68,.36,1.05) forwards, navFloat 4s ease-in-out 1s infinite;
+  animation:navEmerge .8s cubic-bezier(.16,.73,.3,1.02) forwards,
+            navFloat 4s ease-in-out 1.5s infinite;
 }
-.cube-nav.visible .nav-box:nth-child(1){animation-delay:.06s, 1s}
-.cube-nav.visible .nav-box:nth-child(2){animation-delay:.14s, 1.8s}
-.cube-nav.visible .nav-box:nth-child(3){animation-delay:.22s, 2.6s}
-.cube-nav.visible .nav-box:nth-child(4){animation-delay:.30s, 3.4s}
+.cube-nav.visible .nav-box:nth-child(1){animation-delay:0s, 1.5s}
+.cube-nav.visible .nav-box:nth-child(2){animation-delay:.12s, 1.7s}
+.cube-nav.visible .nav-box:nth-child(3){animation-delay:.24s, 1.9s}
+.cube-nav.visible .nav-box:nth-child(4){animation-delay:.36s, 2.1s}
 .nav-box-inner{
   width:260px;height:82px;
   position:relative;
@@ -201,9 +199,25 @@ a{text-decoration:none}
 .nav-box:nth-child(2) .nf-front{animation-delay:.75s}
 .nav-box:nth-child(3) .nf-front{animation-delay:1.5s}
 .nav-box:nth-child(4) .nf-front{animation-delay:2.25s}
-@keyframes navBoxIn{
-  from{opacity:0;transform:translateX(60px)}
-  to{opacity:1;transform:translateX(0)}
+@keyframes navEmerge{
+  0%{
+    opacity:0;
+    transform:translate(-40vw, 20vh) scale(.18) rotateY(90deg);
+    filter:blur(6px) brightness(2);
+  }
+  40%{
+    opacity:1;
+    filter:blur(2px) brightness(1.5);
+  }
+  70%{
+    transform:translate(8px, 0) scale(1.04) rotateY(-4deg);
+    filter:blur(0) brightness(1.15);
+  }
+  100%{
+    opacity:1;
+    transform:translate(0,0) scale(1) rotateY(0deg);
+    filter:blur(0) brightness(1);
+  }
 }
 @keyframes navFloat{
   0%,100%{transform:translateY(0)}
@@ -217,11 +231,25 @@ a{text-decoration:none}
   .cube-nav{gap:12px}
   .nav-box-inner{width:220px;height:70px}
   .nf-front{font-size:1.55rem}
+  .nav-box{transform:translate(-30vw, 15vh) scale(.2) rotateY(90deg)}
+  @keyframes navEmerge{
+    0%{opacity:0;transform:translate(-30vw,15vh) scale(.2) rotateY(90deg);filter:blur(6px) brightness(2)}
+    40%{opacity:1;filter:blur(2px) brightness(1.5)}
+    70%{transform:translate(6px,0) scale(1.03) rotateY(-3deg);filter:blur(0) brightness(1.1)}
+    100%{opacity:1;transform:translate(0,0) scale(1) rotateY(0);filter:blur(0) brightness(1)}
+  }
 }
 @media(max-width:480px){
   .cube-nav{gap:10px}
   .nav-box-inner{width:180px;height:60px}
   .nf-front{font-size:1.35rem}
+  .nav-box{transform:translate(-25vw, 10vh) scale(.22) rotateY(90deg)}
+  @keyframes navEmerge{
+    0%{opacity:0;transform:translate(-25vw,10vh) scale(.22) rotateY(90deg);filter:blur(4px) brightness(2)}
+    40%{opacity:1;filter:blur(1px) brightness(1.4)}
+    70%{transform:translate(4px,0) scale(1.02) rotateY(-2deg);filter:blur(0) brightness(1.1)}
+    100%{opacity:1;transform:translate(0,0) scale(1) rotateY(0);filter:blur(0) brightness(1)}
+  }
 }
 
 </style>
