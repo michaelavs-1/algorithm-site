@@ -222,135 +222,79 @@ a{text-decoration:none}
 .cat-page{
   position:absolute;z-index:8;
   inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  padding-top:8vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
   pointer-events:none;
   opacity:0;
-  transition:opacity .4s ease;
-  overflow-y:auto;
+  transition:opacity .5s ease;
 }
 .cat-page.active{
   pointer-events:auto;
   opacity:1;
 }
 .cat-back{
-  position:fixed;top:20px;right:20px;z-index:20;
+  position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:20;
   background:rgba(0,15,30,.8);
   border:1px solid rgba(0,200,255,.3);
   color:#00d4ff;
-  font-size:1.4rem;
-  width:44px;height:44px;
-  border-radius:50%;
+  font-family:'Amatic SC',cursive;
+  font-size:1.3rem;font-weight:700;
+  padding:10px 28px;
+  border-radius:30px;
   cursor:pointer;
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   transition:all .3s;
-  display:flex;align-items:center;justify-content:center;
+  letter-spacing:1px;
 }
 .cat-back:hover{
   background:rgba(0,60,100,.9);
   border-color:rgba(0,220,255,.6);
-  transform:scale(1.1);
+  transform:translateX(-50%) scale(1.05);
 }
 .cat-title{
   font-family:'Amatic SC','Rubik',cursive;
   font-weight:900;
-  font-size:3.5rem;
-  color:#00d4ff;
-  margin-bottom:2rem;
-  letter-spacing:2px;
+  font-size:2.8rem;
+  color:rgba(0,200,255,.3);
+  margin-bottom:2.5rem;
+  letter-spacing:3px;
   text-align:center;
-  opacity:0;
-  transform:translateY(20px);
-  transition:all .5s ease .6s;
-}
-.cat-page.active .cat-title{
-  opacity:1;
-  transform:translateY(0);
 }
 .cat-content{
-  width:90%;
-  max-width:900px;
-  opacity:0;
-  transform:translateY(30px);
-  transition:all .5s ease .8s;
+  display:flex;flex-direction:column;align-items:center;gap:0;
 }
-.cat-page.active .cat-content{
+.artist-line{
+  font-family:'Frank Ruhl Libre','Heebo',serif;
+  font-weight:700;
+  font-size:3.2rem;
+  color:#e4eaf0;
+  text-align:center;
+  cursor:pointer;
+  padding:8px 20px;
+  transition:all .4s ease;
+  opacity:0;
+  transform:translateY(25px);
+  letter-spacing:1px;
+}
+.cat-page.active .artist-line{
   opacity:1;
   transform:translateY(0);
 }
-
-/* Artist Grid */
-.artist-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
-  gap:18px;
-  width:100%;
-}
-.artist-card{
-  background:rgba(0,15,30,.7);
-  border:1px solid rgba(0,200,255,.15);
-  border-radius:14px;
-  padding:22px 16px;
-  text-align:center;
-  cursor:pointer;
-  transition:all .35s ease;
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
-}
-.artist-card:hover{
-  background:rgba(0,50,90,.8);
-  border-color:rgba(0,220,255,.5);
-  transform:translateY(-4px);
-  box-shadow:0 8px 30px rgba(0,180,230,.2);
-}
-.artist-icon{
-  width:64px;height:64px;
-  border-radius:50%;
-  margin:0 auto 12px;
-  background:linear-gradient(135deg,rgba(0,180,230,.25),rgba(0,100,150,.15));
-  border:2px solid rgba(0,200,255,.2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.6rem;
+.artist-line:hover{
   color:#00d4ff;
+  text-shadow:0 0 30px rgba(0,200,255,.4);
+  transform:scale(1.06);
 }
-.artist-name{
-  font-family:'Heebo',sans-serif;
-  font-weight:600;
-  font-size:1.05rem;
-  color:#e4eaf0;
-  margin-bottom:4px;
-}
-.artist-role{
-  font-family:'Heebo',sans-serif;
-  font-weight:300;
-  font-size:.8rem;
-  color:rgba(0,200,255,.5);
-}
-
-/* Wide cube for category pages */
-.cube-wrap.cat-open{
-  position:fixed;
-  top:50%;left:50%;
-  transform:translate(-50%,-50%) scale(0.35);
-  width:360px;height:360px;
-  z-index:6;
-  opacity:0.15;
-  pointer-events:none;
-  transition:transform .6s ease, opacity .6s ease;
-}
+.artist-line:nth-child(1){transition-delay:.5s;}
+.artist-line:nth-child(2){transition-delay:.6s;}
+.artist-line:nth-child(3){transition-delay:.7s;}
+.artist-line:nth-child(4){transition-delay:.8s;}
+.artist-line:nth-child(5){transition-delay:.9s;}
 
 @media(max-width:768px){
-  .cat-title{font-size:2.5rem;}
-  .artist-grid{
-    grid-template-columns:repeat(2, 1fr);
-    gap:12px;
-  }
-  .artist-card{padding:16px 10px;}
-  .artist-icon{width:50px;height:50px;font-size:1.3rem;}
-  .artist-name{font-size:.95rem;}
-  .cat-back{top:12px;right:12px;width:38px;height:38px;font-size:1.2rem;}
-  .cat-page{padding-top:6vh;}
+  .cat-title{font-size:2rem;}
+  .artist-line{font-size:2.2rem;padding:6px 14px;}
+  .cat-back{top:14px;padding:8px 22px;font-size:1.1rem;}
 }
 </style>
 </head>
@@ -383,7 +327,7 @@ a{text-decoration:none}
   </div>
 
   <div class="cat-page" id="catPage">
-    <button class="cat-back" id="catBack">✕</button>
+    <button class="cat-back" id="catBack">✕ חזרה</button>
     <div class="cat-title" id="catTitle"></div>
     <div class="cat-content" id="catContent"></div>
   </div>
@@ -782,43 +726,81 @@ var HERO_IMGS=[
   var wrap=document.querySelector('.cube-wrap');
   var cats=document.getElementById('cubeCategories');
   var catItems=document.querySelectorAll('.cat-item');
-
-  // Artist data
-  var ARTISTS=[
-    {name:'Static & Ben El',nameHe:'סטטיק ובן אל',role:'פופ / מזרחית'},
-    {name:'Noa Kirel',nameHe:'נועה קירל',role:'פופ'},
-    {name:'Eden Ben Zaken',nameHe:'עדן בן זקן',role:'מזרחית / פופ'},
-    {name:'Omer Adam',nameHe:'עומר אדם',role:'מזרחית / פופ'},
-    {name:'Anna Zak',nameHe:'אנה זק',role:'פופ'},
-    {name:'Itay Levi',nameHe:'איתי לוי',role:'מזרחית'},
-    {name:'Mergui',nameHe:'מרגי',role:'R&B / פופ'},
-    {name:'Tuna',nameHe:'טונה',role:'היפ הופ'},
-    {name:'Stephane Legar',nameHe:'סטפן לגר',role:'אפרו-פופ'},
-    {name:'Subliminal',nameHe:'סאבלימינל',role:'היפ הופ'},
-    {name:'Ravid Plotnik',nameHe:'רביד פלוטניק',role:'ראפ'},
-    {name:'Harel Skaat',nameHe:'הראל סקעת',role:'פופ / סואל'}
-  ];
-
-  var EMOJIS=['🎤','🎵','🎸','🎹','🎶','🎧','🎺','🎻','🥁','🎷','🎼','🎙️'];
-
-  function buildArtistsGrid(){
-    var html='<div class="artist-grid">';
-    ARTISTS.forEach(function(a,i){
-      html+='<div class="artist-card" style="transition-delay:'+(0.8+i*0.06)+'s;opacity:0;transform:translateY(20px);"><div class="artist-icon">'+EMOJIS[i%EMOJIS.length]+'</div><div class="artist-name">'+a.nameHe+'</div><div class="artist-role">'+a.role+'</div></div>';
-    });
-    html+='</div>';
-    return html;
-  }
+  var hubCenter=document.querySelector('.hub-center');
 
   var CAT_DATA={
-    artists:{title:'אומנים',build:buildArtistsGrid},
-    productions:{title:'הפקות',build:function(){return '<div style="text-align:center;color:rgba(0,200,255,.4);font-size:1.3rem;padding:40px;">בקרוב...</div>';}},
-    marketing:{title:'שיווק',build:function(){return '<div style="text-align:center;color:rgba(0,200,255,.4);font-size:1.3rem;padding:40px;">בקרוב...</div>';}},
-    booking:{title:'בוקינג',build:function(){return '<div style="text-align:center;color:rgba(0,200,255,.4);font-size:1.3rem;padding:40px;">בקרוב...</div>';}}
+    artists:{
+      title:'אומנים',
+      names:["ג׳ימבו ג׳י","אקו","אלי לוזון","מאור אשכנזי","נרקיס"]
+    },
+    productions:{title:'הפקות',names:['בקרוב...']},
+    marketing:{title:'שיווק',names:['בקרוב...']},
+    booking:{title:'בוקינג',names:['בקרוב...']}
   };
 
   var currentCat=null;
-  var hubCenter=document.querySelector('.hub-center');
+  var savedCubieTransforms=[];
+
+  // Fly cubies to 4 corners of the viewport
+  function flyCubiesToCorners(){
+    var cubies=window._cubies||[];
+    var vw=window.innerWidth, vh=window.innerHeight;
+    // 4 corner targets (in px, relative to cube-root center)
+    var corners=[
+      {x:-vw*0.45, y:-vh*0.45}, // top-left
+      {x: vw*0.45, y:-vh*0.45}, // top-right
+      {x:-vw*0.45, y: vh*0.45}, // bottom-left
+      {x: vw*0.45, y: vh*0.45}  // bottom-right
+    ];
+
+    cubies.forEach(function(c,idx){
+      // Save current transform
+      savedCubieTransforms[idx]=c.el.style.transform;
+      var st=c.el.style.transform;
+      var m=st.match(/matrix3d\(([^)]+)\)/);
+      if(!m) return;
+      var vals=m[1].split(',').map(Number);
+
+      // Assign each cubie to a corner (distribute evenly)
+      var corner=corners[idx%4];
+      // Add some randomness for organic feel
+      var jx=(Math.random()-0.5)*120;
+      var jy=(Math.random()-0.5)*120;
+
+      vals[12]=corner.x+jx;
+      vals[13]=corner.y+jy;
+      vals[14]=(Math.random()-0.5)*100;
+
+      // Add slight rotation
+      var ra=(Math.random()-0.5)*0.4;
+      vals[0]+=ra; vals[5]+=ra;
+
+      var delay=idx*12;
+      c.el.style.transition='transform .6s cubic-bezier(.22,.68,.36,1.1) '+delay+'ms, opacity .4s ease '+(delay+100)+'ms';
+      c.el.style.transform='matrix3d('+vals.join(',')+')';
+      c.el.style.opacity='0.35';
+    });
+  }
+
+  // Fly cubies back from corners to original positions
+  function flyCubiesBack(){
+    var cubies=window._cubies||[];
+    cubies.forEach(function(c,idx){
+      var delay=idx*10;
+      c.el.style.transition='transform .5s cubic-bezier(.25,.46,.45,.94) '+delay+'ms, opacity .4s ease '+delay+'ms';
+      c.el.style.opacity='1';
+    });
+    // Restore original transforms
+    if(window._restoreCubies) window._restoreCubies();
+  }
+
+  function buildContent(names){
+    var html='';
+    names.forEach(function(name){
+      html+='<div class="artist-line">'+name+'</div>';
+    });
+    return html;
+  }
 
   function openCategory(catKey){
     var data=CAT_DATA[catKey];
@@ -827,45 +809,24 @@ var HERO_IMGS=[
 
     // Build content
     catTitle.textContent=data.title;
-    catContent.innerHTML=data.build();
+    catContent.innerHTML=buildContent(data.names);
 
-    // Step 1: Hide categories immediately
+    // Step 1: Hide categories
     cats.classList.remove('visible');
 
-    // Step 2: Quickly reverse-fold the cube closed
-    // Trigger the close by restoring cubies
-    var cubies=window._cubies||[];
-    cubies.forEach(function(c,idx){
-      var saved=c._savedTransform;
-      if(!saved && window._cubeUpd){window._cubeUpd(c);saved=c.el.style.transform;}
-      if(saved){
-        c.el.style.transition='transform .4s cubic-bezier(.25,.46,.45,.94) '+(idx%9)*8+'ms';
-        c.el.style.transform=saved;
-      }
-      c.el.style.opacity='1';
-    });
-
-    // Step 3: After cube folds back, shrink it and show category page
+    // Step 2: Fly cubies to corners (from current exploded state)
     setTimeout(function(){
-      // Clean up cube state
-      wrap.classList.remove('exploded');
-      if(window._restoreCubies) window._restoreCubies();
+      flyCubiesToCorners();
 
-      // Now shrink cube to decorative background element
-      wrap.classList.add('cat-open');
-      hubCenter.style.transition='opacity .4s ease';
+      // Step 3: Hide hub center, show category page
+      hubCenter.style.transition='opacity .3s ease';
       hubCenter.style.opacity='0';
       hubCenter.style.pointerEvents='none';
 
-      // Show category page
-      catPage.classList.add('active');
-
-      // Animate artist cards in
       setTimeout(function(){
-        var cards=catContent.querySelectorAll('.artist-card');
-        cards.forEach(function(c){c.style.opacity='1';c.style.transform='translateY(0)';});
-      },100);
-    },500);
+        catPage.classList.add('active');
+      },300);
+    },150);
   }
 
   function closeCategory(){
@@ -875,9 +836,11 @@ var HERO_IMGS=[
     // Hide category page
     catPage.classList.remove('active');
 
-    // Restore hub-center and cube
+    // Fly cubies back
     setTimeout(function(){
-      wrap.classList.remove('cat-open');
+      wrap.classList.remove('exploded');
+      flyCubiesBack();
+      hubCenter.style.transition='opacity .5s ease .3s';
       hubCenter.style.opacity='1';
       hubCenter.style.pointerEvents='';
     },300);
