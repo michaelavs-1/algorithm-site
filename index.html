@@ -1348,21 +1348,13 @@ var HERO_IMGS=[
     });
 
     setTimeout(function(){
-      // Restore bottom cubies and clean up clones
+      // Restore ALL cubies visibility
       cubies.forEach(function(c){
+        c.el.style.transition='opacity .4s ease, transform .4s ease';
         if(c.face==='bottom' && c._savedTransform){
-          c.el.style.transition='opacity .4s ease, transform .4s ease';
           c.el.style.transform=c._savedTransform;
-          c.el.style.opacity='1';
         }
-      });
-
-      // Show non-bottom cubies
-      cubies.forEach(function(c){
-        if(c.face!=='bottom' && c._savedTransform){
-          c.el.style.transition='opacity .4s ease';
-          c.el.style.opacity='1';
-        }
+        c.el.style.opacity='1';
       });
 
       setTimeout(function(){
@@ -1461,6 +1453,8 @@ var HERO_IMGS=[
     // Restore UI
     setTimeout(function(){
       cats.classList.add('visible');
+      var glow=document.querySelector('.cube-glow');
+      if(glow) glow.style.opacity='';
       var hint=document.getElementById('clickHint');
       if(hint) hint.style.display='none';
       gridFront.innerHTML='';
