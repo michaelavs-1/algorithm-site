@@ -123,8 +123,17 @@ a{text-decoration:none}
 @keyframes fadeUp{from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
 
 @media(max-width:768px){
-  .cube-wrap{width:260px;height:260px}
-  .float-label{font-size:1.8rem}
+  .hub{overflow:visible}
+  .cube-wrap{width:200px;height:200px;margin:0 auto}
+  .hub-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+  .float-label{
+    font-size:1.5rem;
+    color:#00b8e6 !important;
+    -webkit-text-fill-color:#00b8e6 !important;
+    background:none !important;
+    -webkit-text-stroke:0;
+    filter:none !important;
+  }
 }
 </style>
 </head>
@@ -313,7 +322,8 @@ var HERO_IMGS=[
   function getRadius(){
     var w=hub.offsetWidth/2, h=hub.offsetHeight/2;
     var r=Math.min(w,h)*0.78;
-    return Math.max(260, Math.min(420, r));
+    var isMobile=window.innerWidth<=768;
+    return isMobile ? Math.max(140, Math.min(200, r)) : Math.max(260, Math.min(420, r));
   }
 
   setTimeout(function(){
