@@ -358,11 +358,11 @@ a{text-decoration:none}
   transform-style:preserve-3d;
   transform:translateX(-50%) translateY(-50%) translateZ(0);
   transition:transform 1.2s cubic-bezier(.25,.46,.45,.94);
-  width:180px;height:180px;
+  width:320px;height:320px;
 }
 
 .pov-cube-container.diving{
-  transform:translateX(-50%) translateY(-50%) translateZ(800px) rotateX(-70deg) rotateY(0deg);
+  transform:translateX(-50%) translateY(-50%) translateZ(450px) rotateX(-70deg) rotateY(0deg);
 }
 
 /* Inner face container for rotating to bottom face */
@@ -391,39 +391,21 @@ a{text-decoration:none}
   opacity:1;
 }
 
-/* Positioned in 3D grid layout (matching cube grid) */
-.pov-cubie-clone[data-gx="-1"][data-gy="-1"]{
-  left:0;top:0;
-}
-.pov-cubie-clone[data-gx="0"][data-gy="-1"]{
-  left:calc(50% - 28px);top:0;
-}
-.pov-cubie-clone[data-gx="1"][data-gy="-1"]{
-  right:0;top:0;
-}
-.pov-cubie-clone[data-gx="-1"][data-gy="0"]{
-  left:0;top:calc(50% - 28px);
-}
-.pov-cubie-clone[data-gx="0"][data-gy="0"]{
-  left:calc(50% - 28px);top:calc(50% - 28px);
-}
-.pov-cubie-clone[data-gx="1"][data-gy="0"]{
-  right:0;top:calc(50% - 28px);
-}
-.pov-cubie-clone[data-gx="-1"][data-gy="1"]{
-  left:0;bottom:0;
-}
-.pov-cubie-clone[data-gx="0"][data-gy="1"]{
-  left:calc(50% - 28px);bottom:0;
-}
-.pov-cubie-clone[data-gx="1"][data-gy="1"]{
-  right:0;bottom:0;
-}
+/* Positioned in 3D grid layout — 3x3 in 320px container */
+.pov-cubie-clone[data-gx="-1"][data-gy="-1"]{ left:5px;top:5px; }
+.pov-cubie-clone[data-gx="0"][data-gy="-1"]{ left:calc(50% - 28px);top:5px; }
+.pov-cubie-clone[data-gx="1"][data-gy="-1"]{ right:5px;top:5px; }
+.pov-cubie-clone[data-gx="-1"][data-gy="0"]{ left:5px;top:calc(50% - 28px); }
+.pov-cubie-clone[data-gx="0"][data-gy="0"]{ left:calc(50% - 28px);top:calc(50% - 28px); }
+.pov-cubie-clone[data-gx="1"][data-gy="0"]{ right:5px;top:calc(50% - 28px); }
+.pov-cubie-clone[data-gx="-1"][data-gy="1"]{ left:5px;bottom:5px; }
+.pov-cubie-clone[data-gx="0"][data-gy="1"]{ left:calc(50% - 28px);bottom:5px; }
+.pov-cubie-clone[data-gx="1"][data-gy="1"]{ right:5px;bottom:5px; }
 
 /* Cards spread out after dive */
 .pov-cube-container.landed .pov-cubie-clone{
-  width:120px;height:120px;
-  transform:translateZ(120px) scale(1);
+  width:100px;height:100px;
+  transform:translateZ(60px) scale(1);
 }
 
 /* Cubie visual inner */
