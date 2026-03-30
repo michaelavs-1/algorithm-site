@@ -73,7 +73,7 @@ a{text-decoration:none}
 }
 .hub-hero-link:hover{transform:scale(1.03)}
 
-/* Inner categories — semi-circle arc above the cube */
+/* Inner categories (revealed on click) */
 .cube-categories{
   position:absolute;z-index:5;
   top:0;left:0;width:100%;height:100%;
@@ -89,12 +89,12 @@ a{text-decoration:none}
   position:absolute;
   font-family:'Amatic SC','Rubik',cursive;
   font-weight:900;
-  font-size:2.4rem;
+  font-size:3rem;
   white-space:nowrap;
   text-align:center;
-  padding:10px 22px;
+  padding:14px 28px;
   border-radius:14px;
-  background:rgba(0,15,30,.8);
+  background:rgba(0,15,30,.75);
   border:1px solid rgba(0,200,255,.3);
   color:#00d4ff;
   cursor:pointer;
@@ -103,62 +103,31 @@ a{text-decoration:none}
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
   opacity:0;
-  /* Start at cube center */
-  top:50%;left:50%;
-  transform:translate(-50%,-50%) scale(0.2) translateY(0);
-  transition:all .6s cubic-bezier(.34,1.56,.64,1);
+  transform:scale(0) rotate(0deg);
+  transition:opacity .5s ease, transform .6s cubic-bezier(.34,1.56,.64,1), background .3s, border-color .3s, color .3s, box-shadow .3s;
   box-shadow:0 0 15px rgba(0,180,230,.1);
   letter-spacing:1px;
 }
 .cube-categories.visible .cat-item{
   opacity:1;
+  transform:scale(1) var(--rot);
 }
-/* 4 items in inverted smile arc above cube — positions along arc */
-/* Arc: items spread horizontally, with outer items slightly lower (inverted smile) */
-.cube-categories.visible .cat-item:nth-child(1){
-  top:var(--ty);left:var(--tx);
-  transform:translate(-50%,-50%) scale(1);
-}
-.cube-categories.visible .cat-item:nth-child(2){
-  top:var(--ty);left:var(--tx);
-  transform:translate(-50%,-50%) scale(1);
-}
-.cube-categories.visible .cat-item:nth-child(3){
-  top:var(--ty);left:var(--tx);
-  transform:translate(-50%,-50%) scale(1);
-}
-.cube-categories.visible .cat-item:nth-child(4){
-  top:var(--ty);left:var(--tx);
-  transform:translate(-50%,-50%) scale(1);
-}
-/* Inverted smile: center items higher, outer items lower */
-/* Order RTL: 1=rightmost, 4=leftmost */
-.cat-item:nth-child(1){--tx:72%;--ty:12%;transition-delay:.35s;}
-.cat-item:nth-child(2){--tx:57%;--ty:4%;transition-delay:.42s;}
-.cat-item:nth-child(3){--tx:42%;--ty:4%;transition-delay:.49s;}
-.cat-item:nth-child(4){--tx:27%;--ty:12%;transition-delay:.56s;}
+.cat-item:nth-child(1){top:28%;left:55%;--rot:rotate(-5deg);transition-delay:.5s,.5s,0s,0s,0s,0s;}
+.cat-item:nth-child(2){top:36%;left:18%;--rot:rotate(3deg);transition-delay:.6s,.6s,0s,0s,0s,0s;}
+.cat-item:nth-child(3){top:56%;left:50%;--rot:rotate(4deg);transition-delay:.7s,.7s,0s,0s,0s,0s;}
+.cat-item:nth-child(4){top:50%;left:12%;--rot:rotate(-4deg);transition-delay:.8s,.8s,0s,0s,0s,0s;}
 .cat-item:hover{
   background:rgba(0,60,100,.9);
   border-color:rgba(0,220,255,.6);
   color:#88ffff;
-  transform:translate(-50%,-50%) scale(1.1)!important;
+  transform:scale(1.12) var(--rot);
   box-shadow:0 0 30px rgba(0,180,230,.35);
 }
 
 /* Cube box-open state */
-.cube-wrap{cursor:pointer;position:relative;}
-.cube-tap-zone{
-  position:absolute;inset:0;z-index:10;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;
-}
-.cube-wrap.exploded .cube-tap-zone{pointer-events:none;}
+.cube-wrap{cursor:pointer;}
 .cube-wrap.exploded .cube-root{
   animation-play-state:paused;
-}
-.cube-wrap.exploded .inner-img{
-  opacity:1!important;
 }
 .cube-root .cubie{transition:transform .9s cubic-bezier(.25,.46,.45,.94);}
 .cube-wrap.exploded .cube-root .cubie{
@@ -214,600 +183,12 @@ a{text-decoration:none}
     font-size:1.8rem;
     padding:10px 18px;
   }
-  .cat-item:nth-child(1){--tx:70%;--ty:22%;}
-  .cat-item:nth-child(2){--tx:15%;--ty:32%;}
-  .cat-item:nth-child(3){--tx:65%;--ty:62%;}
-  .cat-item:nth-child(4){--tx:12%;--ty:55%;}
+  .cat-item:nth-child(1){top:18%;left:50%;}
+  .cat-item:nth-child(2){top:30%;left:10%;}
+  .cat-item:nth-child(3){top:58%;left:45%;}
+  .cat-item:nth-child(4){top:50%;left:5%;}
   .click-hint{font-size:1rem;bottom:-28px;}
   .scatter-dot,.scatter-line{display:none}
-}
-
-/* === Category Page === */
-.cat-page{
-  position:fixed;z-index:8;
-  inset:0;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .2s ease;
-  perspective:900px;
-}
-.cat-page.active{
-  pointer-events:auto;
-  opacity:1;
-}
-.cat-page.cube-tour{
-  z-index:11;
-  opacity:1 !important;
-  transition:none !important;
-  /* Shift content to top so it doesn't block the 3D room floor */
-  align-items:center;
-  justify-content:flex-start;
-  padding-top:60px;
-  pointer-events:none;
-}
-.cat-page.cube-tour .cat-back{
-  pointer-events:auto;
-}
-
-/* Inner cube walls — simulates being inside the opened cube */
-.cube-walls{
-  position:absolute;inset:0;pointer-events:none;
-  perspective:800px;
-  transform-style:preserve-3d;
-}
-.cube-wall{
-  position:absolute;
-  background:linear-gradient(180deg,rgba(0,30,60,.0) 0%,rgba(0,60,120,.12) 50%,rgba(0,30,60,.0) 100%);
-  border:1px solid rgba(0,200,255,.0);
-  transition:all .7s cubic-bezier(.22,.68,.36,1.05);
-  opacity:0;
-}
-.cat-page.active .cube-wall{opacity:1;}
-/* Top wall — folds down from top */
-.cube-wall--top{
-  top:0;left:5%;right:5%;height:22%;
-  transform-origin:top center;
-  transform:rotateX(75deg);
-  background:linear-gradient(180deg,rgba(0,40,80,.2) 0%,rgba(0,20,50,.05) 100%);
-  border-bottom:1px solid rgba(0,200,255,.08);
-}
-.cat-page.active .cube-wall--top{transform:rotateX(68deg);border-bottom-color:rgba(0,200,255,.12);}
-/* Bottom wall — folds up from bottom */
-.cube-wall--bottom{
-  bottom:0;left:5%;right:5%;height:22%;
-  transform-origin:bottom center;
-  transform:rotateX(-75deg);
-  background:linear-gradient(0deg,rgba(0,40,80,.2) 0%,rgba(0,20,50,.05) 100%);
-  border-top:1px solid rgba(0,200,255,.08);
-}
-.cat-page.active .cube-wall--bottom{transform:rotateX(-68deg);border-top-color:rgba(0,200,255,.12);}
-/* Left wall */
-.cube-wall--left{
-  left:0;top:8%;bottom:8%;width:16%;
-  transform-origin:left center;
-  transform:rotateY(-75deg);
-  background:linear-gradient(90deg,rgba(0,40,80,.18) 0%,rgba(0,20,50,.03) 100%);
-  border-right:1px solid rgba(0,200,255,.08);
-}
-.cat-page.active .cube-wall--left{transform:rotateY(-68deg);border-right-color:rgba(0,200,255,.1);}
-/* Right wall */
-.cube-wall--right{
-  right:0;top:8%;bottom:8%;width:16%;
-  transform-origin:right center;
-  transform:rotateY(75deg);
-  background:linear-gradient(-90deg,rgba(0,40,80,.18) 0%,rgba(0,20,50,.03) 100%);
-  border-left:1px solid rgba(0,200,255,.08);
-}
-.cat-page.active .cube-wall--right{transform:rotateY(68deg);border-left-color:rgba(0,200,255,.1);}
-
-/* Corner glow accents */
-.cube-wall::after{
-  content:'';position:absolute;
-  width:60px;height:60px;
-  background:radial-gradient(circle,rgba(0,200,255,.06),transparent 70%);
-  border-radius:50%;
-}
-.cube-wall--top::after{bottom:-30px;left:50%;transform:translateX(-50%);}
-.cube-wall--bottom::after{top:-30px;left:50%;transform:translateX(-50%);}
-.cube-wall--left::after{right:-30px;top:50%;transform:translateY(-50%);}
-.cube-wall--right::after{left:-30px;top:50%;transform:translateY(-50%);}
-
-/* Edge glow lines where walls meet */
-.cube-edge{
-  position:absolute;
-  background:rgba(0,200,255,.0);
-  transition:background .6s ease .2s;
-}
-.cat-page.active .cube-edge{background:rgba(0,200,255,.06);}
-.cube-edge--tl{top:0;left:0;width:1px;height:20%;background:linear-gradient(180deg,rgba(0,200,255,.1),transparent)!important;}
-.cube-edge--tr{top:0;right:0;width:1px;height:20%;background:linear-gradient(180deg,rgba(0,200,255,.1),transparent)!important;}
-.cube-edge--bl{bottom:0;left:0;width:1px;height:20%;background:linear-gradient(0deg,rgba(0,200,255,.1),transparent)!important;}
-.cube-edge--br{bottom:0;right:0;width:1px;height:20%;background:linear-gradient(0deg,rgba(0,200,255,.1),transparent)!important;}
-
-.cat-back{
-  position:fixed;top:20px;left:50%;z-index:20;
-  background:rgba(0,15,30,.85);
-  border:1px solid rgba(0,200,255,.3);
-  color:#00d4ff;
-  font-family:'Amatic SC',cursive;
-  font-size:1.3rem;font-weight:700;
-  padding:10px 28px;
-  border-radius:30px;
-  cursor:pointer;
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  letter-spacing:1px;
-  opacity:0;
-  transform:translateX(-50%) translateY(-20px);
-  transition:opacity .4s ease .6s, transform .4s ease .6s, background .3s, border-color .3s;
-}
-.cat-page.active .cat-back{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
-}
-.cat-back:hover{
-  background:rgba(0,60,100,.9);
-  border-color:rgba(0,220,255,.6);
-}
-
-/* ========== POV 3D Room System ========== */
-
-/* Full-screen scene — the camera viewport */
-.pov-camera-scene{
-  position:fixed;z-index:10;inset:0;
-  perspective:700px;
-  perspective-origin:50% 30%;
-  display:none;
-  overflow:hidden;
-  background:radial-gradient(ellipse at 50% 60%,rgba(0,30,60,.95) 0%,rgba(2,8,18,1) 70%);
-}
-.pov-camera-scene.active{ display:block; }
-
-/* Vignette overlay */
-.pov-camera-scene::after{
-  content:'';position:absolute;inset:0;z-index:100;
-  background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(0,0,0,.55) 100%);
-  pointer-events:none;opacity:0;transition:opacity .8s ease .2s;
-}
-.pov-camera-scene.active::after{ opacity:1; }
-
-/* The 3D camera rig — this element gets transformed to simulate camera movement */
-.pov-camera-rig{
-  position:absolute;
-  left:50%;top:40%;
-  width:0;height:0;
-  transform-style:preserve-3d;
-  /* Start: camera above looking down */
-  transform:translate(-50%,-50%) translateY(-400px) translateZ(-500px) rotateX(75deg);
-  transition:transform 2s cubic-bezier(.25,.46,.45,.94);
-}
-/* Phase: camera dives into the room */
-.pov-camera-rig.entered{
-  transform:translate(-50%,-50%) translateY(-120px) translateZ(120px) rotateX(42deg);
-  transition:transform 2.2s cubic-bezier(.22,.68,.36,1);
-}
-/* Phase: camera settles — looking down at the floor cards */
-.pov-camera-rig.settled{
-  transform:translate(-50%,-50%) translateY(-100px) translateZ(160px) rotateX(38deg);
-  transition:transform 1.5s cubic-bezier(.25,.46,.45,.94);
-}
-
-/* The 3D room — a box made of 6 faces */
-.pov-room{
-  position:absolute;
-  transform-style:preserve-3d;
-  width:500px;height:500px;
-  left:-250px;top:-250px;
-}
-
-/* Each wall face */
-.pov-room-face{
-  position:absolute;
-  width:500px;height:500px;
-  backface-visibility:visible;
-  border:1px solid rgba(0,200,255,.08);
-}
-
-/* Floor — where the cards live */
-.pov-room-floor{
-  background:linear-gradient(180deg,rgba(0,20,50,.6) 0%,rgba(0,10,30,.85) 100%);
-  border-color:rgba(0,200,255,.12);
-  transform:rotateX(-90deg) translateZ(250px);
-}
-/* Subtle grid on floor */
-.pov-room-floor::after{
-  content:'';position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(0,200,255,.06) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,200,255,.06) 1px,transparent 1px);
-  background-size:33.33% 33.33%;
-}
-
-/* Ceiling */
-.pov-room-ceiling{
-  background:linear-gradient(180deg,rgba(0,8,20,.9) 0%,rgba(0,30,60,.4) 100%);
-  transform:rotateX(90deg) translateZ(250px);
-  opacity:.7;
-}
-.pov-room-ceiling::after{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(circle at 50% 50%,rgba(0,200,255,.08) 0%,transparent 60%);
-}
-
-/* Front wall (facing camera) */
-.pov-room-front{
-  background:linear-gradient(180deg,rgba(0,15,40,.3) 0%,rgba(0,20,50,.5) 100%);
-  transform:translateZ(-250px);
-}
-
-/* Back wall (behind camera) */
-.pov-room-back{
-  background:linear-gradient(180deg,rgba(0,15,40,.2) 0%,rgba(0,10,30,.4) 100%);
-  transform:translateZ(250px) rotateY(180deg);
-  opacity:.4;
-}
-
-/* Left wall */
-.pov-room-left{
-  background:linear-gradient(90deg,rgba(0,15,40,.5) 0%,rgba(0,20,50,.15) 100%);
-  transform:rotateY(90deg) translateZ(250px);
-}
-/* Glowing edge lines on walls */
-.pov-room-left::before,.pov-room-right::before{
-  content:'';position:absolute;
-  width:1px;height:100%;
-  background:linear-gradient(180deg,transparent 0%,rgba(0,200,255,.15) 30%,rgba(0,200,255,.15) 70%,transparent 100%);
-  right:0;top:0;
-}
-.pov-room-right::before{ left:0;right:auto; }
-
-/* Right wall */
-.pov-room-right{
-  background:linear-gradient(-90deg,rgba(0,15,40,.5) 0%,rgba(0,20,50,.15) 100%);
-  transform:rotateY(-90deg) translateZ(250px);
-}
-
-/* Ambient particles inside the room */
-.pov-room-particle{
-  position:absolute;
-  width:2px;height:2px;
-  background:rgba(0,200,255,.4);
-  border-radius:50%;
-  pointer-events:none;
-  animation:povRoomFloat var(--dur,5s) ease-in-out infinite var(--delay,0s);
-}
-@keyframes povRoomFloat{
-  0%,100%{transform:translate3d(0,0,0) scale(1);opacity:.15}
-  50%{transform:translate3d(var(--dx,10px),var(--dy,-20px),var(--dz,10px)) scale(1.8);opacity:.5}
-}
-
-/* Floor card grid — the 3x3 inside the room */
-.pov-floor-grid{
-  position:absolute;
-  width:420px;height:420px;
-  left:40px;top:40px;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  grid-template-rows:repeat(3,1fr);
-  gap:8px;
-  transform-style:preserve-3d;
-}
-
-/* Individual floor card */
-.pov-floor-card{
-  position:relative;
-  border-radius:10px;
-  overflow:hidden;
-  background:rgba(0,15,35,.85);
-  border:1px solid rgba(0,200,255,.15);
-  cursor:pointer;
-  opacity:0;
-  transform:translateY(20px) scale(.9);
-  transition:opacity .5s ease var(--card-delay,.3s), transform .6s cubic-bezier(.22,.68,.36,1) var(--card-delay,.3s), border-color .3s, box-shadow .3s;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:flex-end;
-}
-.pov-camera-rig.settled .pov-floor-card{
-  opacity:1;
-  transform:translateY(0) scale(1);
-}
-.pov-floor-card:hover{
-  border-color:rgba(0,220,255,.45);
-  box-shadow:0 0 25px rgba(0,200,255,.15), 0 8px 30px rgba(0,0,0,.4);
-  transform:translateY(-2px) scale(1.02);
-}
-
-.pov-card-bg{
-  position:absolute;inset:0;
-  background-size:cover;background-position:center;
-  opacity:.7;
-  transition:opacity .4s ease, transform .6s ease;
-  transform:scale(1.08);
-}
-.pov-floor-card:hover .pov-card-bg{
-  opacity:.95;
-  transform:scale(1);
-}
-
-.pov-card-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(0,10,20,.02) 0%,rgba(0,10,20,.75) 80%);
-  z-index:1;
-}
-
-.pov-card-name{
-  position:relative;z-index:2;
-  font-family:'Frank Ruhl Libre','Heebo',serif;
-  font-weight:700;
-  font-size:clamp(.85rem,1.8vw,1.1rem);
-  color:#e4eaf0;
-  text-align:center;
-  padding:10px 6px;
-  width:100%;
-  text-shadow:0 2px 10px rgba(0,0,0,.7);
-  transition:color .3s ease;
-}
-.pov-floor-card:hover .pov-card-name{ color:#88ffff; }
-
-/* Room entrance animation — walls fade in */
-.pov-room-face{
-  opacity:0;
-  transition:opacity 1s ease;
-}
-.pov-camera-rig.entered .pov-room-face,
-.pov-camera-rig.settled .pov-room-face{
-  opacity:1;
-  transition:opacity 1.2s ease .3s;
-}
-.pov-camera-rig.entered .pov-room-floor,
-.pov-camera-rig.settled .pov-room-floor{
-  opacity:1;
-  transition:opacity .8s ease .1s;
-}
-
-/* Subtle breathing animation on the room for ambiance */
-@keyframes roomBreathe{
-  0%,100%{ transform:translate(-50%,-50%) translateY(-100px) translateZ(160px) rotateX(38deg) rotateY(0deg); }
-  50%{ transform:translate(-50%,-50%) translateY(-103px) translateZ(160px) rotateX(38.5deg) rotateY(.5deg); }
-}
-.pov-camera-rig.breathing{
-  animation:roomBreathe 6s ease-in-out infinite;
-}
-
-/* 3D Grid container — used for switching categories */
-.face-grid-3d{
-  perspective:1200px;
-  width:min(82vw,420px);
-  aspect-ratio:1;
-  margin:0 auto;
-  position:relative;
-  display:none;
-  transform-style:preserve-3d;
-}
-
-.cat-page.active .face-grid-3d{
-  display:block;
-}
-.cat-page.cube-tour .face-grid-3d{
-  display:none;
-}
-
-.face-grid-face{
-  position:absolute;inset:0;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:5px;
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-  transform-style:preserve-3d;
-  transition:transform .7s cubic-bezier(.4,.0,.2,1);
-}
-
-.face-grid-face--front{
-  transform:rotateY(0deg);
-}
-
-.face-grid-face--back{
-  transform:rotateY(180deg);
-}
-
-.face-grid-3d.flipping .face-grid-face--front{
-  transform:rotateY(180deg);
-}
-
-.face-grid-3d.flipping .face-grid-face--back{
-  transform:rotateY(0deg);
-}
-
-/* Artist cards in grid */
-.face-cell{
-  position:relative;
-  border-radius:8px;
-  overflow:hidden;
-  background:rgba(0,20,40,.7);
-  border:1px solid rgba(0,200,255,.15);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:flex-end;
-  cursor:pointer;
-  opacity:1;
-  transform:scale(1) translateZ(0);
-  transition:opacity .45s ease, transform .5s cubic-bezier(.22,.68,.36,1.08), border-color .3s, box-shadow .3s;
-  transform-style:preserve-3d;
-}
-
-.face-cell:hover{
-  border-color:rgba(0,220,255,.5);
-  transform:scale(1.04) translateZ(22px)!important;
-  box-shadow:0 8px 32px rgba(0,200,255,.18), 0 0 24px rgba(0,200,255,.12), inset 0 0 12px rgba(0,200,255,.04);
-}
-
-.face-cell:active{
-  transform:scale(0.97) translateZ(8px)!important;
-  transition-duration:.1s;
-}
-
-.face-cell-bg{
-  position:absolute;inset:0;
-  background-size:cover;background-position:center;
-  opacity:.72;
-  transition:opacity .4s ease, transform .6s ease;
-  transform:scale(1.05);
-}
-
-.face-cell:hover .face-cell-bg{
-  opacity:.92;
-  transform:scale(1);
-}
-
-.face-cell-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(0,10,20,.05) 0%,rgba(0,10,20,.7) 85%);
-  z-index:1;
-}
-
-.face-cell-name{
-  position:relative;z-index:2;
-  font-family:'Frank Ruhl Libre','Heebo',serif;
-  font-weight:700;
-  font-size:1.15rem;
-  color:#e4eaf0;
-  text-align:center;
-  padding:10px 6px;
-  width:100%;
-  text-shadow:0 2px 8px rgba(0,0,0,.6);
-  transition:color .3s ease, text-shadow .3s ease;
-}
-
-.face-cell:hover .face-cell-name{
-  color:#88ffff;
-  text-shadow:0 2px 12px rgba(0,200,255,.3), 0 2px 8px rgba(0,0,0,.6);
-}
-
-.face-cell-empty{
-  background:rgba(0,12,24,.5);
-  border-color:rgba(0,200,255,.05);
-  cursor:default;
-}
-
-.face-cell-empty::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(0,40,80,.08),transparent);
-}
-
-.face-cell-empty:hover{
-  transform:scale(1) translateZ(0)!important;
-  border-color:rgba(0,200,255,.05);
-  box-shadow:none;
-}
-
-/* Cat title above grid */
-.cat-title-label{
-  font-family:'Amatic SC','Rubik',cursive;
-  font-weight:700;
-  font-size:2.2rem;
-  color:rgba(0,200,255,.3);
-  letter-spacing:3px;
-  margin-bottom:1rem;
-  opacity:0;
-  transform:translateY(15px) scale(0.9);
-  transition:opacity .4s ease .3s, transform .5s cubic-bezier(.22,.68,.36,1.05) .3s;
-}
-
-.cat-page.active .cat-title-label{
-  opacity:1;
-  transform:translateY(0) scale(1);
-}
-
-/* Cube face indicator dots */
-.face-indicator{
-  display:flex;gap:8px;justify-content:center;
-  margin-top:12px;
-  opacity:0;
-  transition:opacity .4s ease .5s;
-}
-
-.cat-page.active .face-indicator{
-  opacity:1;
-}
-
-.face-dot{
-  width:8px;height:8px;border-radius:50%;
-  background:rgba(0,200,255,.15);
-  border:1px solid rgba(0,200,255,.2);
-  transition:background .3s, border-color .3s, transform .3s, box-shadow .3s;
-  cursor:pointer;
-}
-
-.face-dot.active{
-  background:rgba(0,200,255,.5);
-  border-color:rgba(0,220,255,.7);
-  transform:scale(1.3);
-  box-shadow:0 0 8px rgba(0,200,255,.3);
-}
-
-.face-dot:hover:not(.active){
-  background:rgba(0,200,255,.25);
-  border-color:rgba(0,200,255,.4);
-}
-
-/* Particle burst on category open */
-@keyframes particleBurst{
-  0%{transform:translate(0,0) scale(1);opacity:.8;}
-  100%{transform:translate(var(--px),var(--py)) scale(0);opacity:0;}
-}
-
-.grid-particle{
-  position:absolute;
-  width:4px;height:4px;border-radius:50%;
-  background:rgba(0,200,255,.6);
-  pointer-events:none;
-  animation:particleBurst .7s ease-out forwards;
-}
-
-/* Immersive vignette when in cube tour */
-.cat-page.cube-tour::before{
-  content:'';position:fixed;inset:0;z-index:9;
-  background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.35) 100%);
-  pointer-events:none;
-  opacity:1;
-}
-
-/* Responsive */
-@media(max-width:768px){
-  .face-grid-3d{
-    width:min(92vw,340px);
-  }
-  .face-grid-face{
-    gap:3px;
-  }
-  .face-cell-name{
-    font-size:.9rem;
-    padding:7px 4px;
-  }
-  .cat-back{
-    top:12px;
-    padding:8px 20px;
-    font-size:1.1rem;
-  }
-  .cat-title-label{
-    font-size:1.6rem;
-    margin-bottom:.6rem;
-  }
-  .cube-wall--top,.cube-wall--bottom{
-    height:18%;
-  }
-  .cube-wall--left,.cube-wall--right{
-    width:12%;
-  }
-  .face-dot{
-    width:7px;
-    height:7px;
-  }
-  .face-indicator{
-    gap:6px;
-    margin-top:8px;
-  }
 }
 </style>
 </head>
@@ -826,38 +207,17 @@ a{text-decoration:none}
 
   <div class="hub-center">
     <div class="hub-hero-link">
-      <div class="cube-wrap"><div class="cube-root" id="cubeRoot"></div><div class="cube-tap-zone" id="cubeTap"></div></div>
+      <div class="cube-wrap"><div class="cube-root" id="cubeRoot"></div></div>
       <div class="cube-glow"></div>
       <div class="click-hint" id="clickHint">לחץ לפתיחה</div>
     </div>
   </div>
 
   <div class="cube-categories" id="cubeCategories">
-    <a class="cat-item" data-cat="artists" href="#">אומנים</a>
-    <a class="cat-item" data-cat="productions" href="#">הפקות</a>
-    <a class="cat-item" data-cat="marketing" href="#">שיווק</a>
-    <a class="cat-item" data-cat="booking" href="#">בוקינג</a>
-  </div>
-
-  <div class="cat-page" id="catPage">
-    <div class="cube-walls">
-      <div class="cube-wall cube-wall--top"></div>
-      <div class="cube-wall cube-wall--bottom"></div>
-      <div class="cube-wall cube-wall--left"></div>
-      <div class="cube-wall cube-wall--right"></div>
-      <div class="cube-edge cube-edge--tl"></div>
-      <div class="cube-edge cube-edge--tr"></div>
-      <div class="cube-edge cube-edge--bl"></div>
-      <div class="cube-edge cube-edge--br"></div>
-    </div>
-    <button class="cat-back" id="catBack">✕ חזרה</button>
-    <div class="cat-title-label" id="catTitleLabel"></div>
-    <div class="morph-container" id="morphContainer"></div>
-    <div class="face-grid-3d" id="faceGrid3d">
-      <div class="face-grid-face face-grid-face--front" id="gridFaceFront"></div>
-      <div class="face-grid-face face-grid-face--back" id="gridFaceBack"></div>
-    </div>
-    <div class="face-indicator" id="faceIndicator"></div>
+    <a class="cat-item" href="#">אומנים</a>
+    <a class="cat-item" href="#">הפקות</a>
+    <a class="cat-item" href="#">שיווק</a>
+    <a class="cat-item" href="#">בוקינג</a>
   </div>
 </div>
 
@@ -933,46 +293,41 @@ var HERO_IMGS=[
       ['rotateX(90deg) translateZ('+half+'px)', y===-1?'ny':null]
     ];
 
-    // Determine which inner face index points "inward" toward cube center
-    // fi: 0=+z, 1=-z, 2=+x, 3=-x, 4=+y, 5=-y(top)
-    // Inner face = opposite of the outer face direction
-    var innerFaceIdx=-1;
-    if(Math.abs(x)===1 && y!==0 && z!==0) innerFaceIdx=(x===1)?3:2; // left/right wall inner
-    else if(Math.abs(z)===1 && y!==0 && x!==0) innerFaceIdx=(z===1)?1:0; // front/back wall inner
-    else if(y===-1 && Math.abs(x)<=1 && Math.abs(z)<=1) innerFaceIdx=4; // top lid inner (faces down)
-    else if(y===1 && Math.abs(x)<=1 && Math.abs(z)<=1) innerFaceIdx=5; // bottom inner (faces up)
-
     faces.forEach(function(fd, fi){
       var f=document.createElement('div');
+      var isTop=(fi===5 && isTopFace);
       var key=fd[1];
+      var bg;
 
-      // Check if this inner face should get an image
-      var isInnerImage=(!key && fi===innerFaceIdx);
-
-      if(key){
-        // Outer face — gradient only (no images on outside)
+      // Only 4 tiles on the TOP face get images (corners only)
+      var isTopFaceCorner=(fi===5 && y===-1 && Math.abs(x)===1 && Math.abs(z)===1);
+      
+      if(key && isTopFaceCorner){
+        // Image tile with strong cyan tint overlay to blend with cube
+        var imgIdx=Math.floor(Math.random()*HERO_IMGS.length);
+        f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background-size:cover;background-position:center;background-image:url('+HERO_IMGS[imgIdx]+');border:1px solid rgba(0,200,255,.18);transition:background-image 1.8s ease;';
+        f.dataset.imgIdx=imgIdx;
+        // Cyan-tinted overlay for color harmony
+        var ov=document.createElement('div');
+        ov.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,80,120,.35),rgba(0,40,80,.25));pointer-events:none;';
+        f.appendChild(ov);
+        var sh=document.createElement('div');
+        sh.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 60%);pointer-events:none;';
+        f.appendChild(sh);
+        topFaces.push(f);
+      } else if(key){
+        // Gradient face — keeps the cyan Rubik aesthetic
         var g=FG[key];
         var bg='linear-gradient(135deg,'+g[0]+' 0%,'+g[1]+' 50%,'+g[2]+' 100%)';
         f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background:'+bg+';border:1px solid rgba(0,200,255,.12);box-shadow:inset 0 0 8px rgba(0,0,0,.25);';
-      } else if(isInnerImage){
-        // Inner face with image — hidden by default, revealed when box opens
-        var imgIdx=Math.floor(Math.random()*HERO_IMGS.length);
-        f.className='inner-img';
-        f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background-size:cover;background-position:center;background-image:url('+HERO_IMGS[imgIdx]+');border:1px solid rgba(0,200,255,.08);transition:opacity .6s ease .3s;opacity:0;';
-        f.dataset.imgIdx=imgIdx;
-        var ov=document.createElement('div');
-        ov.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,40,80,.3),rgba(0,20,50,.2));pointer-events:none;';
-        f.appendChild(ov);
-        topFaces.push(f);
       } else {
-        // Other inner face
+        // Inner face (not visible)
         f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background:'+INNER+';border:1px solid rgba(0,200,255,.04);';
       }
       el.appendChild(f);
     });
 
     var c={el:el,gx:x,gy:y,gz:z,r:[[1,0,0],[0,1,0],[0,0,1]],origY:y};
-    c.face=(y===1)?'bottom':(y===-1)?'top':(z===1)?'front':(z===-1)?'back':(x===-1)?'left':(x===1)?'right':'center';
     cubies.push(c);
     root.appendChild(el);
     upd(c);
@@ -1000,7 +355,6 @@ var HERO_IMGS=[
   window._cubies=cubies;
   window._cubeStep=step;
   window._cubeUpd=upd;
-  window._heroImgs=HERO_IMGS;
 
   // Very subtle periodic swaps
   setInterval(function(){swapRandomTiles(1);},6000);
@@ -1042,8 +396,7 @@ var HERO_IMGS=[
     }
     requestAnimationFrame(tick);
   }
-  // Rubik turns disabled — keep faces stable for navigation
-  // setTimeout(function(){doTurn();setInterval(doTurn,1600);},1200);
+  setTimeout(function(){doTurn();setInterval(doTurn,1600);},1200);
 })();
 
 // === Cube Click to Open/Close (Box Unfolding) ===
@@ -1127,28 +480,20 @@ var HERO_IMGS=[
     }
   }
 
-  var tapZone=document.getElementById('cubeTap');
-  function toggleCube(e){
-    if(e){e.preventDefault();e.stopPropagation();}
+  wrap.addEventListener('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
     isOpen=!isOpen;
 
     var cubies=window._cubies||[];
 
     if(isOpen){
-      // Snap cube to fixed angle for consistent look
-      var root=document.getElementById('cubeRoot');
-      root.style.animation='none';
-      root.offsetHeight; // force reflow
-      root.style.transform='rotateX(-35deg) rotateY(-30deg)';
-
       wrap.classList.add('exploded');
 
-      // Re-compute cubie positions at the fixed angle, then freeze
+      // First, freeze current transforms
       cubies.forEach(function(c){
-        if(window._cubeUpd) window._cubeUpd(c);
-      });
-      cubies.forEach(function(c){
-        c._savedTransform=c.el.style.transform;
+        var st=c.el.style.transform;
+        c._savedTransform=st;
       });
 
       // Group by face and apply box-opening transforms
@@ -1206,457 +551,23 @@ var HERO_IMGS=[
       cats.classList.add('visible');
       if(hint) hint.style.display='none';
     } else {
-      // Close: reverse the fold — animate back to saved positions first
-      cats.classList.remove('visible');
-
-      // Step 1: Animate each cubie back to its original (pre-open) transform
-      var faceOrder2={top:5, front:4, back:3, right:2, left:1, bottom:0, center:0};
-      var maxDelay=0;
-      cubies.forEach(function(c,idx){
-        var face=getFace(c);
-        var saved=c._savedTransform;
-        if(!saved){
-          // Fallback: compute from upd
-          if(window._cubeUpd) window._cubeUpd(c);
-          saved=c.el.style.transform;
-        }
-        var delay=faceOrder2[face]*60 + (idx%9)*12;
-        var totalTime=delay+800;
-        if(totalTime>maxDelay) maxDelay=totalTime;
-        c.el.style.transition='transform .8s cubic-bezier(.25,.46,.45,.94) '+delay+'ms';
-        c.el.style.transform=saved;
+      // Close: fold back together
+      wrap.classList.remove('exploded');
+      cubies.forEach(function(c){
+        c.el.style.transition='transform .8s cubic-bezier(.25,.46,.45,.94), opacity .5s ease';
         c.el.style.opacity='1';
       });
-
-      // Step 2: After all animations complete, remove exploded and resume spin
-      setTimeout(function(){
-        wrap.classList.remove('exploded');
-        if(window._restoreCubies) window._restoreCubies();
-        // Resume spinning animation
-        var root=document.getElementById('cubeRoot');
-        root.style.animation='cubeSpin 20s linear infinite';
-      }, maxDelay+50);
+      cats.classList.remove('visible');
+      if(window._restoreCubies) window._restoreCubies();
     }
-  }
-
-  // Tap zone handles both click and touch
-  tapZone.addEventListener('click',toggleCube);
-  // Also listen on wrap for when tap zone is hidden (exploded state)
-  wrap.addEventListener('click',function(e){
-    if(isOpen){toggleCube(e);}
   });
 
   // Click outside cube to close
   document.addEventListener('click',function(e){
     if(isOpen && !wrap.contains(e.target) && !cats.contains(e.target)){
-      toggleCube();
+      wrap.click();
     }
   });
-  document.addEventListener('touchend',function(e){
-    if(isOpen && !wrap.contains(e.target) && !cats.contains(e.target)){
-      toggleCube();
-    }
-  });
-})();
-
-// === POV Camera Dive Navigation ===
-(function(){
-  var catPage=document.getElementById('catPage');
-  var catTitleLabel=document.getElementById('catTitleLabel');
-  var faceGrid3d=document.getElementById('faceGrid3d');
-  var gridFront=document.getElementById('gridFaceFront');
-  var gridBack=document.getElementById('gridFaceBack');
-  var indicator=document.getElementById('faceIndicator');
-  var catBack=document.getElementById('catBack');
-  var cats=document.getElementById('cubeCategories');
-  var catItems=document.querySelectorAll('.cat-item');
-  var hubCenter=document.querySelector('.hub-center');
-
-  var ARTIST_GRADIENTS=[
-    'linear-gradient(135deg,#0a2463 0%,#1e6091 50%,#168aad 100%)',
-    'linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%)',
-    'linear-gradient(135deg,#0d1b2a 0%,#1b2838 50%,#2a4066 100%)',
-    'linear-gradient(135deg,#0b132b 0%,#1c2541 50%,#3a506b 100%)',
-    'linear-gradient(135deg,#001219 0%,#005f73 50%,#0a9396 100%)'
-  ];
-
-  var CAT_KEYS=['artists','productions','marketing','booking'];
-  var CAT_DATA={
-    artists:{title:'אומנים',names:["ג׳ימבו ג׳י","אקו","אלי לוזון","מאור אשכנזי","נרקיס"]},
-    productions:{title:'הפקות',names:['בקרוב...']},
-    marketing:{title:'שיווק',names:['בקרוב...']},
-    booking:{title:'בוקינג',names:['בקרוב...']}
-  };
-
-  var currentCat=null;
-  var povScene=null;
-  var povCubeContainer=null;
-  var povCubies=[];
-  var isAnimating=false;
-
-  // Create POV camera dive scene
-  function createPovScene(){
-    if(povScene) return povScene;
-
-    povScene=document.createElement('div');
-    povScene.className='pov-camera-scene';
-    povScene.id='povScene';
-
-    // Camera rig — the element we transform to move the "camera"
-    povCubeContainer=document.createElement('div');
-    povCubeContainer.className='pov-camera-rig';
-    povCubeContainer.id='povCameraRig';
-
-    // 3D Room — 6 faces
-    var room=document.createElement('div');
-    room.className='pov-room';
-
-    var faces=['floor','ceiling','front','back','left','right'];
-    faces.forEach(function(f){
-      var face=document.createElement('div');
-      face.className='pov-room-face pov-room-'+f;
-      room.appendChild(face);
-    });
-
-    // Floor grid — where cards will go
-    var floorGrid=document.createElement('div');
-    floorGrid.className='pov-floor-grid';
-    floorGrid.id='povFloorGrid';
-    // Attach grid to the floor face
-    var floorFace=room.querySelector('.pov-room-floor');
-    floorFace.appendChild(floorGrid);
-
-    povCubeContainer.appendChild(room);
-
-    // Floating particles inside the room
-    for(var p=0;p<24;p++){
-      var particle=document.createElement('div');
-      particle.className='pov-room-particle';
-      particle.style.setProperty('--dur',(4+Math.random()*4)+'s');
-      particle.style.setProperty('--delay',(Math.random()*5)+'s');
-      particle.style.setProperty('--dx',(Math.random()*40-20)+'px');
-      particle.style.setProperty('--dy',(Math.random()*-40-10)+'px');
-      particle.style.setProperty('--dz',(Math.random()*40-20)+'px');
-      particle.style.left=(Math.random()*400+50)+'px';
-      particle.style.top=(Math.random()*400+50)+'px';
-      var sz=(1+Math.random()*2)+'px';
-      particle.style.width=sz;
-      particle.style.height=sz;
-      povCubeContainer.appendChild(particle);
-    }
-
-    povScene.appendChild(povCubeContainer);
-    return povScene;
-  }
-
-  // Create floor cards for POV room
-  function createPovCubies(data){
-    if(!povScene) return;
-
-    povCubies.forEach(function(c){if(c.parentNode)c.parentNode.removeChild(c);});
-    povCubies=[];
-
-    var floorGrid=document.getElementById('povFloorGrid');
-    if(!floorGrid) return;
-    floorGrid.innerHTML='';
-
-    var imgs=window._heroImgs||[];
-
-    for(var i=0;i<9;i++){
-      var card=document.createElement('div');
-      card.className='pov-floor-card';
-      // Staggered entrance delay
-      card.style.setProperty('--card-delay',(.3+i*0.08)+'s');
-
-      var bg=document.createElement('div');
-      bg.className='pov-card-bg';
-      if(imgs.length>0){
-        bg.style.backgroundImage='url('+imgs[i%imgs.length]+')';
-      } else {
-        bg.style.background=ARTIST_GRADIENTS[i%ARTIST_GRADIENTS.length];
-      }
-      card.appendChild(bg);
-
-      var ov=document.createElement('div');
-      ov.className='pov-card-overlay';
-      card.appendChild(ov);
-
-      var nm=document.createElement('div');
-      nm.className='pov-card-name';
-      nm.textContent=data.names[i]||'';
-      card.appendChild(nm);
-
-      floorGrid.appendChild(card);
-      povCubies.push(card);
-    }
-
-    // Hide original cubies
-    var cubies=window._cubies||[];
-    cubies.forEach(function(c){
-      c.el.style.transition='opacity .4s ease';
-      c.el.style.opacity='0';
-    });
-  }
-
-  // Build face indicator dots
-  function buildIndicator(activeCat){
-    indicator.innerHTML='';
-    CAT_KEYS.forEach(function(key){
-      var dot=document.createElement('div');
-      dot.className='face-dot'+(key===activeCat?' active':'');
-      dot.setAttribute('data-cat',key);
-      dot.addEventListener('click',function(e){
-        e.stopPropagation();
-        if(key!==currentCat && !isAnimating){
-          switchCategory(key);
-        }
-      });
-      indicator.appendChild(dot);
-    });
-  }
-
-  // Build grid for 2D view (fallback for category switching)
-  function buildGrid(target,data){
-    target.innerHTML='';
-    var imgs=window._heroImgs||[];
-    for(var i=0;i<9;i++){
-      var cell=document.createElement('div');
-      if(i<data.names.length && data.names[i]!=='בקרוב...'){
-        cell.className='face-cell';
-        var bg=document.createElement('div');
-        bg.className='face-cell-bg';
-        if(imgs.length>0){
-          bg.style.backgroundImage='url('+imgs[i%imgs.length]+')';
-        } else {
-          bg.style.background=ARTIST_GRADIENTS[i%ARTIST_GRADIENTS.length];
-        }
-        cell.appendChild(bg);
-        var ov=document.createElement('div');
-        ov.className='face-cell-overlay';
-        cell.appendChild(ov);
-        var nm=document.createElement('div');
-        nm.className='face-cell-name';
-        nm.textContent=data.names[i];
-        cell.appendChild(nm);
-      } else if(i<data.names.length && data.names[i]==='בקרוב...'){
-        cell.className='face-cell face-cell-empty';
-        var soon=document.createElement('div');
-        soon.className='face-cell-name';
-        soon.textContent='בקרוב...';
-        soon.style.opacity='.3';
-        cell.appendChild(soon);
-      } else {
-        cell.className='face-cell face-cell-empty';
-      }
-      target.appendChild(cell);
-    }
-  }
-
-  // === Open Category (POV Room Entrance) ===
-  function openCategory(catKey){
-    if(isAnimating) return;
-    isAnimating=true;
-
-    var data=CAT_DATA[catKey];
-    if(!data)return;
-    currentCat=catKey;
-
-    // Save box-fold state
-    var cubies=window._cubies||[];
-    cubies.forEach(function(c){
-      c._boxFoldTransform=c.el.style.transform;
-    });
-
-    // Hide category arc
-    cats.classList.remove('visible');
-    var glow=document.querySelector('.cube-glow');
-    var hint=document.getElementById('clickHint');
-    if(glow) glow.style.opacity='0';
-    if(hint) hint.style.display='none';
-    hubCenter.style.pointerEvents='none';
-
-    // Create POV scene
-    if(!povScene){
-      povScene=createPovScene();
-      document.body.appendChild(povScene);
-    }
-
-    // Reset camera rig classes
-    povCubeContainer.classList.remove('entered','settled','breathing');
-
-    // Build floor cards
-    createPovCubies(data);
-
-    // Setup title and indicator
-    catTitleLabel.textContent=data.title;
-    buildIndicator(catKey);
-
-    // Activate scene
-    setTimeout(function(){
-      povScene.classList.add('active');
-      catPage.classList.add('active');
-      catPage.classList.add('cube-tour');
-
-      // Phase 1: Camera dives into the room from above
-      setTimeout(function(){
-        povCubeContainer.classList.add('entered');
-
-        // Phase 2: Camera settles at eye level, cards appear
-        setTimeout(function(){
-          povCubeContainer.classList.add('settled');
-
-          // Show UI
-          setTimeout(function(){
-            var _b=document.getElementById('catBack');
-            var _t=document.getElementById('catTitleLabel');
-            var _i=document.getElementById('faceIndicator');
-            if(_b){_b.style.transition='none';_b.style.opacity='1';_b.style.transform='translateX(-50%) translateY(0)';}
-            if(_t){_t.style.transition='none';_t.style.opacity='1';_t.style.transform='translateY(0) scale(1)';}
-            if(_i){_i.style.transition='none';_i.style.opacity='1';}
-
-            // Start subtle breathing after a beat
-            setTimeout(function(){
-              povCubeContainer.classList.add('breathing');
-            },800);
-
-            isAnimating=false;
-          },600);
-        },1200);
-      },50);
-    },20);
-  }
-
-  // === Switch Category (Flip animation) ===
-  function switchCategory(newCatKey){
-    if(isAnimating || newCatKey===currentCat)return;
-
-    var data=CAT_DATA[newCatKey];
-    if(!data)return;
-    isAnimating=true;
-
-    // Crossfade title
-    catTitleLabel.style.transition='opacity .15s ease';
-    catTitleLabel.style.opacity='0';
-    setTimeout(function(){
-      catTitleLabel.textContent=data.title;
-      catTitleLabel.style.transition='opacity .2s ease';
-      catTitleLabel.style.opacity='1';
-    },200);
-
-    // Update cubies
-    createPovCubies(data);
-
-    currentCat=newCatKey;
-    buildIndicator(newCatKey);
-
-    setTimeout(function(){
-      isAnimating=false;
-    },600);
-  }
-
-  // === Close Category (Exit room) ===
-  function closeCategory(){
-    if(!currentCat || isAnimating)return;
-    isAnimating=true;
-    currentCat=null;
-
-    // Hide UI elements
-    var _b=document.getElementById('catBack');
-    var _t=document.getElementById('catTitleLabel');
-    var _i=document.getElementById('faceIndicator');
-    if(_b){_b.style.transition='opacity .3s ease, transform .3s ease';_b.style.opacity='0';_b.style.transform='translateX(-50%) translateY(-20px)';}
-    if(_t){_t.style.transition='opacity .3s ease';_t.style.opacity='0';}
-    if(_i){_i.style.transition='opacity .3s ease';_i.style.opacity='0';}
-
-    // Stop breathing, reverse to entered
-    povCubeContainer.classList.remove('breathing','settled');
-
-    setTimeout(function(){
-      // Camera rises back up and out
-      povCubeContainer.classList.remove('entered');
-
-      setTimeout(function(){
-        catPage.classList.remove('active');
-        catPage.classList.remove('cube-tour');
-        povScene.classList.remove('active');
-
-        // Reset inline styles
-        var _b2=document.getElementById('catBack');
-        var _t2=document.getElementById('catTitleLabel');
-        var _i2=document.getElementById('faceIndicator');
-        if(_b2){_b2.style.transition='';_b2.style.opacity='';_b2.style.transform='';}
-        if(_t2){_t2.style.transition='';_t2.style.opacity='';_t2.style.transform='';}
-        if(_i2){_i2.style.transition='';_i2.style.opacity='';}
-
-        // Restore cubies
-        var cubies=window._cubies||[];
-        cubies.forEach(function(c){
-          c.el.style.transition='opacity .4s ease, transform .4s ease';
-          if(c._boxFoldTransform){
-            c.el.style.transform=c._boxFoldTransform;
-          }
-          c.el.style.opacity='1';
-        });
-
-        setTimeout(function(){
-          cats.classList.add('visible');
-          var glow=document.querySelector('.cube-glow');
-          if(glow) glow.style.opacity='';
-          var hint=document.getElementById('clickHint');
-          if(hint) hint.style.display='none';
-          gridFront.innerHTML='';
-          gridBack.innerHTML='';
-          isAnimating=false;
-        },400);
-      },800);
-    },300);
-  }
-
-  // Category click handlers
-  catItems.forEach(function(item){
-    item.addEventListener('click',function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      var catKey=item.getAttribute('data-cat');
-      if(currentCat && currentCat!==catKey){
-        switchCategory(catKey);
-      } else if(!currentCat){
-        openCategory(catKey);
-      }
-    });
-  });
-
-  // Back button
-  catBack.addEventListener('click',function(e){
-    e.preventDefault();
-    e.stopPropagation();
-    closeCategory();
-  });
-
-  // Swipe gesture support
-  (function(){
-    var startX=0,startY=0,startTime=0;
-    catPage.addEventListener('touchstart',function(e){
-      startX=e.touches[0].clientX;
-      startY=e.touches[0].clientY;
-      startTime=Date.now();
-    },{passive:true});
-    catPage.addEventListener('touchend',function(e){
-      if(!currentCat||isAnimating)return;
-      var dx=e.changedTouches[0].clientX-startX;
-      var dy=e.changedTouches[0].clientY-startY;
-      var dt=Date.now()-startTime;
-      if(dt>500||Math.abs(dx)<50)return;
-      if(Math.abs(dy)>Math.abs(dx))return;
-      var idx=CAT_KEYS.indexOf(currentCat);
-      var nextIdx=(dx<0)?(idx+1)%CAT_KEYS.length:(idx-1+CAT_KEYS.length)%CAT_KEYS.length;
-      switchCategory(CAT_KEYS[nextIdx]);
-    },{passive:true});
-  })();
-
-  window._openCategory=openCategory;
-  window._closeCategory=closeCategory;
-  window._switchCategory=switchCategory;
 })();
 
 // === Animated Grid Background ===
