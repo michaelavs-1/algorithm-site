@@ -229,7 +229,7 @@ a{text-decoration:none}
   display:flex;align-items:center;justify-content:center;flex-direction:column;
   pointer-events:none;
   opacity:0;
-  transition:opacity .35s ease;
+  transition:opacity .2s ease;
   perspective:900px;
 }
 .cat-page.active{
@@ -386,9 +386,9 @@ a{text-decoration:none}
 
 /* Initial state: grid starts small from cube center */
 .face-grid-scene{
-  transform:scale(0.06) rotateX(30deg) rotateY(-8deg);
+  transform:scale(0.08) rotateX(20deg) rotateY(-5deg);
   opacity:0;
-  transition:transform .75s cubic-bezier(.22,.68,.36,1.05), opacity .35s ease;
+  transition:transform .55s cubic-bezier(.22,.68,.36,1.05), opacity .25s ease;
   transform-origin:center center;
 }
 .cat-page.active .face-grid-scene{
@@ -1241,22 +1241,20 @@ var HERO_IMGS=[
     // Hide category arc
     cats.classList.remove('visible');
 
+    var glow=document.querySelector('.cube-glow');
+    var hint=document.getElementById('clickHint');
+    if(glow) glow.style.opacity='0';
+    if(hint) hint.style.display='none';
+    hubCenter.style.pointerEvents='none';
+
+    // Bottom cubies zoom forward, others fly to edges
+    flyCubiesToEdges(true);
+
+    // Show grid quickly after cubies start moving
     setTimeout(function(){
-      var glow=document.querySelector('.cube-glow');
-      var hint=document.getElementById('clickHint');
-      if(glow) glow.style.opacity='0';
-      if(hint) hint.style.display='none';
-      hubCenter.style.pointerEvents='none';
-
-      // Bottom cubies zoom forward, others fly to edges
-      flyCubiesToEdges(true);
-
-      // Particle burst + show grid
-      setTimeout(function(){
-        spawnParticles();
-        catPage.classList.add('active');
-      },250);
-    },80);
+      spawnParticles();
+      catPage.classList.add('active');
+    },120);
   }
 
   // ===== Switch Category: 3D flip to new face =====
@@ -1267,90 +1265,102 @@ var HERO_IMGS=[
     isFlipping=true;
     flipCount++;
 
-    // Determine flip direction — alternate between Y and X rotations
-    var useVertical=(flipCount%2===0);
     var currentIdx=CAT_KEYS.indexOf(currentCat);
     var newIdx=CAT_KEYS.indexOf(newCatKey);
+    var goRight=(newIdx>currentIdx);
 
-    // Build new content on the back face
-    var backGrid=flipper.classList.contains('flipping')?gridFront:gridBack;
-    buildGrid(backGrid,data);
+    // Always: build new content on back face, flip 180, then reset
+    buildGrid(gridBack,data);
 
-    // Calculate cumulative rotation
-    var deg=180*flipCount;
-    var axis=useVertical?'X':'Y';
-    // Alternate direction based on relative position
-    var direction=(newIdx>currentIdx)?1:-1;
+    // Ensure back face is positioned correctly
+    gridBack.style.transform='rotateY(180deg)';
+    gridFront.style.transform='';
 
-    flipper.style.transition='transform .85s cubic-bezier(.4,.0,.2,1)';
+    // Determine flip axis — alternate for variety
+    var useVertical=(flipCount%3===0);
+    var flipDeg=goRight?180:-180;
 
+    // Trigger the flip
+    flipper.style.transition='transform .7s cubic-bezier(.4,.0,.2,1)';
     if(useVertical){
-      flipper.style.transform='rotateX('+deg*direction+'deg)';
+      gridBack.style.transform='rotateX(180deg)';
+      flipper.style.transform='rotateX('+flipDeg+'deg)';
     } else {
-      flipper.style.transform='rotateY('+deg*direction+'deg)';
+      gridBack.style.transform='rotateY(180deg)';
+      flipper.style.transform='rotateY('+flipDeg+'deg)';
     }
 
-    // Update back face transform to match
-    backGrid.style.transform=(useVertical?'rotateX(':'rotateY(')+(deg*direction*-1)+'deg)';
-
-    // Update title with a crossfade
-    catTitleLabel.style.transition='opacity .2s ease';
+    // Crossfade title
+    catTitleLabel.style.transition='opacity .15s ease';
     catTitleLabel.style.opacity='0';
     setTimeout(function(){
       catTitleLabel.textContent=data.title;
+      catTitleLabel.style.transition='opacity .2s ease';
       catTitleLabel.style.opacity='1';
-    },350);
+    },300);
 
     currentCat=newCatKey;
     buildIndicator(newCatKey);
+    setTimeout(function(){spawnParticles();},150);
 
-    // Spawn particles during flip
-    setTimeout(function(){spawnParticles();},200);
-
+    // After flip completes: move back content to front, reset flipper
     setTimeout(function(){
       isFlipping=false;
-      // Swap: what was back becomes front for next flip
-      // Reset flipper cleanly
-      var activeGrid=backGrid;
-      var inactiveGrid=(backGrid===gridFront)?gridBack:gridFront;
-      // Copy content from active to front, reset transforms
-      gridFront.innerHTML=activeGrid.innerHTML;
+      // Swap content: back→front
+      gridFront.innerHTML=gridBack.innerHTML;
       gridBack.innerHTML='';
+      // Reset transforms instantly
       flipper.style.transition='none';
       flipper.style.transform='';
       gridFront.style.transform='';
       gridBack.style.transform='rotateY(180deg)';
-      // Re-trigger cell animations
+      flipper.offsetHeight; // force reflow
+      // Ensure cells are visible
       var cells=gridFront.querySelectorAll('.face-cell');
       cells.forEach(function(c){c.style.opacity='1';c.style.transform='scale(1) translateZ(0)';});
-    },900);
+    },750);
   }
 
-  // ===== Close Category: reverse zoom, return to cube =====
+  // ===== Close Category: reverse zoom, return to exploded cube =====
   function closeCategory(){
     if(!currentCat)return;
     currentCat=null;
     isFlipping=false;
     flipCount=0;
 
+    // Fade out the category page
     catPage.classList.remove('active');
 
-    setTimeout(function(){
-      flyClonesToExploded();
-      hubCenter.style.pointerEvents='';
+    // Immediately start restoring ALL cubies to their exploded positions
+    var cubies=window._cubies||[];
+    cubies.forEach(function(c){
+      if(c._savedTransform){
+        c.el.style.transition='opacity .35s ease, transform .4s ease';
+        c.el.style.transform=c._savedTransform;
+        c.el.style.opacity='1';
+      }
+    });
 
-      setTimeout(function(){
-        cats.classList.add('visible');
-        var hint=document.getElementById('clickHint');
-        if(hint) hint.style.display='none';
-        // Reset flipper
-        flipper.classList.remove('flipping','flip-vertical');
-        flipper.style.transform='';
-        gridFront.innerHTML='';
-        gridBack.innerHTML='';
-        gridBack.style.transform='rotateY(180deg)';
-      },600);
-    },350);
+    // Clean up clones
+    flyClones.forEach(function(cl){
+      if(cl.parentNode) cl.parentNode.removeChild(cl);
+    });
+    flyClones=[];
+
+    hubCenter.style.pointerEvents='';
+
+    // Show categories after a short delay
+    setTimeout(function(){
+      cats.classList.add('visible');
+      var hint=document.getElementById('clickHint');
+      if(hint) hint.style.display='none';
+      // Reset flipper
+      flipper.style.transition='none';
+      flipper.style.transform='';
+      gridFront.innerHTML='';
+      gridBack.innerHTML='';
+      gridBack.style.transform='rotateY(180deg)';
+    },400);
   }
 
   // Category click handlers
