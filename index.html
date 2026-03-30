@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Frank+Ruhl+Libre:wght@300;400;500;700;900&family=Rubik:wght@300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
 <title>אלגוריתם | ניהול אמנים · הפקות · שיווק</title>
 <style>
 
@@ -26,8 +26,10 @@ a{text-decoration:none}
 
 .hub-grid{
   position:absolute;inset:0;
-  background-image:linear-gradient(rgba(0,120,200,.012) 1px,transparent 1px),linear-gradient(90deg,rgba(0,120,200,.012) 1px,transparent 1px);
-  background-size:80px 80px;
+  overflow:hidden;
+}
+.hub-grid canvas{
+  position:absolute;inset:0;width:100%;height:100%;
 }
 
 .hub::before{
@@ -67,7 +69,7 @@ a{text-decoration:none}
 
 .hub-hero-link{
   text-decoration:none;display:flex;flex-direction:column;align-items:center;
-  cursor:pointer;transition:transform .3s;
+  cursor:default;transition:transform .3s;
 }
 .hub-hero-link:hover{transform:scale(1.03)}
 
@@ -77,7 +79,7 @@ a{text-decoration:none}
   top:0;left:0;
   text-decoration:none;
   display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
+  cursor:default;
   opacity:0;
   transition:filter .3s;
   will-change:transform;
@@ -90,9 +92,9 @@ a{text-decoration:none}
 }
 
 .float-label{
-  font-family:'Rubik',sans-serif;
+  font-family:'Amatic SC','Rubik',cursive;
   font-weight:900;
-  font-size:2.6rem;
+  font-size:3.4rem;
   white-space:nowrap;
   letter-spacing:1.5px;
   color:#00b8e6;
@@ -129,7 +131,7 @@ a{text-decoration:none}
 <body>
 
 <div class="hub">
-  <div class="hub-grid"></div>
+  <div class="hub-grid"><canvas id="gridCanvas"></canvas></div>
   <div class="scatter-dot scatter-dot--1"></div>
   <div class="scatter-dot scatter-dot--2"></div>
   <div class="scatter-dot scatter-dot--3"></div>
@@ -146,9 +148,10 @@ a{text-decoration:none}
     </a>
   </div>
 
-  <a href="artists.html" class="float-link" id="orb0"><div class="float-label">אמנים</div></a>
-  <a href="productions.html" class="float-link" id="orb1"><div class="float-label">הפקות</div></a>
-  <a href="marketing.html" class="float-link" id="orb2"><div class="float-label">שיווק</div></a>
+  <a class="float-link" id="orb0"><div class="float-label">אומנים</div></a>
+  <a class="float-link" id="orb1"><div class="float-label">הפקות</div></a>
+  <a class="float-link" id="orb2"><div class="float-label">שיווק</div></a>
+  <a class="float-link" id="orb3"><div class="float-label">בוקינג</div></a>
 </div>
 
 <script>
@@ -301,9 +304,9 @@ var HERO_IMGS=[
 
 // === Orbiting labels ===
 (function(){
-  var links=[document.getElementById('orb0'),document.getElementById('orb1'),document.getElementById('orb2')];
-  var offsets=[0, 2*Math.PI/3, 4*Math.PI/3];
-  var speed=0.0003;
+  var links=[document.getElementById('orb0'),document.getElementById('orb1'),document.getElementById('orb2'),document.getElementById('orb3')];
+  var offsets=[0, Math.PI/2, Math.PI, 3*Math.PI/2];
+  var speed=0.00012;
   var angle=0;
   var hub=document.querySelector('.hub');
 
@@ -325,7 +328,7 @@ var HERO_IMGS=[
     var cy=hub.offsetHeight/2;
     var R=getRadius();
 
-    for(var i=0;i<3;i++){
+    for(var i=0;i<4;i++){
       var a=angle+offsets[i];
       var x=Math.cos(a)*R;
       var y=Math.sin(a)*R*0.5;
@@ -334,6 +337,79 @@ var HERO_IMGS=[
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
+})();
+
+// === Animated Grid Background ===
+(function(){
+  var c=document.getElementById('gridCanvas');
+  if(!c)return;
+  var ctx=c.getContext('2d');
+  var w,h;
+  function resize(){
+    w=c.width=window.innerWidth;
+    h=c.height=window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  var cols=Math.ceil(w/80)+2;
+  var rows=Math.ceil(h/80)+2;
+  var t=0;
+
+  function draw(){
+    t+=0.003;
+    ctx.clearRect(0,0,w,h);
+    
+    // Vertical lines
+    for(var i=0;i<cols;i++){
+      var x=i*80;
+      var wave=Math.sin(t+i*0.15)*8;
+      var alpha=0.03+Math.sin(t*0.7+i*0.3)*0.015;
+      ctx.beginPath();
+      ctx.strokeStyle='rgba(0,180,230,'+alpha+')';
+      ctx.lineWidth=0.5;
+      for(var y=0;y<h;y+=4){
+        var dx=wave*Math.sin(y*0.008+t*0.5);
+        if(y===0)ctx.moveTo(x+dx,y);
+        else ctx.lineTo(x+dx,y);
+      }
+      ctx.stroke();
+    }
+    
+    // Horizontal lines
+    for(var j=0;j<rows;j++){
+      var y=j*80;
+      var wave2=Math.sin(t*0.8+j*0.15)*8;
+      var alpha2=0.03+Math.sin(t*0.5+j*0.3)*0.015;
+      ctx.beginPath();
+      ctx.strokeStyle='rgba(0,180,230,'+alpha2+')';
+      ctx.lineWidth=0.5;
+      for(var x=0;x<w;x+=4){
+        var dy=wave2*Math.sin(x*0.008+t*0.5);
+        if(x===0)ctx.moveTo(x,y+dy);
+        else ctx.lineTo(x,y+dy);
+      }
+      ctx.stroke();
+    }
+    
+    // Subtle glow at intersections
+    for(var i=0;i<cols;i++){
+      for(var j=0;j<rows;j++){
+        var px=i*80+Math.sin(t+i*0.15)*8*Math.sin(j*80*0.008+t*0.5);
+        var py=j*80+Math.sin(t*0.8+j*0.15)*8*Math.sin(i*80*0.008+t*0.5);
+        var ga=0.04+Math.sin(t*1.2+i+j)*0.025;
+        if(ga>0){
+          ctx.beginPath();
+          ctx.arc(px,py,1.5,0,6.28);
+          ctx.fillStyle='rgba(0,200,255,'+ga+')';
+          ctx.fill();
+        }
+      }
+    }
+    
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
 })();
 </script>
 </body>
