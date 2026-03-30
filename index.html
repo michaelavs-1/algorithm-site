@@ -256,21 +256,20 @@ var HERO_IMGS=[
       var key=fd[1];
       var bg;
 
-      var isTopTile=(fi===5 && y===-1); // top face tiles only
-      var isFrontEdge=(fi===0 && z===1 && y===-1); // top-row of front face
-      var showImage=isTopTile || isFrontEdge;
+      // Only 4 tiles on the TOP face get images (corners only)
+      var isTopFaceCorner=(fi===5 && y===-1 && Math.abs(x)===1 && Math.abs(z)===1);
       
-      if(key && showImage){
-        // Image tile — only on top face + front top row
+      if(key && isTopFaceCorner){
+        // Image tile with strong cyan tint overlay to blend with cube
         var imgIdx=Math.floor(Math.random()*HERO_IMGS.length);
-        var overlay=isTopTile?'rgba(0,60,100,.2)':'rgba(0,40,80,.35)';
-        f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background-size:cover;background-position:center;background-image:url('+HERO_IMGS[imgIdx]+');border:1px solid rgba(0,200,255,.18);transition:background-image 1.5s ease;';
+        f.style.cssText='position:absolute;width:'+S+'px;height:'+S+'px;backface-visibility:visible;transform:'+fd[0]+';background-size:cover;background-position:center;background-image:url('+HERO_IMGS[imgIdx]+');border:1px solid rgba(0,200,255,.18);transition:background-image 1.8s ease;';
         f.dataset.imgIdx=imgIdx;
+        // Cyan-tinted overlay for color harmony
         var ov=document.createElement('div');
-        ov.style.cssText='position:absolute;inset:0;background:'+overlay+';pointer-events:none;';
+        ov.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,80,120,.35),rgba(0,40,80,.25));pointer-events:none;';
         f.appendChild(ov);
         var sh=document.createElement('div');
-        sh.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent 60%);pointer-events:none;';
+        sh.style.cssText='position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 60%);pointer-events:none;';
         f.appendChild(sh);
         topFaces.push(f);
       } else if(key){
@@ -306,8 +305,8 @@ var HERO_IMGS=[
       })(i*150);
     }
   }
-  // Subtle periodic swaps — only a tile or two at a time
-  setInterval(function(){swapRandomTiles(1);},3500);
+  // Very subtle periodic swaps
+  setInterval(function(){swapRandomTiles(1);},6000);
 
   // Cycle images
   var turnCount=0;
