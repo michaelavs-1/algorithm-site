@@ -170,7 +170,7 @@ a{text-decoration:none}
 .cube-nav.visible .nav-box:nth-child(4){animation-delay:.27s}
 
 .nav-box-inner{
-  width:270px;height:92px;
+  width:320px;height:112px;
   position:relative;
   transform-style:preserve-3d;
   transform:var(--cr);
@@ -181,7 +181,7 @@ a{text-decoration:none}
 }
 .nf{
   position:absolute;
-  width:270px;height:92px;
+  width:320px;height:112px;
   backface-visibility:hidden;
 }
 .nf-front{
@@ -189,37 +189,42 @@ a{text-decoration:none}
   border:1.5px solid rgba(0,200,255,.68);
   transform:translateZ(14px);
   display:flex;align-items:center;justify-content:center;
-  font-family:'Amatic SC','Rubik',cursive;
-  font-weight:900;font-size:2.3rem;
+  font-family:'Rubik','Heebo',sans-serif;
+  font-weight:900;font-size:2.8rem;
   color:#00d4ff;
   text-shadow:0 0 12px rgba(0,200,255,.9), 0 0 24px rgba(0,200,255,.4);
-  letter-spacing:3px;
+  letter-spacing:1px;
   text-align:center;
   padding:4px;
 }
 .nf-right{
   display:none;
 }
-.nf-top{display:none;}
+.nf-top{
+  width:270px;height:14px;
+  background:rgba(3,14,36,.8);
+  border:1.5px solid rgba(0,175,215,.55);
+  transform:translateY(-56px) rotateX(90deg);
+}
 @keyframes navBoxIn{
   from{opacity:0;transform:translateX(60px)}
   to{opacity:1;transform:translateX(0)}
 }
 @media(max-width:768px){
   .cube-nav{gap:14px}
-  .nav-box-inner{width:220px;height:76px}
-  .nf{width:220px;height:76px}
-  .nf-front{font-size:1.9rem;transform:translateZ(12px)}
+  .nav-box-inner{width:260px;height:90px}
+  .nf{width:260px;height:90px}
+  .nf-front{font-size:2.3rem;transform:translateZ(12px)}
   .nf-right{display:none}
-  .nf-top{display:none}
+  .nf-top{width:220px;height:12px;transform:translateY(-38px) rotateX(90deg)}
 }
 @media(max-width:480px){
   .cube-nav{gap:10px}
-  .nav-box-inner{width:185px;height:66px}
-  .nf{width:185px;height:66px}
-  .nf-front{font-size:1.65rem;transform:translateZ(10px)}
+  .nav-box-inner{width:220px;height:80px}
+  .nf{width:220px;height:80px}
+  .nf-front{font-size:2rem;transform:translateZ(10px)}
   .nf-right{display:none}
-  .nf-top{display:none}
+  .nf-top{width:185px;height:10px;transform:translateY(-33px) rotateX(90deg)}
 }
 
 </style>
