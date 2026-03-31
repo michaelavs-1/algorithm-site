@@ -714,16 +714,21 @@ var HERO_IMGS=[
       }
 
       // Close: bring cube back and reassemble
+
+      // First restore cube wrap visibility and reset zoom
       wrap.style.transition='transform .4s ease, opacity .3s';
       wrap.style.transform='scale(1)';
       wrap.style.perspective='1200px';
-      wrap.style.transition='transform .4s ease,opacity .3s';
-      wrap.style.transform='scale(1)';wrap.style.perspective='1200px';
       wrap.style.opacity='1';
+
+      // Restore cubies to their saved positions first, then fold back
+      cubies.forEach(function(c){
         c.el.style.transition='none';
         c.el.style.opacity='1';
+        c.el.style.boxShadow='';
         if(c._savedTransform) c.el.style.transform=c._savedTransform;
       });
+      // Force reflow
       wrap.offsetHeight;
 
       var faceOrder2={top:5, front:4, back:3, right:2, left:1, bottom:0, center:0};
