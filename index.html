@@ -203,21 +203,6 @@ a{text-decoration:none}
 
 @media(max-width:768px){.cube-nav{grid-template-columns:1fr 1fr;gap:16px}.nav-box{width:170px;height:115px}.nav-label{font-size:1.3rem}.nav-diamond{width:18px;height:18px}.nav-diamond .d-face{width:18px;height:18px}.nav-diamond .d-front{transform:translateZ(9px)}.nav-diamond .d-back{transform:translateZ(-9px) rotateY(180deg)}.nav-diamond .d-right{transform:translateX(9px) rotateY(90deg)}.nav-diamond .d-left{transform:translateX(-9px) rotateY(-90deg)}.nav-diamond .d-top{transform:translateY(-9px) rotateX(90deg)}.nav-diamond .d-bottom{transform:translateY(9px) rotateX(-90deg)}}
 @media(max-width:480px){.cube-nav{grid-template-columns:1fr;gap:14px}.nav-box{width:200px;height:100px}.nav-label{font-size:1.2rem}.nav-diamond{width:16px;height:16px}.nav-diamond .d-face{width:16px;height:16px}.nav-diamond .d-front{transform:translateZ(8px)}.nav-diamond .d-back{transform:translateZ(-8px) rotateY(180deg)}.nav-diamond .d-right{transform:translateX(8px) rotateY(90deg)}.nav-diamond .d-left{transform:translateX(-8px) rotateY(-90deg)}.nav-diamond .d-top{transform:translateY(-8px) rotateX(90deg)}.nav-diamond .d-bottom{transform:translateY(8px) rotateX(-90deg)}}
-
-/* ===== Floating Disassembled Cubes Background ===== */
-.float-cubes-wrap{position:fixed;inset:0;z-index:20;pointer-events:none;opacity:0;transition:opacity 1.2s ease}
-.float-cubes-wrap.active{opacity:1}
-.fcube{position:absolute;transform-style:preserve-3d;opacity:.18}
-.fcube-face{position:absolute;background-size:cover;background-position:center;border:1px solid rgba(0,200,255,.12);box-shadow:inset 0 0 30px rgba(0,0,0,.4),0 0 15px rgba(0,180,255,.15)}
-.fcube-face::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,220,255,.08) 0%,transparent 50%,rgba(0,100,200,.05) 100%)}
-@keyframes fcSpin1{0%{transform:translate(0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)}50%{transform:translate(60px,-80px) rotateX(180deg) rotateY(90deg) rotateZ(45deg)}100%{transform:translate(0,0) rotateX(360deg) rotateY(180deg) rotateZ(90deg)}}
-@keyframes fcSpin2{0%{transform:translate(0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)}50%{transform:translate(-70px,60px) rotateX(90deg) rotateY(180deg) rotateZ(-60deg)}100%{transform:translate(0,0) rotateX(180deg) rotateY(360deg) rotateZ(-120deg)}}
-@keyframes fcSpin3{0%{transform:translate(0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)}50%{transform:translate(50px,70px) rotateX(-90deg) rotateY(120deg) rotateZ(80deg)}100%{transform:translate(0,0) rotateX(-180deg) rotateY(240deg) rotateZ(160deg)}}
-@keyframes fcSpin4{0%{transform:translate(0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)}50%{transform:translate(-80px,-50px) rotateX(150deg) rotateY(-90deg) rotateZ(-40deg)}100%{transform:translate(0,0) rotateX(300deg) rotateY(-180deg) rotateZ(-80deg)}}
-@keyframes fcSpin5{0%{transform:translate(0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)}50%{transform:translate(40px,-90px) rotateX(60deg) rotateY(200deg) rotateZ(100deg)}100%{transform:translate(0,0) rotateX(120deg) rotateY(400deg) rotateZ(200deg)}}
-@keyframes fcSpin6{0%{transform:translate(0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)}50%{transform:translate(-60px,80px) rotateX(-120deg) rotateY(-150deg) rotateZ(-70deg)}100%{transform:translate(0,0) rotateX(-240deg) rotateY(-300deg) rotateZ(-140deg)}}
-@keyframes fcSpin7{0%{transform:translate(0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)}50%{transform:translate(90px,40px) rotateX(200deg) rotateY(60deg) rotateZ(30deg)}100%{transform:translate(0,0) rotateX(400deg) rotateY(120deg) rotateZ(60deg)}}
-@keyframes fcSpin8{0%{transform:translate(0,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg)}50%{transform:translate(-50px,-70px) rotateX(-60deg) rotateY(240deg) rotateZ(-110deg)}100%{transform:translate(0,0) rotateX(-120deg) rotateY(480deg) rotateZ(-220deg)}}
 </style>
 </head>
 <body>
@@ -251,8 +236,6 @@ a{text-decoration:none}
 <!-- Screen 2: Ambient + Particles + Nav -->
 <div class="nav-ambient" id="navAmbient"></div>
 <canvas class="nav-particles" id="navParticles"></canvas>
-
-<div class="<div class="float-cubes-wrap" id="floatCubesWrap"></div>
 
 <div class="cube-nav" id="cubeNav" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:999;visibility:hidden;opacity:0;transition:opacity .5s,visibility .5s">
 
@@ -662,15 +645,11 @@ var HERO_IMGS=[
       var partCanvas=document.getElementById('navParticles');
       if(nav) setTimeout(function(){
         nav.classList.add('visible');
-      // Show floating cubes background
-      setTimeout(function(){if(window._showFloatingCubes)window._showFloatingCubes();},200);
         if(ambient) ambient.classList.add('visible');
         if(partCanvas){partCanvas.classList.add('visible');window._startNavParticles&&window._startNavParticles();}
       },1500);
 
     } else {
-      // Hide floating cubes background
-      if(window._hideFloatingCubes)window._hideFloatingCubes();
       // Hide Screen 2 and reset
       var nav=document.getElementById('cubeNav');
       var ambient=document.getElementById('navAmbient');
@@ -749,62 +728,6 @@ var HERO_IMGS=[
       }, maxDelay+50);
     }
   }
-
-  // ===== Floating Disassembled Cubes System =====
-  var _fcBuilt=false;
-  var _fcConfigs=[
-    {sz:90,sp:55,x:'5%',y:'8%',anim:'fcSpin1',dur:35,op:.16},
-    {sz:70,sp:42,x:'78%',y:'12%',anim:'fcSpin2',dur:42,op:.14},
-    {sz:110,sp:65,x:'15%',y:'55%',anim:'fcSpin3',dur:38,op:.2},
-    {sz:60,sp:36,x:'85%',y:'60%',anim:'fcSpin4',dur:45,op:.12},
-    {sz:80,sp:48,x:'55%',y:'75%',anim:'fcSpin5',dur:40,op:.17},
-    {sz:100,sp:60,x:'30%',y:'20%',anim:'fcSpin6',dur:50,op:.15},
-    {sz:65,sp:39,x:'70%',y:'40%',anim:'fcSpin7',dur:36,op:.13},
-    {sz:95,sp:57,x:'10%',y:'80%',anim:'fcSpin8',dur:44,op:.18}
-  ];
-  function _buildFloatingCubes(){
-    if(_fcBuilt)return;
-    var wrap=document.getElementById('floatCubesWrap');
-    if(!wrap)return;
-    var imgs=window.HERO_IMGS||[];
-    var imgIdx=0;
-    var faceNames=['front','back','right','left','top','bottom'];
-    var faceT=function(sp){return{
-      front:'translateZ('+sp+'px)',
-      back:'rotateY(180deg) translateZ('+sp+'px)',
-      right:'rotateY(90deg) translateZ('+sp+'px)',
-      left:'rotateY(-90deg) translateZ('+sp+'px)',
-      top:'rotateX(90deg) translateZ('+sp+'px)',
-      bottom:'rotateX(-90deg) translateZ('+sp+'px)'
-    };};
-    _fcConfigs.forEach(function(cfg){
-      var cube=document.createElement('div');
-      cube.className='fcube';
-      cube.style.cssText='width:'+cfg.sz+'px;height:'+cfg.sz+'px;left:'+cfg.x+';top:'+cfg.y+';opacity:'+cfg.op+';animation:'+cfg.anim+' '+cfg.dur+'s infinite linear;perspective:600px;transform-style:preserve-3d';
-      var ft=faceT(cfg.sp);
-      faceNames.forEach(function(fn){
-        var face=document.createElement('div');
-        face.className='fcube-face';
-        face.style.cssText='width:'+cfg.sz+'px;height:'+cfg.sz+'px;transform:'+ft[fn];
-        if(imgs.length>0){
-          face.style.backgroundImage='url('+imgs[imgIdx%imgs.length]+')';
-          imgIdx++;
-        }
-        cube.appendChild(face);
-      });
-      wrap.appendChild(cube);
-    });
-    _fcBuilt=true;
-  }
-  window._showFloatingCubes=function(){
-    _buildFloatingCubes();
-    var w=document.getElementById('floatCubesWrap');
-    if(w)w.classList.add('active');
-  };
-  window._hideFloatingCubes=function(){
-    var w=document.getElementById('floatCubesWrap');
-    if(w)w.classList.remove('active');
-  };
 
   // Tap zone handles both click and touch
   tapZone.addEventListener('click',toggleCube);
