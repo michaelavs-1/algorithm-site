@@ -143,11 +143,11 @@ a{text-decoration:none}
   .scatter-dot,.scatter-line{display:none}
 }
 
-/* === Nav Tabs - emerge from cube === */
+/* === Nav Items - text + diamond cube === */
 .cube-nav{
   display:flex;
   flex-direction:column;
-  gap:28px;
+  gap:32px;
   align-items:flex-end;
 }
 .cube-nav.visible{
@@ -159,96 +159,98 @@ a{text-decoration:none}
   opacity:0;
   transform:translate(-40vw, 20vh) scale(.18) rotateY(90deg);
   filter:blur(6px) brightness(2);
+  display:flex;
+  align-items:center;
+  gap:12px;
+  direction:rtl;
 }
 .cube-nav.visible .nav-box{
-  animation:navEmerge .8s cubic-bezier(.16,.73,.3,1.02) forwards,
-            navFloat 4s ease-in-out 1.5s infinite;
+  animation:navEmerge .8s cubic-bezier(.16,.73,.3,1.02) forwards;
 }
-.cube-nav.visible .nav-box:nth-child(1){animation-delay:0s, 1.5s}
-.cube-nav.visible .nav-box:nth-child(2){animation-delay:.12s, 1.7s}
-.cube-nav.visible .nav-box:nth-child(3){animation-delay:.24s, 1.9s}
-.cube-nav.visible .nav-box:nth-child(4){animation-delay:.36s, 2.1s}
-.nav-box-inner{
-  width:260px;height:82px;
+.cube-nav.visible .nav-box:nth-child(1){animation-delay:0s}
+.cube-nav.visible .nav-box:nth-child(2){animation-delay:.12s}
+.cube-nav.visible .nav-box:nth-child(3){animation-delay:.24s}
+.cube-nav.visible .nav-box:nth-child(4){animation-delay:.36s}
+.nav-diamond{
+  width:18px;height:18px;
   position:relative;
-  transition:transform .3s ease, filter .3s;
+  transform-style:preserve-3d;
+  transform:rotateZ(45deg) rotateX(15deg) rotateY(15deg);
+  transition:transform .4s ease, filter .3s;
+  flex-shrink:0;
 }
-.nav-box:hover .nav-box-inner{
-  transform:scale(1.08) translateX(-8px);
-  filter:brightness(1.5) drop-shadow(0 0 22px rgba(0,210,255,.7));
+.nav-diamond .d-face{
+  position:absolute;
+  width:18px;height:18px;
+  backface-visibility:hidden;
+  border:1.2px solid rgba(0,200,255,.7);
+  background:rgba(0,180,235,.12);
+  transition:transform .4s ease, border-color .3s, background .3s, box-shadow .3s;
 }
-.nf{display:none}
-.nf-right{display:none}
-.nf-top{display:none}
-.nf-front{
-  position:absolute;inset:0;
-  background:rgba(4,18,44,.88);
-  border:1.5px solid rgba(0,200,255,.55);
-  border-radius:6px;
-  display:flex;align-items:center;justify-content:center;
+.nav-diamond .d-front{transform:translateZ(9px)}
+.nav-diamond .d-back{transform:translateZ(-9px) rotateY(180deg)}
+.nav-diamond .d-right{transform:translateX(9px) rotateY(90deg)}
+.nav-diamond .d-left{transform:translateX(-9px) rotateY(-90deg)}
+.nav-diamond .d-top{transform:translateY(-9px) rotateX(90deg)}
+.nav-diamond .d-bottom{transform:translateY(9px) rotateX(-90deg)}
+.nav-box:hover .nav-diamond{
+  animation:diamondSpin .8s ease-in-out infinite;
+  filter:drop-shadow(0 0 10px rgba(0,210,255,.8));
+}
+.nav-box:hover .d-front{transform:translateZ(14px);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25);box-shadow:0 0 8px rgba(0,200,255,.4)}
+.nav-box:hover .d-back{transform:translateZ(-14px) rotateY(180deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
+.nav-box:hover .d-right{transform:translateX(14px) rotateY(90deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
+.nav-box:hover .d-left{transform:translateX(-14px) rotateY(-90deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
+.nav-box:hover .d-top{transform:translateY(-14px) rotateX(90deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
+.nav-box:hover .d-bottom{transform:translateY(14px) rotateX(-90deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
+.nav-label{
   font-family:'Rubik','Heebo',sans-serif;
-  font-weight:800;font-size:1.85rem;
+  font-weight:700;font-size:1.7rem;
   color:#00d4ff;
-  text-shadow:0 0 10px rgba(0,200,255,.8), 0 0 22px rgba(0,200,255,.3);
+  text-shadow:0 0 8px rgba(0,200,255,.6), 0 0 18px rgba(0,200,255,.2);
   letter-spacing:1px;
-  text-align:center;
-  padding:4px;
-  animation:navGlow 3s ease-in-out infinite;
+  transition:text-shadow .3s, color .3s, transform .3s;
+  white-space:nowrap;
 }
-.nav-box:nth-child(2) .nf-front{animation-delay:.75s}
-.nav-box:nth-child(3) .nf-front{animation-delay:1.5s}
-.nav-box:nth-child(4) .nf-front{animation-delay:2.25s}
+.nav-box:hover .nav-label{
+  color:#66e5ff;
+  text-shadow:0 0 14px rgba(0,210,255,.9), 0 0 30px rgba(0,200,255,.4);
+  transform:translateX(-4px);
+}
 @keyframes navEmerge{
-  0%{
-    opacity:0;
-    transform:translate(-40vw, 20vh) scale(.18) rotateY(90deg);
-    filter:blur(6px) brightness(2);
-  }
-  40%{
-    opacity:1;
-    filter:blur(2px) brightness(1.5);
-  }
-  70%{
-    transform:translate(8px, 0) scale(1.04) rotateY(-4deg);
-    filter:blur(0) brightness(1.15);
-  }
-  100%{
-    opacity:1;
-    transform:translate(0,0) scale(1) rotateY(0deg);
-    filter:blur(0) brightness(1);
-  }
+  0%{opacity:0;transform:translate(-40vw,20vh) scale(.18) rotateY(90deg);filter:blur(6px) brightness(2)}
+  40%{opacity:1;filter:blur(2px) brightness(1.5)}
+  70%{transform:translate(8px,0) scale(1.04) rotateY(-4deg);filter:blur(0) brightness(1.15)}
+  100%{opacity:1;transform:translate(0,0) scale(1) rotateY(0);filter:blur(0) brightness(1)}
 }
-@keyframes navFloat{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-5px)}
-}
-@keyframes navGlow{
-  0%,100%{border-color:rgba(0,200,255,.5);box-shadow:0 0 8px rgba(0,200,255,.12)}
-  50%{border-color:rgba(0,220,255,.9);box-shadow:0 0 22px rgba(0,200,255,.35),inset 0 0 14px rgba(0,200,255,.07)}
+@keyframes diamondSpin{
+  0%{transform:rotateZ(45deg) rotateX(15deg) rotateY(15deg)}
+  50%{transform:rotateZ(45deg) rotateX(195deg) rotateY(195deg)}
+  100%{transform:rotateZ(45deg) rotateX(375deg) rotateY(375deg)}
 }
 @media(max-width:768px){
-  .cube-nav{gap:22px}
-  .nav-box-inner{width:220px;height:70px}
-  .nf-front{font-size:1.55rem}
-  .nav-box{transform:translate(-30vw, 15vh) scale(.2) rotateY(90deg)}
-  @keyframes navEmerge{
-    0%{opacity:0;transform:translate(-30vw,15vh) scale(.2) rotateY(90deg);filter:blur(6px) brightness(2)}
-    40%{opacity:1;filter:blur(2px) brightness(1.5)}
-    70%{transform:translate(6px,0) scale(1.03) rotateY(-3deg);filter:blur(0) brightness(1.1)}
-    100%{opacity:1;transform:translate(0,0) scale(1) rotateY(0);filter:blur(0) brightness(1)}
-  }
+  .cube-nav{gap:26px}
+  .nav-label{font-size:1.45rem}
+  .nav-diamond{width:14px;height:14px}
+  .nav-diamond .d-face{width:14px;height:14px}
+  .nav-diamond .d-front{transform:translateZ(7px)}
+  .nav-diamond .d-back{transform:translateZ(-7px) rotateY(180deg)}
+  .nav-diamond .d-right{transform:translateX(7px) rotateY(90deg)}
+  .nav-diamond .d-left{transform:translateX(-7px) rotateY(-90deg)}
+  .nav-diamond .d-top{transform:translateY(-7px) rotateX(90deg)}
+  .nav-diamond .d-bottom{transform:translateY(7px) rotateX(-90deg)}
 }
 @media(max-width:480px){
-  .cube-nav{gap:18px}
-  .nav-box-inner{width:180px;height:60px}
-  .nf-front{font-size:1.35rem}
-  .nav-box{transform:translate(-25vw, 10vh) scale(.22) rotateY(90deg)}
-  @keyframes navEmerge{
-    0%{opacity:0;transform:translate(-25vw,10vh) scale(.22) rotateY(90deg);filter:blur(4px) brightness(2)}
-    40%{opacity:1;filter:blur(1px) brightness(1.4)}
-    70%{transform:translate(4px,0) scale(1.02) rotateY(-2deg);filter:blur(0) brightness(1.1)}
-    100%{opacity:1;transform:translate(0,0) scale(1) rotateY(0);filter:blur(0) brightness(1)}
-  }
+  .cube-nav{gap:22px}
+  .nav-label{font-size:1.25rem}
+  .nav-diamond{width:12px;height:12px}
+  .nav-diamond .d-face{width:12px;height:12px}
+  .nav-diamond .d-front{transform:translateZ(6px)}
+  .nav-diamond .d-back{transform:translateZ(-6px) rotateY(180deg)}
+  .nav-diamond .d-right{transform:translateX(6px) rotateY(90deg)}
+  .nav-diamond .d-left{transform:translateX(-6px) rotateY(-90deg)}
+  .nav-diamond .d-top{transform:translateY(-6px) rotateX(90deg)}
+  .nav-diamond .d-bottom{transform:translateY(6px) rotateX(-90deg)}
 }
 
 </style>
@@ -281,40 +283,27 @@ a{text-decoration:none}
 
 </div>
 
-<div class="cube-nav" id="cubeNav" style="position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:999;visibility:hidden;opacity:0;transition:opacity .4s,visibility .4s;display:flex;flex-direction:column;gap:28px;align-items:flex-end">
+<div class="cube-nav" id="cubeNav" style="position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:999;visibility:hidden;opacity:0;transition:opacity .4s,visibility .4s;display:flex;flex-direction:column;gap:32px;align-items:flex-end">
 
-  <div class="nav-box" style="--cr:rotateX(-18deg) rotateY(16deg) rotateZ(3deg)">
-    <div class="nav-box-inner">
-      <div class="nf nf-top"></div>
-      <div class="nf nf-right"></div>
-      <div class="nf nf-front">אומנים</div>
-    </div>
+  <div class="nav-box">
+    <div class="nav-diamond"><div class="d-face d-front"></div><div class="d-face d-back"></div><div class="d-face d-right"></div><div class="d-face d-left"></div><div class="d-face d-top"></div><div class="d-face d-bottom"></div></div>
+    <span class="nav-label">אומנים</span>
   </div>
 
-  <div class="nav-box" style="--cr:rotateX(-22deg) rotateY(-14deg) rotateZ(-2deg)">
-    <div class="nav-box-inner">
-      <div class="nf nf-top"></div>
-      <div class="nf nf-right"></div>
-      <div class="nf nf-front">הפקות</div>
-    </div>
+  <div class="nav-box">
+    <div class="nav-diamond"><div class="d-face d-front"></div><div class="d-face d-back"></div><div class="d-face d-right"></div><div class="d-face d-left"></div><div class="d-face d-top"></div><div class="d-face d-bottom"></div></div>
+    <span class="nav-label">הפקות</span>
   </div>
 
-  <div class="nav-box" style="--cr:rotateX(-16deg) rotateY(18deg) rotateZ(3deg)">
-    <div class="nav-box-inner">
-      <div class="nf nf-top"></div>
-      <div class="nf nf-right"></div>
-      <div class="nf nf-front">שיווק</div>
-    </div>
+  <div class="nav-box">
+    <div class="nav-diamond"><div class="d-face d-front"></div><div class="d-face d-back"></div><div class="d-face d-right"></div><div class="d-face d-left"></div><div class="d-face d-top"></div><div class="d-face d-bottom"></div></div>
+    <span class="nav-label">שיווק</span>
   </div>
 
-  <div class="nav-box" style="--cr:rotateX(-22deg) rotateY(-16deg) rotateZ(-3deg)">
-    <div class="nav-box-inner">
-      <div class="nf nf-top"></div>
-      <div class="nf nf-right"></div>
-      <div class="nf nf-front">בוקינג</div>
-    </div>
+  <div class="nav-box">
+    <div class="nav-diamond"><div class="d-face d-front"></div><div class="d-face d-back"></div><div class="d-face d-right"></div><div class="d-face d-left"></div><div class="d-face d-top"></div><div class="d-face d-bottom"></div></div>
+    <span class="nav-label">בוקינג</span>
   </div>
-
 
 </div>
 
