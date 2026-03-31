@@ -961,7 +961,7 @@ var HERO_IMGS=[
       p.x+=p.vx;p.y+=p.vy;p.pulse+=p.pulseSpeed;
       var a=p.alpha*(0.6+0.4*Math.sin(p.pulse));
       if(p.x<-10)p.x=canvas.width+10;if(p.x>canvas.width+10)p.x=-10;
-      if(p.y<-10)p.y=canvas.height+10;i(p.y>canvas.height+10)p.y=-10; 
+      if(p.y<-10)p.y=canvas.height+10;if(p.y>canvas.height+10)p.y=-10;
       ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
       ctx.fillStyle='rgba(0,200,255,'+a+')';ctx.fill();
       for(var j=i+1;j<particles.length;j++){
