@@ -642,40 +642,47 @@ var HERO_IMGS=[
         }
 
         // Staggered delay by face group
-        var delay=faceOrder[face]*60 + (idx%9)*12;
-        c.el.style.transition='transform .9s cubic-bezier(.22,.68,.36,1.05) '+delay+'ms';
+        var delay=faceOrder[face]*25 + (idx%9)*5;
+        c.el.style.transition='transform .4s cubic-bezier(.22,.68,.36,1.05) '+delay+'ms';
         c.el.style.transform='matrix3d('+vals.join(',')+')';
         c.el.style.opacity='1'; // Keep faces fully visible!
       });
 
       if(hint) hint.style.display='none';
 
-      // Phase 2: After initial unfold, fling cubies off screen
+      // Phase 2: Immediately start flinging cubies - no pause
       setTimeout(function(){
+        // Flash effect on the cube
+        var glow=document.querySelector('.cube-glow');
+        if(glow){glow.style.transition='opacity .15s';glow.style.opacity='1';glow.style.boxShadow='0 0 80px 40px rgba(0,200,255,.6)';setTimeout(function(){if(glow){glow.style.opacity='0';glow.style.boxShadow='';}},200);}
+
         cubies.forEach(function(c){
-          var angleR=Math.random()*Math.PI*2;
-          var dist=800+Math.random()*600;
-          var flyX=Math.cos(angleR)*dist;
-          var flyY=Math.sin(angleR)*dist;
-          var flyZ=(Math.random()-0.5)*600;
+          var face=getFace(c);
+          // Each face flies in its natural direction - more dramatic
+          var baseAngle=({top:-90,bottom:90,left:180,right:0,front:45,back:-135,center:0})[face]||0;
+          baseAngle=(baseAngle+Math.random()*40-20)*Math.PI/180;
+          var dist=1200+Math.random()*800;
+          var flyX=Math.cos(baseAngle)*dist;
+          var flyY=Math.sin(baseAngle)*dist*(face==='top'||face==='bottom'?1.5:1);
+          var flyZ=(Math.random()-0.5)*1000;
           var m=c.el.style.transform.match(/matrix3d\(([^)]+)\)/);
           if(!m) return;
           var vals=m[1].split(',').map(Number);
           vals[12]+=flyX; vals[13]+=flyY; vals[14]+=flyZ;
-          var delay=Math.random()*200;
-          c.el.style.transition='transform .7s cubic-bezier(.2,.8,.3,1) '+delay+'ms, opacity .5s ease '+delay+'ms';
+          var delay=Math.random()*80;
+          c.el.style.transition='transform .45s cubic-bezier(.15,.8,.25,1) '+delay+'ms, opacity .3s ease '+(delay+100)+'ms';
           c.el.style.transform='matrix3d('+vals.join(',')+')';
           c.el.style.opacity='0';
         });
         setTimeout(function(){
           wrap.style.opacity='0';
-          wrap.style.transition='opacity .3s';
-        },900);
-      },850);
+          wrap.style.transition='opacity .15s';
+        },400);
+      },300);
 
-      // Show centered nav after cubies fly away
+      // Show centered nav faster
       var nav=document.getElementById('cubeNav');
-      if(nav) setTimeout(function(){nav.classList.add('visible');},1600);
+      if(nav) setTimeout(function(){nav.classList.add('visible');},700);
 
     } else {
       // Hide side nav and reset animations for next open
