@@ -596,7 +596,7 @@ var HERO_IMGS=[
         c._savedTransform=c.el.style.transform;
       });
 
-      // Group by face and apply box-opening transforms
+      // ── PHASE 1: Unfold faces outward (0-500ms) ──
       var faceOrder={bottom:0, left:1, right:2, back:3, front:4, top:5, center:0};
       cubies.forEach(function(c,idx){
         var face=getFace(c);
@@ -604,85 +604,88 @@ var HERO_IMGS=[
         var st=c._savedTransform||c.el.style.transform;
         var m=st.match(/matrix3d\(([^)]+)\)/);
         if(!m) return;
-
         var vals=m[1].split(',').map(Number);
-        // Current position
-        var tx=vals[12], ty=vals[13], tz=vals[14];
-
-        // Apply face-specific translation
-        vals[12]=tx+bt.dx;
-        vals[13]=ty+bt.dy;
-        vals[14]=tz+bt.dz;
-
-        // Apply rotation via matrix multiplication
+        vals[12]+=bt.dx; vals[13]+=bt.dy; vals[14]+=bt.dz;
         if(bt.rx||bt.ry||bt.rz){
           var a,ca,sa;
           if(bt.rx){
             a=bt.rx*Math.PI/180; ca=Math.cos(a); sa=Math.sin(a);
-            // Rotate around X
-            var r1=vals[1], r5=vals[5], r9=vals[9];
-            var r2=vals[2], r6=vals[6], r10=vals[10];
-            vals[1]=r1*ca-r2*sa; vals[5]=r5*ca-r6*sa; vals[9]=r9*ca-r10*sa;
-            vals[2]=r1*sa+r2*ca; vals[6]=r5*sa+r6*ca; vals[10]=r9*sa+r10*ca;
+            var r1=vals[1],r5=vals[5],r9=vals[9],r2=vals[2],r6=vals[6],r10=vals[10];
+            vals[1]=r1*ca-r2*sa;vals[5]=r5*ca-r6*sa;vals[9]=r9*ca-r10*sa;
+            vals[2]=r1*sa+r2*ca;vals[6]=r5*sa+r6*ca;vals[10]=r9*sa+r10*ca;
           }
           if(bt.ry){
             a=bt.ry*Math.PI/180; ca=Math.cos(a); sa=Math.sin(a);
-            var r0=vals[0], r4=vals[4], r8=vals[8];
-            var r2b=vals[2], r6b=vals[6], r10b=vals[10];
-            vals[0]=r0*ca+r2b*sa; vals[4]=r4*ca+r6b*sa; vals[8]=r8*ca+r10b*sa;
-            vals[2]=-r0*sa+r2b*ca; vals[6]=-r4*sa+r6b*ca; vals[10]=-r8*sa+r10b*ca;
+            var r0=vals[0],r4=vals[4],r8=vals[8],r2b=vals[2],r6b=vals[6],r10b=vals[10];
+            vals[0]=r0*ca+r2b*sa;vals[4]=r4*ca+r6b*sa;vals[8]=r8*ca+r10b*sa;
+            vals[2]=-r0*sa+r2b*ca;vals[6]=-r4*sa+r6b*ca;vals[10]=-r8*sa+r10b*ca;
           }
           if(bt.rz){
             a=bt.rz*Math.PI/180; ca=Math.cos(a); sa=Math.sin(a);
-            var r0c=vals[0], r4c=vals[4], r8c=vals[8];
-            var r1c=vals[1], r5c=vals[5], r9c=vals[9];
-            vals[0]=r0c*ca-r1c*sa; vals[4]=r4c*ca-r5c*sa; vals[8]=r8c*ca-r9c*sa;
-            vals[1]=r0c*sa+r1c*ca; vals[5]=r4c*sa+r5c*ca; vals[9]=r8c*sa+r9c*ca;
+            var r0c=vals[0],r4c=vals[4],r8c=vals[8],r1c=vals[1],r5c=vals[5],r9c=vals[9];
+            vals[0]=r0c*ca-r1c*sa;vals[4]=r4c*ca-r5c*sa;vals[8]=r8c*ca-r9c*sa;
+            vals[1]=r0c*sa+r1c*ca;vals[5]=r4c*sa+r5c*ca;vals[9]=r8c*sa+r9c*ca;
           }
         }
-
-        // Staggered delay by face group
         var delay=faceOrder[face]*25 + (idx%9)*5;
-        c.el.style.transition='transform .4s cubic-bezier(.22,.68,.36,1.05) '+delay+'ms';
+        c.el.style.transition='transform .5s cubic-bezier(.22,.68,.36,1.05) '+delay+'ms';
         c.el.style.transform='matrix3d('+vals.join(',')+')';
-        c.el.style.opacity='1'; // Keep faces fully visible!
+        c.el.style.opacity='1';
       });
 
       if(hint) hint.style.display='none';
 
-      // Phase 2: Immediately start flinging cubies - no pause
+      // ── PHASE 2: Zoom INTO the cube (200ms after unfold starts) ──
       setTimeout(function(){
-        // Flash effect on the cube
-        var glow=document.querySelector('.cube-glow');
-        if(glow){glow.style.transition='opacity .15s';glow.style.opacity='1';glow.style.boxShadow='0 0 80px 40px rgba(0,200,255,.6)';setTimeout(function(){if(glow){glow.style.opacity='0';glow.style.boxShadow='';}},200);}
+        wrap.style.transition='transform .6s cubic-bezier(.25,.1,.25,1), perspective .6s ease';
+        wrap.style.transform='scale(2.8)';
+        wrap.style.perspective='500px';
+      }, 200);
 
-        cubies.forEach(function(c){
+      // ── PHASE 3 & 4: Faces fly to sides + disappear (600ms) ──
+      setTimeout(function(){
+        var glow=document.querySelector('.cube-glow');
+        if(glow){
+          glow.style.transition='opacity .1s, box-shadow .1s';
+          glow.style.opacity='1';
+          glow.style.boxShadow='0 0 120px 60px rgba(0,200,255,.5)';
+          setTimeout(function(){
+            glow.style.transition='opacity .4s';
+            glow.style.opacity='0';
+            glow.style.boxShadow='';
+          },150);
+        }
+        var faceVectors={
+          top:{x:0,y:-1,z:0},bottom:{x:0,y:1,z:0},
+          left:{x:-1,y:0,z:0},right:{x:1,y:0,z:0},
+          front:{x:0,y:0,z:1},back:{x:0,y:0,z:-1},
+          center:{x:0,y:0,z:0}
+        };
+        cubies.forEach(function(c,idx){
           var face=getFace(c);
-          // Each face flies in its natural direction - more dramatic
-          var baseAngle=({top:-90,bottom:90,left:180,right:0,front:45,back:-135,center:0})[face]||0;
-          baseAngle=(baseAngle+Math.random()*40-20)*Math.PI/180;
-          var dist=1200+Math.random()*800;
-          var flyX=Math.cos(baseAngle)*dist;
-          var flyY=Math.sin(baseAngle)*dist*(face==='top'||face==='bottom'?1.5:1);
-          var flyZ=(Math.random()-0.5)*1000;
+          var vec=faceVectors[face]||{x:0,y:0,z:0};
+          var dist=600+Math.random()*400;
+          var flyX=vec.x*dist+(Math.random()-0.5)*150;
+          var flyY=vec.y*dist+(Math.random()-0.5)*150;
+          var flyZ=vec.z*dist+(Math.random()-0.5)*100;
           var m=c.el.style.transform.match(/matrix3d\(([^)]+)\)/);
           if(!m) return;
           var vals=m[1].split(',').map(Number);
           vals[12]+=flyX; vals[13]+=flyY; vals[14]+=flyZ;
-          var delay=Math.random()*80;
-          c.el.style.transition='transform .45s cubic-bezier(.15,.8,.25,1) '+delay+'ms, opacity .3s ease '+(delay+100)+'ms';
+          var delay=faceOrder[face]*30+(idx%9)*8;
+          c.el.style.transition='transform .55s cubic-bezier(.15,.6,.35,1) '+delay+'ms, opacity .35s ease '+(delay+150)+'ms';
           c.el.style.transform='matrix3d('+vals.join(',')+')';
           c.el.style.opacity='0';
         });
         setTimeout(function(){
+          wrap.style.transition='opacity .25s';
           wrap.style.opacity='0';
-          wrap.style.transition='opacity .15s';
-        },400);
-      },300);
+        },600);
+      },600);
 
-      // Show centered nav faster
+      // ── PHASE 5: Show centered nav categories ──
       var nav=document.getElementById('cubeNav');
-      if(nav) setTimeout(function(){nav.classList.add('visible');},700);
+      if(nav) setTimeout(function(){nav.classList.add('visible');},1100);
 
     } else {
       // Hide side nav and reset animations for next open
@@ -699,8 +702,10 @@ var HERO_IMGS=[
       }
 
       // Close: bring cube back and reassemble
+      wrap.style.transition='transform .4s ease, opacity .3s';
+      wrap.style.transform='scale(1)';
+      wrap.style.perspective='1200px';
       wrap.style.opacity='1';
-      wrap.style.transition='opacity .3s';
       cubies.forEach(function(c){
         c.el.style.transition='none';
         c.el.style.opacity='1';
