@@ -157,116 +157,52 @@ a{text-decoration:none}
 .screen-shake{animation:screenShake .35s ease-out}
 @keyframes screenShake{0%{transform:translate(0,0)}15%{transform:translate(-4px,3px)}30%{transform:translate(3px,-4px)}45%{transform:translate(-3px,2px)}60%{transform:translate(2px,-2px)}75%{transform:translate(-1px,1px)}100%{transform:translate(0,0)}}
 
-/* === Nav Items - text + diamond cube === */
-.cube-nav{
-  display:flex;
-  flex-direction:column;
-  gap:36px;
-  align-items:center;
-}
-.cube-nav.visible{
-  visibility:visible !important;
-  opacity:1 !important;
-}
-.nav-box{
-  cursor:pointer;
-  opacity:0;
-  transform:scale(0) rotateY(180deg);
-  filter:blur(8px) brightness(2);
-  display:flex;
-  align-items:center;
-  gap:12px;
-  direction:rtl;
-}
-.cube-nav.visible .nav-box{
-  animation:navEmerge .8s cubic-bezier(.16,.73,.3,1.02) forwards;
-}
-.cube-nav.visible .nav-box:nth-child(1){animation-delay:0s}
-.cube-nav.visible .nav-box:nth-child(2){animation-delay:.12s}
-.cube-nav.visible .nav-box:nth-child(3){animation-delay:.24s}
-.cube-nav.visible .nav-box:nth-child(4){animation-delay:.36s}
-.nav-diamond{
-  width:18px;height:18px;
-  position:relative;
-  transform-style:preserve-3d;
-  transform:rotateZ(45deg) rotateX(15deg) rotateY(15deg);
-  transition:transform .4s ease, filter .3s;
-  flex-shrink:0;
-}
-.nav-diamond .d-face{
-  position:absolute;
-  width:18px;height:18px;
-  backface-visibility:hidden;
-  border:1.2px solid rgba(0,200,255,.7);
-  background:rgba(0,180,235,.12);
-  transition:transform .4s ease, border-color .3s, background .3s, box-shadow .3s;
-}
-.nav-diamond .d-front{transform:translateZ(9px)}
-.nav-diamond .d-back{transform:translateZ(-9px) rotateY(180deg)}
-.nav-diamond .d-right{transform:translateX(9px) rotateY(90deg)}
-.nav-diamond .d-left{transform:translateX(-9px) rotateY(-90deg)}
-.nav-diamond .d-top{transform:translateY(-9px) rotateX(90deg)}
-.nav-diamond .d-bottom{transform:translateY(9px) rotateX(-90deg)}
-.nav-box:hover .nav-diamond{
-  animation:diamondSpin .8s ease-in-out infinite;
-  filter:drop-shadow(0 0 10px rgba(0,210,255,.8));
-}
-.nav-box:hover .d-front{transform:translateZ(14px);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25);box-shadow:0 0 8px rgba(0,200,255,.4)}
-.nav-box:hover .d-back{transform:translateZ(-14px) rotateY(180deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
-.nav-box:hover .d-right{transform:translateX(14px) rotateY(90deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
-.nav-box:hover .d-left{transform:translateX(-14px) rotateY(-90deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
-.nav-box:hover .d-top{transform:translateY(-14px) rotateX(90deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
-.nav-box:hover .d-bottom{transform:translateY(14px) rotateX(-90deg);border-color:rgba(0,220,255,1);background:rgba(0,200,255,.25)}
-.nav-label{
-  font-family:'Rubik','Heebo',sans-serif;
-  font-weight:700;font-size:2.2rem;
-  color:#00d4ff;
-  text-shadow:0 0 8px rgba(0,200,255,.6), 0 0 18px rgba(0,200,255,.2);
-  letter-spacing:1px;
-  transition:text-shadow .3s, color .3s, transform .3s;
-  white-space:nowrap;
-}
-.nav-box:hover .nav-label{
-  color:#66e5ff;
-  text-shadow:0 0 14px rgba(0,210,255,.9), 0 0 30px rgba(0,200,255,.4);
-  transform:translateX(-4px);
-}
-@keyframes navEmerge{
-  0%{opacity:0;transform:scale(0) rotateY(180deg);filter:blur(8px) brightness(2)}
-  50%{opacity:1;transform:scale(1.08) rotateY(-8deg);filter:blur(1px) brightness(1.3)}
-  75%{transform:scale(0.97) rotateY(3deg);filter:blur(0) brightness(1.05)}
-  100%{opacity:1;transform:scale(1) rotateY(0);filter:blur(0) brightness(1)}
-}
-@keyframes diamondSpin{
-  0%{transform:rotateZ(45deg) rotateX(15deg) rotateY(15deg)}
-  50%{transform:rotateZ(45deg) rotateX(195deg) rotateY(195deg)}
-  100%{transform:rotateZ(45deg) rotateX(375deg) rotateY(375deg)}
-}
-@media(max-width:768px){
-  .cube-nav{gap:26px}
-  .nav-label{font-size:1.45rem}
-  .nav-diamond{width:14px;height:14px}
-  .nav-diamond .d-face{width:14px;height:14px}
-  .nav-diamond .d-front{transform:translateZ(7px)}
-  .nav-diamond .d-back{transform:translateZ(-7px) rotateY(180deg)}
-  .nav-diamond .d-right{transform:translateX(7px) rotateY(90deg)}
-  .nav-diamond .d-left{transform:translateX(-7px) rotateY(-90deg)}
-  .nav-diamond .d-top{transform:translateY(-7px) rotateX(90deg)}
-  .nav-diamond .d-bottom{transform:translateY(7px) rotateX(-90deg)}
-}
-@media(max-width:480px){
-  .cube-nav{gap:22px}
-  .nav-label{font-size:1.25rem}
-  .nav-diamond{width:12px;height:12px}
-  .nav-diamond .d-face{width:12px;height:12px}
-  .nav-diamond .d-front{transform:translateZ(6px)}
-  .nav-diamond .d-back{transform:translateZ(-6px) rotateY(180deg)}
-  .nav-diamond .d-right{transform:translateX(6px) rotateY(90deg)}
-  .nav-diamond .d-left{transform:translateX(-6px) rotateY(-90deg)}
-  .nav-diamond .d-top{transform:translateY(-6px) rotateX(90deg)}
-  .nav-diamond .d-bottom{transform:translateY(6px) rotateX(-90deg)}
-}
+/* === Screen 2: Nav Categories === */
 
+/* Ambient glow */
+.nav-ambient{position:fixed;inset:0;z-index:990;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,rgba(0,180,240,.06) 0%,transparent 60%);opacity:0;transition:opacity .8s ease}
+.nav-ambient.visible{opacity:1}
+.nav-particles{position:fixed;inset:0;z-index:991;pointer-events:none;opacity:0;transition:opacity 1s ease}
+.nav-particles.visible{opacity:1}
+
+.cube-nav{display:grid;grid-template-columns:1fr 1fr;gap:24px;direction:rtl}
+.cube-nav.visible{visibility:visible !important;opacity:1 !important}
+
+.nav-box{cursor:pointer;opacity:0;transform:translateY(30px) scale(.85);filter:blur(6px);width:220px;height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(0,180,240,.04);border:1px solid rgba(0,200,255,.15);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);position:relative;overflow:hidden;transition:transform .35s ease,box-shadow .35s ease,border-color .35s ease,background .35s ease}
+.nav-box::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(0,200,255,.06) 50%,transparent 60%);background-size:300% 300%;background-position:100% 100%;transition:background-position .6s ease;border-radius:16px}
+.nav-box:hover::before{background-position:0% 0%}
+.nav-box::after{content:'';position:absolute;top:8px;right:8px;width:24px;height:24px;border-top:1.5px solid rgba(0,200,255,.3);border-right:1.5px solid rgba(0,200,255,.3);border-radius:0 8px 0 0;transition:border-color .3s,width .3s,height .3s}
+.nav-box:hover::after{border-color:rgba(0,220,255,.7);width:32px;height:32px}
+.nav-box:hover{transform:translateY(-6px) scale(1.04);box-shadow:0 8px 32px rgba(0,200,255,.15),0 0 1px rgba(0,200,255,.3),inset 0 0 30px rgba(0,200,255,.03);border-color:rgba(0,200,255,.35);background:rgba(0,180,240,.07)}
+
+.cube-nav.visible .nav-box{animation:cardEmerge .7s cubic-bezier(.16,.73,.3,1.02) forwards}
+.cube-nav.visible .nav-box:nth-child(1){animation-delay:0s}
+.cube-nav.visible .nav-box:nth-child(2){animation-delay:.1s}
+.cube-nav.visible .nav-box:nth-child(3){animation-delay:.2s}
+.cube-nav.visible .nav-box:nth-child(4){animation-delay:.3s}
+
+.nav-diamond{width:22px;height:22px;position:relative;transform-style:preserve-3d;transform:rotateZ(45deg) rotateX(15deg) rotateY(15deg);transition:transform .4s ease,filter .3s;flex-shrink:0;animation:diamondFloat 3s ease-in-out infinite}
+.nav-diamond .d-face{position:absolute;width:22px;height:22px;backface-visibility:hidden;border:1.2px solid rgba(0,200,255,.5);background:rgba(0,180,235,.08);transition:transform .4s ease,border-color .3s,background .3s,box-shadow .3s}
+.nav-diamond .d-front{transform:translateZ(11px)}
+.nav-diamond .d-back{transform:translateZ(-11px) rotateY(180deg)}
+.nav-diamond .d-right{transform:translateX(11px) rotateY(90deg)}
+.nav-diamond .d-left{transform:translateX(-11px) rotateY(-90deg)}
+.nav-diamond .d-top{transform:translateY(-11px) rotateX(90deg)}
+.nav-diamond .d-bottom{transform:translateY(11px) rotateX(-90deg)}
+.nav-box:hover .nav-diamond{animation:diamondSpin .8s ease-in-out infinite;filter:drop-shadow(0 0 12px rgba(0,210,255,.9))}
+.nav-box:hover .d-face{border-color:rgba(0,220,255,.9);background:rgba(0,200,255,.2);box-shadow:0 0 6px rgba(0,200,255,.3)}
+
+.nav-label{font-family:'Rubik','Heebo',sans-serif;font-weight:700;font-size:1.6rem;color:#00d4ff;text-shadow:0 0 8px rgba(0,200,255,.4),0 0 20px rgba(0,200,255,.1);letter-spacing:1.5px;transition:text-shadow .3s,color .3s,letter-spacing .3s;white-space:nowrap}
+.nav-box:hover .nav-label{color:#80eaff;text-shadow:0 0 12px rgba(0,210,255,.8),0 0 30px rgba(0,200,255,.3);letter-spacing:2.5px}
+.nav-sub{font-family:'Heebo',sans-serif;font-weight:300;font-size:.75rem;color:rgba(0,200,255,.35);letter-spacing:2px;text-transform:uppercase;transition:color .3s}
+.nav-box:hover .nav-sub{color:rgba(0,200,255,.6)}
+
+@keyframes cardEmerge{0%{opacity:0;transform:translateY(30px) scale(.85);filter:blur(6px)}60%{opacity:1;transform:translateY(-4px) scale(1.02);filter:blur(0)}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+@keyframes diamondSpin{0%{transform:rotateZ(45deg) rotateX(15deg) rotateY(15deg)}50%{transform:rotateZ(45deg) rotateX(195deg) rotateY(195deg)}100%{transform:rotateZ(45deg) rotateX(375deg) rotateY(375deg)}}
+@keyframes diamondFloat{0%,100%{transform:rotateZ(45deg) rotateX(15deg) rotateY(15deg) translateY(0)}50%{transform:rotateZ(45deg) rotateX(20deg) rotateY(25deg) translateY(-3px)}}
+
+@media(max-width:768px){.cube-nav{grid-template-columns:1fr 1fr;gap:16px}.nav-box{width:170px;height:115px}.nav-label{font-size:1.3rem}.nav-diamond{width:18px;height:18px}.nav-diamond .d-face{width:18px;height:18px}.nav-diamond .d-front{transform:translateZ(9px)}.nav-diamond .d-back{transform:translateZ(-9px) rotateY(180deg)}.nav-diamond .d-right{transform:translateX(9px) rotateY(90deg)}.nav-diamond .d-left{transform:translateX(-9px) rotateY(-90deg)}.nav-diamond .d-top{transform:translateY(-9px) rotateX(90deg)}.nav-diamond .d-bottom{transform:translateY(9px) rotateX(-90deg)}}
+@media(max-width:480px){.cube-nav{grid-template-columns:1fr;gap:14px}.nav-box{width:200px;height:100px}.nav-label{font-size:1.2rem}.nav-diamond{width:16px;height:16px}.nav-diamond .d-face{width:16px;height:16px}.nav-diamond .d-front{transform:translateZ(8px)}.nav-diamond .d-back{transform:translateZ(-8px) rotateY(180deg)}.nav-diamond .d-right{transform:translateX(8px) rotateY(90deg)}.nav-diamond .d-left{transform:translateX(-8px) rotateY(-90deg)}.nav-diamond .d-top{transform:translateY(-8px) rotateX(90deg)}.nav-diamond .d-bottom{transform:translateY(8px) rotateX(-90deg)}}
 </style>
 </head>
 <body>
@@ -297,26 +233,34 @@ a{text-decoration:none}
 
 </div>
 
-<div class="cube-nav" id="cubeNav" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:999;visibility:hidden;opacity:0;transition:opacity .5s,visibility .5s;display:flex;flex-direction:column;gap:36px;align-items:center">
+<!-- Screen 2: Ambient + Particles + Nav -->
+<div class="nav-ambient" id="navAmbient"></div>
+<canvas class="nav-particles" id="navParticles"></canvas>
+
+<div class="cube-nav" id="cubeNav" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:999;visibility:hidden;opacity:0;transition:opacity .5s,visibility .5s">
 
   <div class="nav-box">
     <div class="nav-diamond"><div class="d-face d-front"></div><div class="d-face d-back"></div><div class="d-face d-right"></div><div class="d-face d-left"></div><div class="d-face d-top"></div><div class="d-face d-bottom"></div></div>
     <span class="nav-label">אומנים</span>
+    <span class="nav-sub">Artists</span>
   </div>
 
   <div class="nav-box">
     <div class="nav-diamond"><div class="d-face d-front"></div><div class="d-face d-back"></div><div class="d-face d-right"></div><div class="d-face d-left"></div><div class="d-face d-top"></div><div class="d-face d-bottom"></div></div>
     <span class="nav-label">הפקות</span>
+    <span class="nav-sub">Productions</span>
   </div>
 
   <div class="nav-box">
     <div class="nav-diamond"><div class="d-face d-front"></div><div class="d-face d-back"></div><div class="d-face d-right"></div><div class="d-face d-left"></div><div class="d-face d-top"></div><div class="d-face d-bottom"></div></div>
     <span class="nav-label">שיווק</span>
+    <span class="nav-sub">Marketing</span>
   </div>
 
   <div class="nav-box">
     <div class="nav-diamond"><div class="d-face d-front"></div><div class="d-face d-back"></div><div class="d-face d-right"></div><div class="d-face d-left"></div><div class="d-face d-top"></div><div class="d-face d-bottom"></div></div>
     <span class="nav-label">בוקינג</span>
+    <span class="nav-sub">Booking</span>
   </div>
 
 </div>
@@ -697,11 +641,21 @@ var HERO_IMGS=[
 
       // ── PHASE 4: Show nav (1500ms) ──
       var nav=document.getElementById('cubeNav');
-      if(nav) setTimeout(function(){nav.classList.add('visible');},1500);
+      var ambient=document.getElementById('navAmbient');
+      var partCanvas=document.getElementById('navParticles');
+      if(nav) setTimeout(function(){
+        nav.classList.add('visible');
+        if(ambient) ambient.classList.add('visible');
+        if(partCanvas){partCanvas.classList.add('visible');window._startNavParticles&&window._startNavParticles();}
+      },1500);
 
     } else {
-      // Hide side nav and reset animations for next open
+      // Hide Screen 2 and reset
       var nav=document.getElementById('cubeNav');
+      var ambient=document.getElementById('navAmbient');
+      var partCanvas=document.getElementById('navParticles');
+      if(ambient) ambient.classList.remove('visible');
+      if(partCanvas){partCanvas.classList.remove('visible');window._stopNavParticles&&window._stopNavParticles();}
       if(nav){
         nav.classList.remove('visible');
         // Reset item animations so they replay next time
@@ -983,6 +937,42 @@ var HERO_IMGS=[
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
+})();
+
+// === Screen 2: Floating Particles ===
+(function(){
+  var canvas=document.getElementById('navParticles');
+  if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var particles=[];var running=false;var rafId=null;
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  window.addEventListener('resize',resize);resize();
+  function createParticles(){
+    particles=[];
+    for(var i=0;i<60;i++){
+      particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+0.5,vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3,alpha:Math.random()*0.4+0.1,pulse:Math.random()*Math.PI*2,pulseSpeed:0.01+Math.random()*0.02});
+    }
+  }
+  function draw(){
+    if(!running) return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(var i=0;i<particles.length;i++){
+      var p=particles[i];
+      p.x+=p.vx;p.y+=p.vy;p.pulse+=p.pulseSpeed;
+      var a=p.alpha*(0.6+0.4*Math.sin(p.pulse));
+      if(p.x<-10)p.x=canvas.width+10;if(p.x>canvas.width+10)p.x=-10;
+      if(p.y<-10)p.y=canvas.height+10;if(p.y>canvas.height+10)p.y=-10;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,200,255,'+a+')';ctx.fill();
+      for(var j=i+1;j<particles.length;j++){
+        var p2=particles[j];var dx=p.x-p2.x,dy=p.y-p2.y;var dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<120){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p2.x,p2.y);ctx.strokeStyle='rgba(0,200,255,'+(0.06*(1-dist/120))+')';ctx.lineWidth=0.5;ctx.stroke();}
+      }
+    }
+    rafId=requestAnimationFrame(draw);
+  }
+  window._startNavParticles=function(){if(running)return;running=true;createParticles();draw();};
+  window._stopNavParticles=function(){running=false;if(rafId)cancelAnimationFrame(rafId);ctx.clearRect(0,0,canvas.width,canvas.height);};
 })();
 </script>
 </body>
