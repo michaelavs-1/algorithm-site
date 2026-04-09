@@ -594,8 +594,8 @@ var HERO_IMGS=[
       // Phase 2a (400ms): Begin slow outward drift + darken
       setTimeout(function(){
         wrap.style.transition="transform 2.5s ease-in-out,perspective 2.5s ease-in-out,filter 1.2s ease-in";
-        wrap.style.transform="scale(1.8) rotate3d(0.1,1,0.05,2deg)";wrap.style.perspective="650px";
-        wrap.style.filter="brightness(0.25)";
+        wrap.style.transform="scale(1.8) rotate3d(0.15,1,0.1,20deg)";wrap.style.perspective="650px";
+        wrap.style.filter="brightness(0.35)";
         if(glow){glow.style.transition="opacity 1.2s ease-in,box-shadow 1.2s ease-in";glow.style.opacity=".1";glow.style.boxShadow="0 0 15px 8px rgba(0,60,100,.12)";}
         cubies.forEach(function(c,idx){
           var face=getFace(c);var bt=getBoxTransform(face,c);
@@ -613,7 +613,7 @@ var HERO_IMGS=[
       // Phase 2b (1400ms): Continue expanding + warm up brightness (fires while 2a still moving)
       setTimeout(function(){
         wrap.style.transition="transform 2s ease-in-out,perspective 2s ease-in-out,filter 1.4s ease-in-out";
-        wrap.style.transform="scale(2.6) rotate3d(0.1,1,0.05,-1deg)";wrap.style.perspective="500px";
+        wrap.style.transform="scale(2.6) rotate3d(0.15,1,0.1,55deg)";wrap.style.perspective="500px";
         wrap.style.filter="brightness(0.45)";
         if(glow){glow.style.transition="opacity 1.4s ease-in-out,box-shadow 1.4s ease-in-out";glow.style.opacity=".3";glow.style.boxShadow="0 0 40px 20px rgba(0,130,170,.2)";}
         cubies.forEach(function(c,idx){
@@ -632,7 +632,7 @@ var HERO_IMGS=[
       // Phase 2c (2400ms): Accelerating expansion + getting bright (fires while 2b still moving)
       setTimeout(function(){
         wrap.style.transition="transform 1.5s cubic-bezier(.25,.46,.45,.94),perspective 1.5s ease-in-out,filter 1.2s ease-in-out";
-        wrap.style.transform="scale(3.3) rotate3d(0.1,1,0.05,1.5deg)";wrap.style.perspective="400px";
+        wrap.style.transform="scale(3.3) rotate3d(0.15,1,0.1,95deg)";wrap.style.perspective="400px";
         wrap.style.filter="brightness(0.75)";
         if(glow){glow.style.transition="opacity 1.2s ease-in-out,box-shadow 1.2s ease-in-out";glow.style.opacity=".55";glow.style.boxShadow="0 0 75px 38px rgba(0,190,230,.3)";}
         cubies.forEach(function(c,idx){
@@ -651,7 +651,7 @@ var HERO_IMGS=[
       // Phase 2d (3200ms): Peak brightness + final stretch before boom
       setTimeout(function(){
         wrap.style.transition="transform 0.6s ease-in,perspective 0.6s ease-in,filter 0.5s ease-in";
-        wrap.style.transform="scale(3.7) rotate3d(0.1,1,0.05,-0.5deg)";wrap.style.perspective="360px";
+        wrap.style.transform="scale(3.7) rotate3d(0.15,1,0.1,130deg)";wrap.style.perspective="360px";
         wrap.style.filter="brightness(1.35)";
         if(glow){glow.style.transition="opacity 0.5s ease-in,box-shadow 0.5s ease-in";glow.style.opacity="1";glow.style.boxShadow="0 0 180px 90px rgba(180,240,255,.55)";}
         cubies.forEach(function(c,idx){
