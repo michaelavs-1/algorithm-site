@@ -674,8 +674,8 @@ var HERO_IMGS=[
           c.el.style.transition='transform 1.5s cubic-bezier(.15,.6,.35,1) '+delay+'ms,opacity 1s ease '+(delay+400)+'ms,box-shadow 1s ease '+delay+'ms';
           c.el.style.transform='matrix3d('+vals.join(',')+')';c.el.style.opacity='0';
         });
-        setTimeout(function(){wrap.style.transition='opacity .5s';wrap.style.opacity='0';},2800);
-        setTimeout(function(){if(energy.parentNode)energy.remove();if(ring.parentNode)ring.remove();},3500);
+        setTimeout(function(){wrap.style.transition='opacity .5s';wrap.style.opacity='0';},1200);
+        setTimeout(function(){if(energy.parentNode)energy.remove();if(ring.parentNode)ring.remove();},2000);
       },3500);
 
       // ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ PHASE 4: Show nav (1500ms) ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ
@@ -686,7 +686,7 @@ var HERO_IMGS=[
         nav.classList.add('visible');
         if(ambient) ambient.classList.add('visible');
         if(partCanvas){partCanvas.classList.add('visible');window._startNavParticles&&window._startNavParticles();}
-      },7000);
+      },5200);
 
     } else {
       // Hide Screen 2 and reset
