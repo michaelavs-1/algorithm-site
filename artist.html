@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אלגוריתם - אומן</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Rubik:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Heebo',sans-serif;background:#060810;color:#e4eaf0;direction:rtl;overflow-x:hidden;min-height:100vh}
+a{text-decoration:none;color:inherit}
+::selection{background:rgba(0,184,230,.25);color:#fff}
+
+/* ambient background */
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(0,140,200,.12),transparent 55%),
+    linear-gradient(rgba(0,180,240,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,180,240,.04) 1px,transparent 1px);
+  background-size:100% 100%,46px 46px,46px 46px}
+
+/* navbar */
+.navbar{position:fixed;top:0;right:0;left:0;height:62px;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:rgba(6,8,16,.7);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,184,230,.1)}
+.navbar-logo{font-family:'Rubik',sans-serif;font-size:22px;font-weight:700;letter-spacing:1px;background:linear-gradient(135deg,#00b8e6,#33d4ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.navbar-back{display:flex;align-items:center;gap:8px;color:#00b8e6;font-size:14px;font-weight:500;transition:.3s}
+.navbar-back:hover{color:#33d4ff;transform:translateX(4px)}
+
+.wrap{position:relative;z-index:2;max-width:1080px;margin:0 auto;padding:108px 28px 80px}
+
+/* hero card */
+.hero{display:grid;grid-template-columns:340px 1fr;gap:40px;align-items:start}
+.photo-frame{position:relative;aspect-ratio:1/1;border-radius:20px;overflow:hidden;
+  border:1px solid rgba(0,200,255,.28);
+  box-shadow:0 20px 70px rgba(0,0,0,.55),inset 0 0 40px rgba(0,120,180,.1);
+  background:linear-gradient(145deg,#0c1424,#070b14)}
+.photo-frame::before,.photo-frame::after{content:'';position:absolute;width:30px;height:30px;z-index:4;pointer-events:none}
+.photo-frame::before{top:12px;right:12px;border-top:2px solid rgba(0,210,255,.6);border-right:2px solid rgba(0,210,255,.6)}
+.photo-frame::after{bottom:12px;left:12px;border-bottom:2px solid rgba(0,210,255,.6);border-left:2px solid rgba(0,210,255,.6)}
+.photo-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+.photo-frame img.img-missing{display:none}
+.photo-ph{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  background:radial-gradient(ellipse at 50% 38%,rgba(0,150,210,.16),transparent 60%)}
+.photo-ph svg{width:64px;height:64px;filter:drop-shadow(0 0 12px rgba(0,200,255,.5))}
+.photo-ph span{font-size:12px;letter-spacing:2px;color:#5d7187;text-transform:uppercase}
+
+.hero-info{padding-top:6px}
+.eyebrow{font-family:'Rubik',sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:rgba(0,200,255,.7);margin-bottom:14px}
+.artist-name{font-size:54px;font-weight:800;line-height:1.05;letter-spacing:-1px;
+  background:linear-gradient(135deg,#fff 0%,#7fe3ff 120%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.artist-genre{margin-top:12px;font-size:17px;color:#33d4ff;font-weight:500;letter-spacing:.5px}
+.socials{margin-top:26px;display:flex;gap:14px;flex-wrap:wrap}
+.social-link{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:12px;background:rgba(0,184,230,.08);border:1px solid rgba(0,184,230,.25);color:#00b8e6;transition:.3s}
+.social-link:hover{background:rgba(0,184,230,.2);color:#33d4ff;transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,140,200,.3)}
+.social-link svg{width:20px;height:20px;fill:currentColor}
+
+/* sections */
+.section{margin-top:56px}
+.section-title{font-family:'Rubik',sans-serif;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:rgba(0,200,255,.65);margin-bottom:18px;display:flex;align-items:center;gap:12px}
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,184,230,.3),transparent)}
+.bio{font-size:17px;line-height:1.9;color:#aeb9cc;font-weight:300;max-width:760px}
+.demo-tag{display:inline-block;margin-top:14px;font-size:11px;letter-spacing:1px;color:#5d7187;border:1px dashed rgba(0,184,230,.3);border-radius:6px;padding:4px 10px}
+
+/* player */
+.players{display:grid;grid-template-columns:1fr;gap:20px}
+.player-box{border:1px solid rgba(0,184,230,.18);border-radius:16px;overflow:hidden;background:rgba(0,180,240,.03)}
+.player-box iframe{display:block;width:100%;border:0}
+.player-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:180px;text-align:center;padding:20px;
+  background:repeating-linear-gradient(45deg,rgba(0,180,240,.03),rgba(0,180,240,.03) 12px,transparent 12px,transparent 24px)}
+.player-ph .pl-ico{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,184,230,.12);color:#33d4ff}
+.player-ph .pl-ico svg{width:22px;height:22px;fill:currentColor}
+.player-ph p{font-size:14px;color:#8493a8}
+.player-ph small{font-size:11px;color:#5d7187;letter-spacing:1px}
+
+.footer{position:relative;z-index:2;text-align:center;padding:34px;color:#56607a;font-size:12px;border-top:1px solid rgba(0,184,230,.08);font-weight:300}
+
+.not-found{text-align:center;padding:120px 20px}
+.not-found h1{font-size:30px;margin-bottom:14px}
+.not-found a{color:#33d4ff}
+
+@media(max-width:760px){
+  .navbar{padding:0 18px}
+  .wrap{padding:96px 18px 60px}
+  .hero{grid-template-columns:1fr;gap:26px}
+  .photo-frame{max-width:300px;margin:0 auto}
+  .artist-name{font-size:38px}
+  .hero-info{text-align:center}
+  .socials{justify-content:center}
+  .section-title{justify-content:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<nav class="navbar">
+  <a href="index.html" class="navbar-back">→ חזרה לעמוד הבית</a>
+  <span class="navbar-logo">אלגוריתם</span>
+</nav>
+
+<main id="app"></main>
+
+<footer class="footer">© 2026 אלגוריתם — ניהול אמנים · הפקות · שיווק</footer>
+
+<script>
+/* =========================================================================
+   נתוני האמנים. הטקסטים והקישורים הם דמה — החליפו אותם בתוכן אמיתי.
+   - img:      קובץ תמונה בתיקיית images/ (אותם קבצים של דף האמנים)
+   - bio:      טקסט "על המוזיקה"
+   - spotify:  קישור EMBED של ספוטיפיי (Share → Embed). ריק = פלייסהולדר
+   - youtube:  מזהה וידאו של יוטיוב (החלק אחרי v=). ריק = פלייסהולדר
+   - socials:  קישורים לרשתות (החליפו את ה-# בכתובות אמיתיות)
+   ========================================================================= */
+var ARTISTS = {
+  "jimbo-jay": {
+    name:"ג׳ימבו ג׳יי", nameEn:"JIMBO J", genre:"ראפ / היפ-הופ",
+    img:"images/jimbo-jay.jpg",
+    bio:"טקסט לדוגמה: ג׳ימבו ג׳יי הוא אחד הקולות הבולטים בהיפ-הופ הישראלי, עם סאונד שמשלב גרוב, הומור וביקורת חברתית. כאן יופיע תיאור אמיתי של האמן, הסגנון המוזיקלי, אבני דרך והופעות. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
+  "eko": {
+    name:"אקו", nameEn:"EKO", genre:"מוזיקה",
+    img:"images/eko.jpg",
+    bio:"טקסט לדוגמה: אקו מביא/ה סאונד ייחודי המשלב השפעות מגוונות. כאן יופיע תיאור אמיתי של האמן/ית, הסגנון והקריירה. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
+  "maor-ashkenazi": {
+    name:"מאור אשכנזי", nameEn:"MAOR ASHKENAZI", genre:"מוזיקה",
+    img:"images/maor-ashkenazi.jpg",
+    bio:"טקסט לדוגמה: מאור אשכנזי — תיאור של האמן, הסגנון המוזיקלי וההישגים. כאן יופיע הטקסט האמיתי. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
+  "uriel-tzarum": {
+    name:"אוריאל צארום", nameEn:"URIEL TZARUM", genre:"מוזיקה",
+    img:"images/uriel-tzarum.jpg",
+    bio:"טקסט לדוגמה: אוריאל צארום — תיאור של האמן, הסגנון והדרך המוזיקלית. כאן יופיע הטקסט האמיתי. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
+  "daniel-rubin": {
+    name:"דניאל רובין", nameEn:"DANIEL RUBIN", genre:"מוזיקה",
+    img:"images/daniel-rubin.jpg",
+    bio:"טקסט לדוגמה: דניאל רובין — תיאור של האמן/ית, הסגנון המוזיקלי והקריירה. כאן יופיע הטקסט האמיתי. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
+  "yuz": {
+    name:"yuz", nameEn:"YUZ", genre:"מוזיקה",
+    img:"images/yuz.jpg",
+    bio:"טקסט לדוגמה: yuz — תיאור של האמן, הסאונד והפרויקטים. כאן יופיע הטקסט האמיתי. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
+  "jerusalem-street-orchestra": {
+    name:"תזמורת הרחוב הירושלמית", nameEn:"JERUSALEM STREET ORCHESTRA", genre:"אנסמבל / מוזיקת רחוב",
+    img:"images/jerusalem-street-orchestra.jpg",
+    bio:"טקסט לדוגמה: תזמורת הרחוב הירושלמית — אנסמבל שמביא את האנרגיה של הרחוב אל הבמה. כאן יופיע תיאור אמיתי של ההרכב, ההיסטוריה וההופעות. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  }
+};
+
+var ICONS = {
+  cube:'<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="#33d4ff" stroke-width="2.5" stroke-linejoin="round"><path d="M50 8 L86 28 L86 72 L50 92 L14 72 L14 28 Z"/><path d="M50 8 L50 50 M50 50 L86 28 M50 50 L14 28" stroke="rgba(51,212,255,.5)"/><path d="M50 50 L50 92" stroke="rgba(51,212,255,.5)"/></g></svg>',
+  play:'<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
+  instagram:'<svg viewBox="0 0 24 24"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 3.25.15 4.77 1.69 4.92 4.92.06 1.27.07 1.64.07 4.85s-.01 3.58-.07 4.85c-.15 3.23-1.66 4.77-4.92 4.92-1.27.06-1.64.07-4.85.07s-3.58-.01-4.85-.07c-3.26-.15-4.77-1.7-4.92-4.92C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85C2.38 3.92 3.9 2.38 7.15 2.23 8.42 2.17 8.8 2.16 12 2.16M12 0C8.74 0 8.33.01 7.05.07 2.7.27.27 2.69.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.2 4.36 2.62 6.78 6.98 6.98C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c4.35-.2 6.78-2.62 6.98-6.98.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.2-4.35-2.62-6.78-6.98-6.98C15.67.01 15.26 0 12 0m0 5.84a6.16 6.16 0 100 12.32 6.16 6.16 0 000-12.32M12 16a4 4 0 110-8 4 4 0 010 8m6.41-10.85a1.44 1.44 0 100 2.88 1.44 1.44 0 000-2.88"/></svg>',
+  youtube:'<svg viewBox="0 0 24 24"><path d="M23.5 6.19a3.02 3.02 0 00-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3.02 3.02 0 00.5 6.2C0 8.07 0 12 0 12s0 3.93.5 5.81a3.02 3.02 0 002.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3.02 3.02 0 002.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81M9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg>',
+  spotify:'<svg viewBox="0 0 24 24"><path d="M12 0a12 12 0 100 24 12 12 0 000-24m5.5 17.31a.75.75 0 01-1.03.25c-2.82-1.72-6.37-2.11-10.55-1.16a.75.75 0 11-.33-1.46c4.57-1.04 8.49-.59 11.66 1.34.35.22.46.68.25 1.03m1.47-3.27a.94.94 0 01-1.29.31c-3.23-1.98-8.16-2.56-11.98-1.4a.94.94 0 11-.55-1.8c4.37-1.32 9.8-.68 13.51 1.6.44.27.58.85.31 1.29m.13-3.4C15.33 8.26 8.75 8.04 5.0 9.18a1.13 1.13 0 11-.65-2.16C8.65 5.71 15.92 5.97 20.1 8.45a1.13 1.13 0 11-1.16 1.93"/></svg>',
+  tiktok:'<svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.89-4.55v-3.5a6.33 6.33 0 105.62 6.29V8.51a8.16 8.16 0 004.77 1.52V6.69z"/></svg>'
+};
+
+function el(html){var d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild;}
+function getId(){return new URLSearchParams(location.search).get('id');}
+
+function socialBtns(s){
+  var order=['instagram','youtube','spotify','tiktok'];
+  return order.filter(function(k){return s&&s[k];}).map(function(k){
+    return '<a class="social-link" href="'+s[k]+'" target="_blank" rel="noopener" title="'+k+'">'+ICONS[k]+'</a>';
+  }).join('');
+}
+
+function playerBlock(a){
+  var blocks=[];
+  if(a.spotify){
+    blocks.push('<div class="player-box"><iframe style="height:152px" src="'+a.spotify+'" allow="autoplay;clipboard-write;encrypted-media;fullscreen;picture-in-picture" loading="lazy"></iframe></div>');
+  }
+  if(a.youtube){
+    blocks.push('<div class="player-box"><iframe style="aspect-ratio:16/9;height:auto" src="https://www.youtube.com/embed/'+a.youtube+'" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe></div>');
+  }
+  if(!blocks.length){
+    blocks.push('<div class="player-box"><div class="player-ph"><div class="pl-ico">'+ICONS.play+'</div><p>כאן ישובץ נגן Spotify / YouTube</p><small>הוסיפו קישור EMBED בשדה spotify או מזהה וידאו בשדה youtube</small></div></div>');
+  }
+  return '<div class="players">'+blocks.join('')+'</div>';
+}
+
+function render(){
+  var app=document.getElementById('app');
+  var id=getId();
+  var a=ARTISTS[id];
+  if(!a){
+    document.title='אלגוריתם - אומן לא נמצא';
+    app.innerHTML='<div class="not-found"><h1>האומן לא נמצא</h1><p><a href="index.html">חזרה לעמוד הבית →</a></p></div>';
+    return;
+  }
+  document.title='אלגוריתם - '+a.name;
+  app.innerHTML=
+    '<section class="hero">'+
+      '<div class="photo-frame">'+
+        '<div class="photo-ph">'+ICONS.cube+'<span>תמונה בקרוב</span></div>'+
+        '<img src="'+a.img+'" alt="'+a.name+'" onerror="this.classList.add(\'img-missing\')">'+
+      '</div>'+
+      '<div class="hero-info">'+
+        '<div class="eyebrow">'+(a.nameEn||'ARTIST')+'</div>'+
+        '<h1 class="artist-name">'+a.name+'</h1>'+
+        '<div class="artist-genre">'+a.genre+'</div>'+
+        '<div class="socials">'+socialBtns(a.socials)+'</div>'+
+      '</div>'+
+    '</section>'+
+    '<section class="section">'+
+      '<div class="section-title">על המוזיקה</div>'+
+      '<p class="bio">'+a.bio+'</p>'+
+      '<span class="demo-tag">תוכן לדוגמה — ניתן לעריכה בקובץ artist.html</span>'+
+    '</section>'+
+    '<section class="section">'+
+      '<div class="section-title">להאזנה וצפייה</div>'+
+      playerBlock(a)+
+    '</section>';
+}
+render();
+</script>
+</body>
+</html>
