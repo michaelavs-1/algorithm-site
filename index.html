@@ -864,7 +864,9 @@ var HERO_IMGS=[
   window._showNavInstant=function(){
     isOpen=true;
     if(hint) hint.style.display='none';
-    wrap.style.transition='none'; wrap.style.opacity='0';
+    wrap.style.animation='none'; wrap.style.transition='none';
+    wrap.style.opacity='0'; wrap.style.visibility='hidden'; wrap.style.pointerEvents='none';
+    var gl=document.querySelector('.cube-glow'); if(gl){gl.style.transition='none';gl.style.opacity='0';gl.style.boxShadow='none';}
     var navi=document.getElementById('cubeNav');
     var amb=document.getElementById('navAmbient');
     var pc=document.getElementById('navParticles');
