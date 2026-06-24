@@ -860,6 +860,22 @@ var HERO_IMGS=[
 
   // Tap zone handles both click and touch
   tapZone.addEventListener('click',toggleCube);
+  // Instant-open: arriving from an artist page jumps straight to the artists menu
+  window._showNavInstant=function(){
+    isOpen=true;
+    if(hint) hint.style.display='none';
+    wrap.style.transition='none'; wrap.style.opacity='0';
+    var navi=document.getElementById('cubeNav');
+    var amb=document.getElementById('navAmbient');
+    var pc=document.getElementById('navParticles');
+    if(navi){navi.classList.add('visible'); if(typeof spawnFloatingFaces==='function') spawnFloatingFaces();}
+    if(amb) amb.classList.add('visible');
+    if(pc){pc.classList.add('visible'); if(window._startNavParticles) window._startNavParticles();}
+  };
+  if(/(?:[?&])view=artists(?:&|$)/.test(location.search)){
+    if(document.readyState==='complete'){window._showNavInstant();}
+    else{window.addEventListener('load',function(){setTimeout(window._showNavInstant,30);});}
+  }
   // Also listen on wrap for when tap zone is hidden (exploded state)
   wrap.addEventListener('click',function(e){
     if(isOpen){toggleCube(e);}

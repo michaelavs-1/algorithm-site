@@ -94,7 +94,7 @@ a{text-decoration:none;color:inherit}
 <body>
 <div class="bg-grid"></div>
 <nav class="navbar">
-  <a href="index.html" class="navbar-back">→ חזרה לעמוד הבית</a>
+  <a href="index.html?view=artists" class="navbar-back">→ חזרה לאמנים</a>
   <span class="navbar-logo">אלגוריתם</span>
 </nav>
 
@@ -202,7 +202,7 @@ function render(){
   var a=ARTISTS[id];
   if(!a){
     document.title='אלגוריתם - אומן לא נמצא';
-    app.innerHTML='<div class="not-found"><h1>האומן לא נמצא</h1><p><a href="index.html">חזרה לעמוד הבית →</a></p></div>';
+    app.innerHTML='<div class="not-found"><h1>האומן לא נמצא</h1><p><a href="index.html?view=artists">חזרה לאמנים →</a></p></div>';
     return;
   }
   document.title='אלגוריתם - '+a.name;
