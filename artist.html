@@ -154,6 +154,34 @@ var ARTISTS = {
     spotify:"", youtube:"",
     socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
   },
+  "adi-butbika": {
+    name:"עדי בוטביקה", nameEn:"ADI BUTBIKA", genre:"מוזיקה",
+    img:"images/adi-butbika.jpg",
+    bio:"טקסט לדוגמה: עדי בוטביקה — תיאור של האמן/ית, הסגנון המוזיקלי והדרך. כאן יופיע הטקסט האמיתי. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
+  "dj-sticky": {
+    name:"דיג׳יי סטיקי", nameEn:"DJ STICKY", genre:"דיג׳יי / אלקטרוני",
+    img:"images/dj-sticky.jpg",
+    bio:"טקסט לדוגמה: דיג׳יי סטיקי — תיאור של הדיג׳יי, הסאונד וההופעות בארץ ובעולם. כאן יופיע הטקסט האמיתי. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
+  "itzik-petzatzti": {
+    name:"איציק פצצתי", nameEn:"ITZIK PETZATZTI", genre:"מוזיקה",
+    img:"images/itzik-petzatzti.jpg",
+    bio:"טקסט לדוגמה: איציק פצצתי — תיאור של האמן, הסגנון וההופעות. כאן יופיע הטקסט האמיתי. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
+  "amitai-kurtz-samba-project": {
+    name:"אמיתי קורץ סמבה פרוג׳קט", nameEn:"AMITAI KURTZ SAMBA PROJECT", genre:"סמבה / מוזיקת עולם",
+    img:"images/amitai-kurtz-samba-project.jpg",
+    bio:"טקסט לדוגמה: אמיתי קורץ סמבה פרוג׳קט — הרכב שמביא את הקצב הברזילאי לבמות בעולם. כאן יופיע תיאור אמיתי של ההרכב, הסאונד וההופעות. [טקסט זמני — יוחלף]",
+    spotify:"", youtube:"",
+    socials:{instagram:"#", youtube:"#", spotify:"#", tiktok:"#"}
+  },
   "jerusalem-street-orchestra": {
     name:"תזמורת הרחוב הירושלמית", nameEn:"JERUSALEM STREET ORCHESTRA", genre:"אנסמבל / מוזיקת רחוב",
     img:"images/jerusalem-street-orchestra.jpg",
@@ -174,6 +202,10 @@ var ICONS = {
 
 function el(html){var d=document.createElement('div');d.innerHTML=html.trim();return d.firstChild;}
 function getId(){return new URLSearchParams(location.search).get('id');}
+function backHref(){
+  var f=new URLSearchParams(location.search).get('from');
+  return 'index.html?view='+((f==='israeli'||f==='international')?f:'artists');
+}
 
 function socialBtns(s){
   var order=['instagram','youtube','spotify','tiktok'];
@@ -202,9 +234,10 @@ function render(){
   var a=ARTISTS[id];
   if(!a){
     document.title='אלגוריתם - אומן לא נמצא';
-    app.innerHTML='<div class="not-found"><h1>האומן לא נמצא</h1><p><a href="index.html?view=artists">חזרה לאמנים →</a></p></div>';
+    app.innerHTML='<div class="not-found"><h1>האומן לא נמצא</h1><p><a href="'+backHref()+'">חזרה לאמנים →</a></p></div>';
     return;
   }
+  var bk=document.querySelector('.navbar-back'); if(bk) bk.href=backHref();
   document.title='אלגוריתם - '+a.name;
   app.innerHTML=
     '<section class="hero">'+
